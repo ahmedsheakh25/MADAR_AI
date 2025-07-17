@@ -116,12 +116,8 @@ const DockNavigation = () => {
   // Language/Theme switcher section
   const languageThemeSection = (
     <>
-      <DockIcon className="bg-background border-2 border-border hover:border-primary/50">
-        <LanguageSwitcher />
-      </DockIcon>
-      <DockIcon className="bg-background border-2 border-border hover:border-primary/50">
-        <ThemeToggle />
-      </DockIcon>
+      <LanguageSwitcher />
+      <ThemeToggle />
     </>
   );
 
