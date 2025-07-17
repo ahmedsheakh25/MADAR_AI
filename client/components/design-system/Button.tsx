@@ -68,6 +68,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           variants={buttonAnimationVariants}
           whileHover="hover"
           whileTap="tap"
+          transition={{ duration: 0.2, ease: "easeOut" }}
           className="inline-block"
         >
           <Comp
