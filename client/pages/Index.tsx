@@ -21,8 +21,7 @@ import {
   Label,
   GradientText,
 } from "@/components/design-system";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { ThemeToggle } from "@/components/ThemeToggle";
+// Navigation imports removed - using dock navigation
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
 
