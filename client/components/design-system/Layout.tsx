@@ -231,7 +231,7 @@ const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
       full: "max-w-full",
     };
 
-    const classes = cn("mx-auto px-4", sizeClasses[size], className);
+    const classes = cn("mx-auto px-4 h-full", sizeClasses[size], className);
 
     if (animate) {
       return (
