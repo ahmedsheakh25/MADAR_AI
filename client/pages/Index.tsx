@@ -136,12 +136,23 @@ export default function Index() {
         size="xl"
         className="flex-1 p-6 lg:p-8 overflow-auto max-h-full"
       >
-        <Grid cols={1} responsive={{ lg: 3 }} gap="8" animate stagger>
+        <Grid
+          cols={1}
+          responsive={{ lg: 3 }}
+          gap="6"
+          animate
+          stagger
+          className="h-full max-h-full"
+        >
           {/* Left Sidebar - Controls */}
-          <div className="lg:col-span-1">
-            <Card animate hoverEffect className="glass gradient-border h-full">
-              <CardContent className="p-6 h-full flex-1">
-                <Flex direction="column" gap="6" className="h-fit flex-1">
+          <div className="lg:col-span-1 h-full">
+            <Card
+              animate
+              hoverEffect
+              className="glass gradient-border h-full max-h-full"
+            >
+              <CardContent className="p-4 h-full flex-1 overflow-auto">
+                <Flex direction="column" gap="4" className="h-full">
                   {/* Upload Section */}
                   <div className="w-auto self-stretch">
                     <Heading
