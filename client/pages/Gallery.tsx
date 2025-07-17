@@ -123,7 +123,7 @@ export default function Gallery() {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 glass"
+              className="ps-10 glass"
               placeholder="ابحث في تصاميمك..."
             />
           </div>
