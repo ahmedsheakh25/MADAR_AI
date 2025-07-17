@@ -125,12 +125,12 @@ const DockNavigation = () => {
   const isRTL = language === "ar";
 
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+    <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-auto max-w-[90vw]">
       <Dock
         direction="bottom"
-        className="bg-background/90 backdrop-blur-lg border border-border/50 shadow-2xl px-2 py-1"
-        iconSize={36}
-        iconMagnification={48}
+        className="bg-background/90 backdrop-blur-lg border border-border/50 shadow-2xl px-1 sm:px-2 py-1"
+        iconSize={32}
+        iconMagnification={40}
       >
         {isRTL ? (
           <>
