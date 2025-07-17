@@ -20,7 +20,7 @@ function AppWithLanguage() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<IndexOnceUI />} />
+        <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/my-images" element={<Gallery />} />
