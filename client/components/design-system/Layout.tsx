@@ -112,7 +112,11 @@ const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
           variants={stagger ? containerVariants : itemVariants}
           initial="hidden"
           animate="visible"
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{
+            duration: 0.4,
+            ease: "easeOut",
+            layout: false, // Prevent layout animations that trigger ResizeObserver
+          }}
           {...props}
         />
       );
@@ -203,7 +207,11 @@ const Grid = React.forwardRef<HTMLDivElement, GridProps>(
           variants={stagger ? containerVariants : itemVariants}
           initial="hidden"
           animate="visible"
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{
+            duration: 0.4,
+            ease: "easeOut",
+            layout: false, // Prevent layout animations that trigger ResizeObserver
+          }}
           {...props}
         />
       );
