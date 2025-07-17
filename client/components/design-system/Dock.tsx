@@ -71,8 +71,7 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
         {...props}
         className={cn(dockVariants({ className }), {
           "items-start": direction === "top",
-          "items-center": direction === "middle",
-          "items-center": direction === "bottom",
+          "items-center": direction === "middle" || direction === "bottom",
         })}
       >
         {renderChildren()}
