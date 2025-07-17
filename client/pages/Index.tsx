@@ -161,7 +161,7 @@ export default function Index() {
                   </GradientText>
                   <Text size="xs" className="text-muted-foreground font-arabic">
                     {language === "ar"
-                      ? t("brand.name")
+                      ? t("brand.nameEnglish")
                       : t("brand.nameArabic")}
                   </Text>
                 </div>
