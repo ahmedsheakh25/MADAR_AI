@@ -46,8 +46,8 @@ export default function Login() {
               <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center">
                 <span className="text-white font-bold text-xl">
                   {language === "ar"
-                    ? t("brand.nameArabic")
-                    : t("brand.name").charAt(0)}
+                    ? t("brand.nameArabic").charAt(0)
+                    : t("brand.nameEnglish").charAt(0)}
                 </span>
               </div>
               <div className="text-start">
