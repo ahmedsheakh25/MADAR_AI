@@ -23,7 +23,6 @@ import {
 } from "@/components/design-system";
 import { LanguageSwitcherOnceUI as LanguageSwitcher } from "@/components/LanguageSwitcherOnceUI";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
 
