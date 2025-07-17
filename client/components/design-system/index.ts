@@ -19,7 +19,6 @@ export { Label } from "../ui/label";
 export { Badge } from "../ui/badge";
 export { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 export {
-  Dropdown,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
