@@ -9,6 +9,15 @@ import {
   CardTitle,
   Input,
   Label,
+  Heading,
+  Text,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Badge,
 } from "@/components/design-system";
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
@@ -20,10 +29,24 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
+    
+    // Basic validation
+    const newErrors: { email?: string; password?: string } = {};
+    if (!email) newErrors.email = t("common.errors.emailRequired");
+    if (!password) newErrors.password = t("common.errors.passwordRequired");
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsLoading(false);
+      return;
+    }
+    
     // Simulate login
     setTimeout(() => {
       setIsLoading(false);
@@ -51,22 +74,22 @@ export default function Login() {
                 </span>
               </div>
               <div className="text-start">
-                <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                <Heading as="h1" size="2xl" className="bg-gradient-primary bg-clip-text text-transparent">
                   {t("brand.name")}
-                </h1>
-                <p className="text-sm text-muted-foreground font-arabic">
+                </Heading>
+                <Text size="sm" className="text-muted-foreground font-arabic">
                   {language === "ar"
                     ? t("brand.nameEnglish")
                     : t("brand.nameArabic")}
-                </p>
+                </Text>
               </div>
             </div>
-            <h2 className="text-3xl font-bold text-foreground">
+            <Heading as="h2" size="3xl" className="text-foreground">
               {t("pages.login.title")}
-            </h2>
-            <p className="text-muted-foreground font-arabic">
+            </Heading>
+            <Text size="lg" className="text-muted-foreground font-arabic">
               {t("pages.login.subtitle")}
-            </p>
+            </Text>
           </div>
 
           {/* Login Form */}
@@ -82,47 +105,59 @@ export default function Login() {
                   <Label htmlFor="email" className="text-sm font-medium">
                     {t("common.forms.emailAddress")}
                   </Label>
-                  <div className="relative">
-                    <Mail className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="ps-10 glass"
-                      placeholder={t("common.forms.emailPlaceholder")}
-                      required
-                    />
-                  </div>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="glass"
+                    placeholder={t("common.forms.emailPlaceholder")}
+                    leftIcon={<Mail className="w-4 h-4" />}
+                    variant={errors.email ? "error" : "default"}
+                    error={errors.email}
+                    required
+                  />
+                  {errors.email && (
+                    <Text size="sm" className="text-destructive">
+                      {errors.email}
+                    </Text>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium">
                     {t("common.forms.password")}
                   </Label>
-                  <div className="relative">
-                    <Lock className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="ps-10 pe-10 glass"
-                      placeholder={t("common.forms.passwordPlaceholder")}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute end-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="glass"
+                    placeholder={t("common.forms.passwordPlaceholder")}
+                    leftIcon={<Lock className="w-4 h-4" />}
+                    rightIcon={
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    }
+                    variant={errors.password ? "error" : "default"}
+                    error={errors.password}
+                    required
+                  />
+                  {errors.password && (
+                    <Text size="sm" className="text-destructive">
+                      {errors.password}
+                    </Text>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
@@ -136,8 +171,11 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white"
+                  variant="gradient"
+                  size="lg"
+                  className="w-full"
                   disabled={isLoading}
+                  animate
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-2">
@@ -164,7 +202,9 @@ export default function Login() {
               <Button
                 onClick={handleGoogleLogin}
                 variant="outline"
+                size="lg"
                 className="w-full glass border-border/50 hover:border-primary/50"
+                animate
               >
                 <svg
                   className="w-5 h-5 me-2"
@@ -215,55 +255,55 @@ export default function Login() {
           <div className="max-w-lg">
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="w-8 h-8 text-primary animate-glow" />
-              <span className="text-primary font-semibold">
+              <Badge variant="secondary" className="text-primary font-semibold">
                 {t("brand.tagline")}
-              </span>
+              </Badge>
             </div>
 
-            <h1 className="text-4xl lg:text-5xl font-bold mb-6 font-arabic leading-tight">
+            <Heading as="h1" size="4xl" className="mb-6 font-arabic leading-tight lg:text-5xl">
               {t("pages.login.heroTitle")}
-            </h1>
+            </Heading>
 
-            <p className="text-xl text-muted-foreground mb-8 font-arabic leading-relaxed">
+            <Text size="xl" className="text-muted-foreground mb-8 font-arabic leading-relaxed">
               {t("pages.login.heroSubtitle")}
-            </p>
+            </Text>
 
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-lg">
                 <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                   <Star className="w-4 h-4 text-primary" />
                 </div>
-                <span className="font-arabic">
+                <Text size="lg" className="font-arabic">
                   {t("pages.login.features.highQuality")}
-                </span>
+                </Text>
               </div>
 
               <div className="flex items-center gap-3 text-lg">
                 <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                   <Star className="w-4 h-4 text-primary" />
                 </div>
-                <span className="font-arabic">
+                <Text size="lg" className="font-arabic">
                   {t("pages.login.features.transparentBackground")}
-                </span>
+                </Text>
               </div>
 
               <div className="flex items-center gap-3 text-lg">
                 <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                   <Star className="w-4 h-4 text-primary" />
                 </div>
-                <span className="font-arabic">
+                <Text size="lg" className="font-arabic">
                   {t("pages.login.features.freeForDesigners")}
-                </span>
+                </Text>
               </div>
             </div>
 
             <div className="mt-8 p-4 glass rounded-xl border border-primary/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground font-arabic">
+                  <Text size="sm" className="text-muted-foreground font-arabic">
                     {t("pages.login.activeUsers")}
-                  </p>
-                  <p className="text-2xl font-bold text-primary">+12,500</p>
+                  </Text>
+                  <Text size="xl" className="text-2xl font-bold text-primary">+12,500</Text>
                 </div>
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (

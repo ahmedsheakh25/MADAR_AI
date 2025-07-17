@@ -9,7 +9,17 @@ import {
   Grid3X3,
   List,
 } from "lucide-react";
-import { Button, Card, CardContent, Input } from "@/components/design-system";
+import {
+  Button,
+  Card,
+  CardContent,
+  Input,
+  GalleryCard,
+  Heading,
+  Text,
+  Badge,
+  Flex,
+} from "@/components/design-system";
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -18,26 +28,33 @@ const MOCK_IMAGES = [
   {
     id: 1,
     src: "/placeholder.svg",
-    prompt: "3D pixel character design",
+    prompt:
+      "3D pixel character design with vibrant colors and geometric shapes",
     style: "3D Pixel Isometric",
     createdAt: "2024-01-15",
     aspectRatio: "1:1",
+    likes: 42,
+    views: 156,
   },
   {
     id: 2,
     src: "/placeholder.svg",
-    prompt: "Minimal icon with glass effect",
+    prompt: "Minimal icon with glass effect and subtle gradients",
     style: "Glass Morphism",
     createdAt: "2024-01-14",
     aspectRatio: "3:2",
+    likes: 28,
+    views: 89,
   },
   {
     id: 3,
     src: "/placeholder.svg",
-    prompt: "Neon toy figurine design",
+    prompt: "Neon toy figurine design with glowing accents",
     style: "Neon Glow",
     createdAt: "2024-01-13",
     aspectRatio: "2:3",
+    likes: 67,
+    views: 203,
   },
 ];
 
@@ -64,12 +81,12 @@ export default function Gallery() {
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 font-arabic">
+          <Heading as="h1" size="3xl" className="mb-2 font-arabic">
             {t("pages.gallery.title")}
-          </h1>
-          <p className="text-muted-foreground font-arabic">
+          </Heading>
+          <Text size="lg" className="text-muted-foreground font-arabic">
             {t("pages.gallery.subtitle")}
-          </p>
+          </Text>
         </div>
 
         {/* Filters and Search */}
@@ -89,6 +106,7 @@ export default function Gallery() {
               variant={viewMode === "grid" ? "default" : "outline"}
               size="sm"
               onClick={() => setViewMode("grid")}
+              animate
             >
               <Grid3X3 className="w-4 h-4" />
             </Button>
@@ -96,10 +114,11 @@ export default function Gallery() {
               variant={viewMode === "list" ? "default" : "outline"}
               size="sm"
               onClick={() => setViewMode("list")}
+              animate
             >
               <List className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" animate>
               <Filter className="w-4 h-4 mr-2" />
               <span className="font-arabic">{t("common.buttons.filter")}</span>
             </Button>
@@ -133,28 +152,28 @@ function EmptyState({ searchQuery }: { searchQuery: string }) {
 
         {searchQuery ? (
           <>
-            <h3 className="text-xl font-semibold mb-2">
+            <Heading as="h3" size="xl" className="mb-2">
               {t("pages.gallery.emptyState.noResults")}
-            </h3>
-            <p className="text-muted-foreground mb-6 font-arabic">
+            </Heading>
+            <Text size="lg" className="text-muted-foreground mb-6 font-arabic">
               {t("pages.gallery.emptyState.noResultsText", {
                 searchQuery: searchQuery,
               })}
-            </p>
+            </Text>
           </>
         ) : (
           <>
-            <h3 className="text-xl font-semibold mb-2 font-arabic">
+            <Heading as="h3" size="xl" className="mb-2 font-arabic">
               {t("pages.gallery.emptyState.noDesigns")}
-            </h3>
-            <p className="text-muted-foreground mb-6 font-arabic">
+            </Heading>
+            <Text size="lg" className="text-muted-foreground mb-6 font-arabic">
               {t("pages.gallery.emptyState.noDesignsText")}
-            </p>
+            </Text>
           </>
         )}
 
         <Link to="/">
-          <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
+          <Button variant="gradient" animate>
             <Star className="w-4 h-4 mr-2" />
             <span className="font-arabic">
               {t("common.buttons.startDesigning")}
@@ -177,6 +196,14 @@ function ImageGrid({
 }) {
   const { t } = useTranslation();
 
+  const handleLike = (id: number) => {
+    console.log("Liked image:", id);
+  };
+
+  const handleShare = (id: number) => {
+    console.log("Shared image:", id);
+  };
+
   if (viewMode === "list") {
     return (
       <div className="space-y-4">
@@ -192,28 +219,31 @@ function ImageGrid({
                   />
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold truncate mb-1">
-                    {image.prompt}
-                  </h3>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="font-arabic">{image.style}</span>
-                    <span>{image.aspectRatio}</span>
-                    <span>{image.createdAt}</span>
+                                  <div className="flex-1 min-w-0">
+                    <Heading as="h3" size="md" className="truncate mb-1">
+                      {image.prompt}
+                    </Heading>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <Badge variant="secondary" className="font-arabic">
+                        {image.style}
+                      </Badge>
+                      <Text size="sm">{image.aspectRatio}</Text>
+                      <Text size="sm">{image.createdAt}</Text>
+                    </div>
                   </div>
-                </div>
 
-                <Button
-                  onClick={() => onDownload(image.id)}
-                  variant="outline"
-                  size="sm"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  <span className="font-arabic">
-                    {t("common.buttons.download")}
-                  </span>
-                </Button>
-              </div>
+                  <Button
+                    onClick={() => onDownload(image.id)}
+                    variant="outline"
+                    size="sm"
+                    animate
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    <span className="font-arabic">
+                      {t("common.buttons.download")}
+                    </span>
+                  </Button>
+                </div>
             </CardContent>
           </Card>
         ))}
@@ -222,40 +252,22 @@ function ImageGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {images.map((image) => (
-        <Card key={image.id} className="glass gradient-border group">
-          <CardContent className="p-0">
-            <div className="relative aspect-square overflow-hidden rounded-t-lg">
-              <img
-                src={image.src}
-                alt={image.prompt}
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <Button
-                  onClick={() => onDownload(image.id)}
-                  className="bg-white text-black hover:bg-white/90"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  <span className="font-arabic">
-                    {t("common.buttons.download")}
-                  </span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-4">
-              <h3 className="font-semibold mb-2 line-clamp-2">
-                {image.prompt}
-              </h3>
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span className="font-arabic">{image.style}</span>
-                <span>{image.createdAt}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <GalleryCard
+          key={image.id}
+          id={image.id}
+          src={image.src}
+          prompt={image.prompt}
+          style={image.style}
+          createdAt={image.createdAt}
+          aspectRatio={image.aspectRatio}
+          likes={image.likes}
+          views={image.views}
+          onDownload={onDownload}
+          onLike={handleLike}
+          onShare={handleShare}
+        />
       ))}
     </div>
   );

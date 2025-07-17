@@ -8,8 +8,6 @@ import {
   CardContent,
   Text,
   Heading,
-  Flex,
-  Grid,
   Container,
   Select,
   SelectContent,
@@ -71,8 +69,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  type: "tween",
-  ease: "anticipate",
+  type: "tween" as const,
+  ease: [0.25, 0.46, 0.45, 0.94],
   duration: 0.4,
 };
 
@@ -136,12 +134,12 @@ export default function Index() {
         size="xl"
         className="flex-1 p-6 lg:p-8 overflow-auto max-h-full"
       >
-        <Grid cols={1} responsive={{ lg: 3 }} gap="6" animate stagger>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Sidebar - Controls */}
           <div className="lg:col-span-1">
             <Card animate hoverEffect className="glass gradient-border">
               <CardContent className="p-4 overflow-auto">
-                <Flex direction="column" gap="4" className="h-full">
+                <div className="flex flex-col gap-4 h-full">
                   {/* Upload Section */}
                   <div className="w-auto self-stretch">
                     <Heading
@@ -181,7 +179,7 @@ export default function Index() {
                               htmlFor="image-upload"
                               className="cursor-pointer"
                             >
-                              <Button variant="secondary" size="sm">
+                              <Button variant="secondary" size="sm" animate>
                                 {t("common.buttons.changeImage")}
                               </Button>
                             </Label>
@@ -272,7 +270,7 @@ export default function Index() {
                     >
                       {t("pages.homepage.aspectRatioSection.title")}
                     </Heading>
-                    <Flex gap="3">
+                    <div className="flex gap-3">
                       {["1:1", "3:2", "2:3"].map((ratio) => (
                         <Button
                           key={ratio}
@@ -282,12 +280,12 @@ export default function Index() {
                           size="sm"
                           onClick={() => setAspectRatio(ratio)}
                           animate
-                          className="w-auto flex-1 w-full"
+                          className="flex-1"
                         >
                           {ratio}
                         </Button>
                       ))}
-                    </Flex>
+                    </div>
                   </div>
 
                   {/* Prompt */}
@@ -303,12 +301,15 @@ export default function Index() {
                     <Textarea
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      className="glass min-h-[120px] resize-none"
+                      className="glass min-h-[120px]"
                       placeholder={t(
                         "pages.homepage.promptSection.placeholder",
                       )}
+                      maxLength={500}
+                      showCharCount
+                      resize="none"
                     />
-                    <Flex align="center" gap="2" className="mt-2">
+                    <div className="flex items-center gap-2 mt-2">
                       <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">
                         <span className="text-black text-xs">!</span>
                       </div>
@@ -318,15 +319,16 @@ export default function Index() {
                       >
                         {t("common.messages.generationTakes")}
                       </Text>
-                    </Flex>
+                    </div>
                   </div>
 
                   {/* Generate Button */}
                   <Button
                     onClick={handleGenerate}
                     disabled={!uploadedImage || isGenerating}
-                    className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white font-semibold py-3 text-base w-auto self-stretch"
+                    variant="gradient"
                     size="lg"
+                    className="w-full font-semibold py-3 text-base"
                     animate
                   >
                     <AnimatePresence mode="wait">
@@ -367,7 +369,7 @@ export default function Index() {
                       )}
                     </AnimatePresence>
                   </Button>
-                </Flex>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -376,14 +378,9 @@ export default function Index() {
           <div className="lg:col-span-2">
             <Card animate hoverEffect className="glass gradient-border">
               <CardContent className="p-4 flex flex-col overflow-hidden">
-                <Flex direction="column" className="h-full">
+                <div className="flex flex-col h-full">
                   {/* Hero Section */}
-                  <Flex
-                    direction="column"
-                    align="center"
-                    justify="center"
-                    className="text-center py-4 flex-1"
-                  >
+                  <div className="flex flex-col items-center justify-center text-center py-4 flex-1">
                     <motion.div
                       animate={{
                         scale: [1, 1.1, 1],
@@ -430,13 +427,8 @@ export default function Index() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.5, duration: 0.6 }}
                     >
-                      <Flex
-                        align="center"
-                        justify="center"
-                        gap="2"
-                        className="mb-8"
-                      >
-                        <Flex gap="1">
+                      <div className="flex items-center justify-center gap-2 mb-8">
+                        <div className="flex gap-1">
                           {[...Array(5)].map((_, i) => (
                             <motion.div
                               key={i}
@@ -447,16 +439,16 @@ export default function Index() {
                               <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
                             </motion.div>
                           ))}
-                        </Flex>
+                        </div>
                         <Text
                           size="sm"
                           className="text-muted-foreground font-arabic"
                         >
                           {t("pages.homepage.hero.ratingText")}
                         </Text>
-                      </Flex>
+                      </div>
                     </motion.div>
-                  </Flex>
+                  </div>
 
                   {/* Examples Section */}
                   <motion.div
@@ -465,19 +457,19 @@ export default function Index() {
                     transition={{ delay: 0.7, duration: 0.6 }}
                     className="flex-shrink-0"
                   >
-                    <Flex justify="between" align="center" className="mb-6">
+                    <div className="flex justify-between items-center mb-6">
                       <Heading as="h2" size="lg" className="font-arabic">
                         {t("pages.homepage.examplesSection.title")}
                       </Heading>
-                      <Button variant="secondary" size="sm">
+                      <Button variant="secondary" size="sm" animate>
                         <span className="font-arabic">
                           {t("common.buttons.moreExamples")}
                         </span>
                         <span className="flip-for-rtl ms-1">←</span>
                       </Button>
-                    </Flex>
+                    </div>
 
-                    <Grid cols={1} responsive={{ md: 1 }} gap="4">
+                    <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                       {EXAMPLE_IMAGES.slice(0, 1).map((img, index) => (
                         <motion.div
                           key={img.id}
@@ -526,13 +518,13 @@ export default function Index() {
                           </div>
                         </motion.div>
                       ))}
-                    </Grid>
+                    </div>
                   </motion.div>
-                </Flex>
+                </div>
               </CardContent>
             </Card>
           </div>
-        </Grid>
+        </div>
       </Container>
     </motion.div>
   );
