@@ -141,7 +141,7 @@ export default function Index() {
           <div className="lg:col-span-1">
             <Card animate hoverEffect className="glass gradient-border">
               <CardContent className="p-4 overflow-auto">
-                <Flex direction="column" gap="4">
+                <Flex direction="column" gap="4" className="h-full">
                   {/* Upload Section */}
                   <div className="w-auto self-stretch">
                     <Heading
@@ -376,7 +376,7 @@ export default function Index() {
           <div className="lg:col-span-2">
             <Card animate hoverEffect className="glass gradient-border">
               <CardContent className="p-4 flex flex-col overflow-hidden">
-                <Flex direction="column">
+                <Flex direction="column" className="h-full">
                   {/* Hero Section */}
                   <Flex
                     direction="column"
