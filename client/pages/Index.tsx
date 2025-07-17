@@ -372,14 +372,14 @@ export default function Index() {
           {/* Right Side - Preview & Examples */}
           <div className="lg:col-span-2">
             <Card animate hoverEffect className="glass gradient-border h-full">
-              <CardContent className="p-6">
-                <Flex direction="column" className="h-full">
+              <CardContent className="p-6 flex-1 h-full flex flex-col">
+                <Flex direction="column" className="h-full flex-0">
                   {/* Hero Section */}
                   <Flex
                     direction="column"
                     align="center"
                     justify="center"
-                    className="text-center py-12 flex-1"
+                    className="text-center py-12 flex-0 h-auto"
                   >
                     <motion.div
                       animate={{
@@ -460,7 +460,7 @@ export default function Index() {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7, duration: 0.6 }}
-                    className="mt-auto"
+                    className="mt-auto w-full"
                   >
                     <Flex justify="between" align="center" className="mb-6">
                       <Heading as="h2" size="lg" className="font-arabic">
