@@ -1,55 +1,21 @@
-import { useLanguage } from "./use-language";
-import enTranslations from "../locales/en.json";
-import arTranslations from "../locales/ar.json";
+import { useTranslation as useI18nTranslation } from "react-i18next";
 
 type TranslationKey = string;
 type TranslationParams = Record<string, string | number>;
 
-interface Translation {
-  [key: string]: string | Translation;
-}
-
-const translations = {
-  en: enTranslations as Translation,
-  ar: arTranslations as Translation,
-};
-
-function getNestedValue(obj: Translation, path: TranslationKey): string {
-  return path.split(".").reduce((current, key) => {
-    if (current && typeof current === "object" && key in current) {
-      return current[key] as any;
-    }
-    return undefined;
-  }, obj) as string;
-}
-
-function interpolateParams(text: string, params: TranslationParams): string {
-  return Object.entries(params).reduce(
-    (result, [key, value]) =>
-      result.replace(new RegExp(`{{${key}}}`, "g"), String(value)),
-    text,
-  );
-}
-
 export function useTranslation() {
-  const { language } = useLanguage();
+  const { t: i18nT, i18n } = useI18nTranslation();
 
   const t = (key: TranslationKey, params?: TranslationParams): string => {
-    const translation = getNestedValue(translations[language], key);
-
-    if (!translation) {
+    try {
+      return i18nT(key, params);
+    } catch (error) {
       console.warn(
-        `Translation key "${key}" not found for language "${language}"`,
+        `Translation key "${key}" not found for language "${i18n.language}"`,
       );
       return key;
     }
-
-    if (params) {
-      return interpolateParams(translation, params);
-    }
-
-    return translation;
   };
 
-  return { t };
+  return { t, i18n };
 }
