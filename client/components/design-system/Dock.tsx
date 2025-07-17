@@ -9,7 +9,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import React, { PropsWithChildren, useRef } from "react";
+import React, { PropsWithChildren, useRef, useCallback } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -45,6 +45,21 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
   ) => {
     const mouseX = useMotionValue(Infinity);
 
+    // Throttle mouse movement updates to prevent excessive calculations
+    const throttledMouseUpdate = useCallback(
+      (() => {
+        let timeoutId: number | null = null;
+        return (pageX: number) => {
+          if (timeoutId) return;
+          timeoutId = window.setTimeout(() => {
+            mouseX.set(pageX);
+            timeoutId = null;
+          }, 16); // ~60fps
+        };
+      })(),
+      [mouseX],
+    );
+
     const renderChildren = () => {
       return React.Children.map(children, (child) => {
         if (
@@ -66,7 +81,7 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
     return (
       <motion.div
         ref={ref}
-        onMouseMove={(e) => mouseX.set(e.pageX)}
+        onMouseMove={(e) => throttledMouseUpdate(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
         {...props}
         className={cn(dockVariants({ className }), {
