@@ -189,7 +189,7 @@ export default function Index() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="space-y-4"
+                            className="space-y-4 flex flex-col h-fit flex-0"
                           >
                             <motion.div
                               animate={{ y: [0, -10, 0] }}
@@ -198,10 +198,11 @@ export default function Index() {
                                 repeat: Infinity,
                                 ease: "easeInOut",
                               }}
+                              className="flex-0"
                             >
                               <ImageIcon className="w-14 h-14 text-muted-foreground mx-auto" />
                             </motion.div>
-                            <div>
+                            <div className="flex flex-col">
                               <Text size="sm" className="mb-2 font-arabic">
                                 {t("common.messages.clickToUpload")}
                               </Text>
@@ -214,9 +215,14 @@ export default function Index() {
                             </div>
                             <Label
                               htmlFor="image-upload"
-                              className="cursor-pointer"
+                              className="cursor-pointer w-full self-stretch"
                             >
-                              <Button size="sm" variant="gradient" animate>
+                              <Button
+                                size="sm"
+                                variant="gradient"
+                                animate
+                                className="w-full self-stretch"
+                              >
                                 {t("common.buttons.chooseImage")}
                               </Button>
                             </Label>
