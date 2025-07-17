@@ -149,8 +149,8 @@ export default function Index() {
                 >
                   <Text size="sm" weight="bold" className="text-white">
                     {language === "ar"
-                      ? t("brand.nameArabic")
-                      : t("brand.name").charAt(0)}
+                      ? t("brand.nameArabic").charAt(0)
+                      : t("brand.nameEnglish").charAt(0)}
                   </Text>
                 </motion.div>
                 <div>
