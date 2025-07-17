@@ -90,21 +90,20 @@ export default function Index() {
             </div>
 
             <nav className="hidden md:flex items-center gap-6">
-              <a
-                href="#"
-                className="text-sm text-foreground hover:text-primary transition-colors"
-              >
+              <span className="text-sm text-foreground font-medium">
                 المولد
-              </a>
-              <a
-                href="#"
+              </span>
+              <Link
+                to="/gallery"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 معرض أعمالي
-              </a>
-              <Button variant="outline" size="sm">
-                تسجيل الدخول
-              </Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  تسجيل الدخول
+                </Button>
+              </Link>
             </nav>
           </div>
         </div>
@@ -262,9 +261,7 @@ export default function Index() {
                   ) : (
                     <div className="flex items-center gap-2">
                       <Zap className="w-5 h-5" />
-                      <span className="font-arabic">
-                        توليد الص��رة (1 رصيد)
-                      </span>
+                      <span className="font-arabic">توليد الصورة (1 رصيد)</span>
                     </div>
                   )}
                 </Button>
@@ -284,7 +281,7 @@ export default function Index() {
                     </div>
 
                     <h1 className="text-4xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
-                      حوّل أي صورة إلى تصميم ثلاثي الأبعاد مميز
+                      حوّل أي ص��رة إلى تصميم ثلاثي الأبعاد مميز
                     </h1>
                     <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-arabic">
                       استخدم الذكاء الاصطناعي لتحويل صورك إلى تصاميم إبداعية
