@@ -210,7 +210,7 @@ export default function Index() {
                     className="flex gap-3"
                   >
                     {["1:1", "3:2", "2:3"].map((ratio) => (
-                      <div key={ratio} className="flex items-center space-x-2">
+                      <div key={ratio} className="flex items-center gap-2">
                         <RadioGroupItem
                           value={ratio}
                           id={ratio}
@@ -313,7 +313,7 @@ export default function Index() {
                       </h2>
                       <Button variant="outline" size="sm">
                         <span className="font-arabic">المزيد من الأمثلة</span>
-                        <span className="mr-1">←</span>
+                        <span className="flip-for-rtl ms-1">←</span>
                       </Button>
                     </div>
 
@@ -329,17 +329,17 @@ export default function Index() {
                                   alt="Original"
                                   className="w-full h-full object-cover"
                                 />
-                                <div className="absolute top-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                <div className="absolute top-2 start-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
                                   الأصلية
                                 </div>
                               </div>
-                              <div className="relative border-l-2 border-primary">
+                              <div className="relative border-s-2 border-primary">
                                 <img
                                   src={img.src}
                                   alt="Generated"
                                   className="w-full h-full object-cover"
                                 />
-                                <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded">
+                                <div className="absolute top-2 end-2 bg-primary text-white text-xs px-2 py-1 rounded">
                                   ثلاثي الأبعاد
                                 </div>
                               </div>
@@ -351,7 +351,7 @@ export default function Index() {
 
                     <div className="flex justify-center mt-6">
                       <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
-                        <Upload className="w-5 h-5 mr-2" />
+                        <Upload className="w-5 h-5 me-2" />
                         <span className="font-arabic">ارفع صورتك الآن</span>
                       </Button>
                     </div>
