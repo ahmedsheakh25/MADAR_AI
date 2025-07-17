@@ -131,8 +131,6 @@ export default function IndexOnceUI() {
       transition={pageTransition}
       className="min-h-screen bg-background"
     >
-      <VersionSwitcher />
-
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
