@@ -64,7 +64,27 @@
   }
 
   html {
-    font-family: "Inter", "Noto Sans Arabic", sans-serif;
+    font-family: var(--font-body-en);
+  }
+
+  /* Language-specific font application */
+  html[lang="en"] {
+    font-family: var(--font-body-en);
+  }
+
+  html[lang="ar"] {
+    font-family: var(--font-arabic);
+    direction: rtl;
+  }
+
+  /* Heading styles for English */
+  html[lang="en"] h1,
+  html[lang="en"] h2,
+  html[lang="en"] h3,
+  html[lang="en"] h4,
+  html[lang="en"] h5,
+  html[lang="en"] h6 {
+    font-family: var(--font-heading-en);
   }
 
   body {
@@ -84,7 +104,16 @@
 
   /* Arabic font family */
   .font-arabic {
-    font-family: "Noto Sans Arabic", "Inter", sans-serif;
+    font-family: var(--font-arabic);
+  }
+
+  /* English font families */
+  .font-heading {
+    font-family: var(--font-heading-en);
+  }
+
+  .font-body {
+    font-family: var(--font-body-en);
   }
 
   /* Glass morphism effects */
