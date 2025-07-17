@@ -128,11 +128,14 @@ export default function Index() {
       exit="out"
       variants={pageVariants}
       transition={pageTransition}
-      className="min-h-screen bg-background"
+      className="h-screen max-h-screen overflow-hidden bg-background flex flex-col"
     >
       {/* Header removed - navigation moved to dock */}
 
-      <Container size="xl" className="p-[90px]">
+      <Container
+        size="xl"
+        className="flex-1 p-6 lg:p-8 overflow-auto max-h-full"
+      >
         <Grid cols={1} responsive={{ lg: 3 }} gap="8" animate stagger>
           {/* Left Sidebar - Controls */}
           <div className="lg:col-span-1">
