@@ -128,7 +128,7 @@ export default function Index() {
       exit="out"
       variants={pageVariants}
       transition={pageTransition}
-      className="h-screen max-h-screen overflow-hidden bg-background flex flex-col"
+      className="h-screen-safe max-h-screen-safe overflow-hidden bg-background flex flex-col"
     >
       {/* Header removed - navigation moved to dock */}
 
