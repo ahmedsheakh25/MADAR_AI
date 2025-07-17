@@ -478,7 +478,7 @@ export default function Index() {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7, duration: 0.6 }}
-                    className="mt-auto w-full"
+                    className="flex-shrink-0 w-full"
                   >
                     <Flex justify="between" align="center" className="mb-6">
                       <Heading as="h2" size="lg" className="font-arabic">
