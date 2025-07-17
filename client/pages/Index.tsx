@@ -233,7 +233,7 @@ export default function Index() {
                   </div>
 
                   {/* Style Selection */}
-                  <div>
+                  <div className="w-auto self-stretch">
                     <Heading
                       as="h3"
                       size="md"
@@ -260,7 +260,7 @@ export default function Index() {
                   </div>
 
                   {/* Aspect Ratio */}
-                  <div>
+                  <div className="w-auto self-stretch">
                     <Heading
                       as="h3"
                       size="md"
@@ -279,6 +279,7 @@ export default function Index() {
                           size="sm"
                           onClick={() => setAspectRatio(ratio)}
                           animate
+                          className="w-auto flex-1 w-full"
                         >
                           {ratio}
                         </Button>
@@ -287,7 +288,7 @@ export default function Index() {
                   </div>
 
                   {/* Prompt */}
-                  <div>
+                  <div className="w-auto self-stretch">
                     <Heading
                       as="h3"
                       size="md"
@@ -321,7 +322,7 @@ export default function Index() {
                   <Button
                     onClick={handleGenerate}
                     disabled={!uploadedImage || isGenerating}
-                    className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white font-semibold py-3 text-base"
+                    className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white font-semibold py-3 text-base w-auto self-stretch"
                     size="lg"
                     animate
                   >
