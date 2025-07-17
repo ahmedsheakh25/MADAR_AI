@@ -9,6 +9,8 @@ import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
 import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
+import { TooltipProvider } from "@/components/design-system";
+import DockNavigation from "./components/navigation/DockNavigation";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
