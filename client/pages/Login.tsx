@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/hooks/use-language";
 
 export default function Login() {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -35,33 +39,41 @@ export default function Login() {
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center">
-                <span className="text-white font-bold text-xl">م</span>
+                <span className="text-white font-bold text-xl">
+                  {language === "ar"
+                    ? t("brand.nameArabic")
+                    : t("brand.name").charAt(0)}
+                </span>
               </div>
               <div className="text-start">
                 <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  Madar
+                  {t("brand.name")}
                 </h1>
                 <p className="text-sm text-muted-foreground font-arabic">
-                  مدار
+                  {language === "ar" ? t("brand.name") : t("brand.nameArabic")}
                 </p>
               </div>
             </div>
-            <h2 className="text-3xl font-bold text-foreground">Welcome Back</h2>
+            <h2 className="text-3xl font-bold text-foreground">
+              {t("pages.login.title")}
+            </h2>
             <p className="text-muted-foreground font-arabic">
-              مرحباً بعودتك إلى منصة التصميم الإبداعي
+              {t("pages.login.subtitle")}
             </p>
           </div>
 
           {/* Login Form */}
           <Card className="glass gradient-border">
             <CardHeader className="text-center pb-4">
-              <CardTitle className="text-xl font-semibold">Sign In</CardTitle>
+              <CardTitle className="text-xl font-semibold">
+                {t("pages.login.signInCard")}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-medium">
-                    Email Address
+                    {t("common.forms.emailAddress")}
                   </Label>
                   <div className="relative">
                     <Mail className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -71,7 +83,7 @@ export default function Login() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="ps-10 glass"
-                      placeholder="your@email.com"
+                      placeholder={t("common.forms.emailPlaceholder")}
                       required
                     />
                   </div>
@@ -79,7 +91,7 @@ export default function Login() {
 
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium">
-                    Password
+                    {t("common.forms.password")}
                   </Label>
                   <div className="relative">
                     <Lock className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -89,7 +101,7 @@ export default function Login() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="ps-10 pe-10 glass"
-                      placeholder="Enter your password"
+                      placeholder={t("common.forms.passwordPlaceholder")}
                       required
                     />
                     <button
@@ -111,7 +123,7 @@ export default function Login() {
                     to="/forgot-password"
                     className="text-primary hover:text-primary/80 transition-colors"
                   >
-                    Forgot Password?
+                    {t("common.buttons.forgotPassword")}
                   </Link>
                 </div>
 
@@ -123,10 +135,10 @@ export default function Login() {
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Signing In...
+                      {t("common.buttons.signingIn")}
                     </div>
                   ) : (
-                    "Sign In"
+                    t("common.buttons.signIn")
                   )}
                 </Button>
               </form>
@@ -137,7 +149,7 @@ export default function Login() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
+                    {t("common.messages.orContinueWith")}
                   </span>
                 </div>
               </div>
@@ -157,16 +169,16 @@ export default function Login() {
                   <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-                Login with Google
+                {t("common.buttons.loginWithGoogle")}
               </Button>
 
               <div className="text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
+                {t("common.messages.dontHaveAccount")}{" "}
                 <Link
                   to="/signup"
                   className="text-primary hover:text-primary/80 transition-colors font-medium"
                 >
-                  Sign up for free
+                  {t("common.buttons.signUpFree")}
                 </Link>
               </div>
             </CardContent>
@@ -197,17 +209,16 @@ export default function Login() {
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="w-8 h-8 text-primary animate-glow" />
               <span className="text-primary font-semibold">
-                AI-Powered Design
+                {t("brand.tagline")}
               </span>
             </div>
 
             <h1 className="text-4xl lg:text-5xl font-bold mb-6 font-arabic leading-tight">
-              حوّل فكرتك إلى تصميم مرئي 3D مميز باستخدام الذكاء الاصطناعي
+              {t("pages.login.heroTitle")}
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 font-arabic leading-relaxed">
-              مجاني تمامًا للمصممين والمبدعين. ارفع صورتك واحصل على تصميم ثلاثي
-              الأبعاد بخلفية شفافة في دقائق
+              {t("pages.login.heroSubtitle")}
             </p>
 
             <div className="space-y-4">
@@ -216,7 +227,7 @@ export default function Login() {
                   <Star className="w-4 h-4 text-primary" />
                 </div>
                 <span className="font-arabic">
-                  تصاميم عالية الجودة بتقنية الذكاء الاصطناعي
+                  {t("pages.login.features.highQuality")}
                 </span>
               </div>
 
@@ -225,7 +236,7 @@ export default function Login() {
                   <Star className="w-4 h-4 text-primary" />
                 </div>
                 <span className="font-arabic">
-                  خلفيات شفافة جاهزة للاستخدام
+                  {t("pages.login.features.transparentBackground")}
                 </span>
               </div>
 
@@ -233,7 +244,9 @@ export default function Login() {
                 <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
                   <Star className="w-4 h-4 text-primary" />
                 </div>
-                <span className="font-arabic">مجاني بالكامل للمصممين</span>
+                <span className="font-arabic">
+                  {t("pages.login.features.freeForDesigners")}
+                </span>
               </div>
             </div>
 
@@ -241,7 +254,7 @@ export default function Login() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground font-arabic">
-                    المستخدمون النشطون
+                    {t("pages.login.activeUsers")}
                   </p>
                   <p className="text-2xl font-bold text-primary">+12,500</p>
                 </div>
