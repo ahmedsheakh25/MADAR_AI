@@ -95,7 +95,7 @@ const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
     };
 
     const classes = cn(
-      "flex h-full",
+      "flex",
       directionClasses[direction],
       alignClasses[align],
       justifyClasses[justify],
