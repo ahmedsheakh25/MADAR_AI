@@ -64,24 +64,13 @@ export default function Gallery() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2 font-arabic">
-              {t("pages.gallery.title")}
-            </h1>
-            <p className="text-muted-foreground font-arabic">
-              {t("pages.gallery.subtitle")}
-            </p>
-          </div>
-
-          <Link to="/">
-            <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
-              <ArrowRight className="w-4 h-4 me-2 flip-for-rtl" />
-              <span className="font-arabic">
-                {t("common.buttons.backToGenerator")}
-              </span>
-            </Button>
-          </Link>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2 font-arabic">
+            {t("pages.gallery.title")}
+          </h1>
+          <p className="text-muted-foreground font-arabic">
+            {t("pages.gallery.subtitle")}
+          </p>
         </div>
 
         {/* Filters and Search */}
