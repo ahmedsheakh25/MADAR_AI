@@ -2,13 +2,10 @@ import { Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Button,
-  Dropdown,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Flex,
-  Text,
 } from "@/components/design-system";
 import { useLanguage, type Language } from "@/hooks/use-language";
 
