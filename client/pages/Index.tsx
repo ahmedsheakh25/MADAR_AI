@@ -382,7 +382,7 @@ export default function Index() {
                     direction="column"
                     align="center"
                     justify="center"
-                    className="text-center py-6 flex-1 min-h-0"
+                    className="text-center py-4 flex-1"
                   >
                     <motion.div
                       animate={{
@@ -463,7 +463,7 @@ export default function Index() {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7, duration: 0.6 }}
-                    className="flex-shrink-0 w-full"
+                    className="flex-shrink-0"
                   >
                     <Flex justify="between" align="center" className="mb-6">
                       <Heading as="h2" size="lg" className="font-arabic">
