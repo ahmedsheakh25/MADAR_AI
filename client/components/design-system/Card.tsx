@@ -40,6 +40,7 @@ const Card = React.forwardRef<
         initial="hidden"
         animate="visible"
         whileHover={hoverEffect ? "hover" : undefined}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         {...props}
       />
     );
