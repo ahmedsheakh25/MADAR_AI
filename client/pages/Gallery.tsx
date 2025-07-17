@@ -69,8 +69,8 @@ export default function Gallery() {
                 <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
                   <span className="text-white font-bold text-sm">
                     {language === "ar"
-                      ? t("brand.nameArabic")
-                      : t("brand.name").charAt(0)}
+                      ? t("brand.nameArabic").charAt(0)
+                      : t("brand.nameEnglish").charAt(0)}
                   </span>
                 </div>
                 <div>
