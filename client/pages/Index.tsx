@@ -101,6 +101,7 @@ export default function Index() {
               >
                 معرض أعمالي
               </Link>
+              <LanguageSwitcher />
               <Link to="/login">
                 <Button variant="outline" size="sm">
                   تسجيل الدخول
@@ -151,7 +152,7 @@ export default function Index() {
                         <ImageIcon className="w-14 h-14 text-muted-foreground mx-auto" />
                         <div>
                           <p className="text-sm text-foreground mb-2 font-arabic">
-                            اضغط لرفع الصورة أو اسحب��ا هنا
+                            اضغط لرفع الصورة أو اسحبها هنا
                           </p>
                           <p className="text-xs text-muted-foreground font-arabic">
                             يدعم PNG، JPG، JPEG
