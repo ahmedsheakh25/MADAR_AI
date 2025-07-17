@@ -24,17 +24,30 @@ import {
 import { LanguageSwitcherOnceUI as LanguageSwitcher } from "@/components/LanguageSwitcherOnceUI";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
+import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/hooks/use-language";
 
 const STYLE_OPTIONS = [
   {
     value: "3d-pixel-isometric",
-    label: "3D Pixel Isometric",
-    nameAr: "أيزومترك بكسل ثلاثي الأبعاد",
+    labelKey: "pages.homepage.styleSection.styles.3dPixelIsometric",
   },
-  { value: "minimal-icon", label: "Minimal Icon", nameAr: "أيقونة بسيطة" },
-  { value: "toy-figurine", label: "Toy Figurine", nameAr: "دمية لعبة" },
-  { value: "glass-morph", label: "Glass Morphism", nameAr: "تأثير زجاجي" },
-  { value: "neon-glow", label: "Neon Glow", nameAr: "توهج نيون" },
+  {
+    value: "minimal-icon",
+    labelKey: "pages.homepage.styleSection.styles.minimalIcon",
+  },
+  {
+    value: "toy-figurine",
+    labelKey: "pages.homepage.styleSection.styles.toyFigurine",
+  },
+  {
+    value: "glass-morph",
+    labelKey: "pages.homepage.styleSection.styles.glassMorphism",
+  },
+  {
+    value: "neon-glow",
+    labelKey: "pages.homepage.styleSection.styles.neonGlow",
+  },
 ];
 
 const EXAMPLE_IMAGES = [
@@ -81,10 +94,12 @@ const buttonVariants = {
 };
 
 export default function IndexOnceUI() {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const [selectedStyle, setSelectedStyle] = useState("3d-pixel-isometric");
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [prompt, setPrompt] = useState(
-    "Transform the uploaded image into a collectible toy figure that could be included as a gift with a McDonald's burger meal. Stylize the character as a small, plastic figurine placed on a simple display base. Include a realistic McDonald's burger and its branded packaging in the background to give the impression of a Happy Meal toy promotion. Use soft lighting and a clean background, keeping the colors vibrant and playful.",
+    t("pages.homepage.promptSection.defaultPrompt"),
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -136,17 +151,21 @@ export default function IndexOnceUI() {
                   className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center"
                 >
                   <Text size="sm" weight="bold" className="text-white">
-                    م
+                    {language === "ar"
+                      ? t("brand.nameArabic")
+                      : t("brand.name").charAt(0)}
                   </Text>
                 </motion.div>
                 <div>
                   <GradientText gradient="primary">
                     <Heading as="h1" size="lg">
-                      Madar
+                      {t("brand.name")}
                     </Heading>
                   </GradientText>
                   <Text size="xs" className="text-muted-foreground font-arabic">
-                    مدار
+                    {language === "ar"
+                      ? t("brand.name")
+                      : t("brand.nameArabic")}
                   </Text>
                 </div>
               </Flex>
@@ -154,19 +173,19 @@ export default function IndexOnceUI() {
 
             <Flex as="nav" className="hidden md:flex" align="center" gap="6">
               <Text size="sm" weight="medium" className="text-foreground">
-                المولد
+                {t("common.navigation.generator")}
               </Text>
               <Link
                 to="/gallery"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                معرض أعمالي
+                {t("common.navigation.gallery")}
               </Link>
               <LanguageSwitcher />
               <ThemeToggle />
               <Link to="/login">
                 <Button variant="secondary" size="sm">
-                  تسجيل الدخول
+                  {t("common.buttons.signIn")}
                 </Button>
               </Link>
             </Flex>
@@ -189,7 +208,7 @@ export default function IndexOnceUI() {
                       className="mb-4 font-arabic"
                       animate
                     >
-                      رفع الصورة
+                      {t("pages.homepage.uploadSection.title")}
                     </Heading>
                     <motion.div
                       whileHover={{ borderColor: "hsl(264, 100%, 50%)" }}
@@ -221,7 +240,7 @@ export default function IndexOnceUI() {
                               className="cursor-pointer"
                             >
                               <Button variant="secondary" size="sm">
-                                تغيير الصورة
+                                {t("common.buttons.changeImage")}
                               </Button>
                             </Label>
                           </motion.div>
@@ -245,13 +264,13 @@ export default function IndexOnceUI() {
                             </motion.div>
                             <div>
                               <Text size="sm" className="mb-2 font-arabic">
-                                اضغط لرفع الصورة أو اسحبها هنا
+                                {t("common.messages.clickToUpload")}
                               </Text>
                               <Text
                                 size="xs"
                                 className="text-muted-foreground font-arabic"
                               >
-                                يدعم PNG، JPG، JPEG
+                                {t("common.messages.supportedFormats")}
                               </Text>
                             </div>
                             <Label
@@ -259,7 +278,7 @@ export default function IndexOnceUI() {
                               className="cursor-pointer"
                             >
                               <Button size="sm" variant="gradient" animate>
-                                اختيار صورة
+                                {t("common.buttons.chooseImage")}
                               </Button>
                             </Label>
                           </motion.div>
@@ -276,7 +295,7 @@ export default function IndexOnceUI() {
                       className="mb-4 font-arabic"
                       animate
                     >
-                      نمط التصميم
+                      {t("pages.homepage.styleSection.title")}
                     </Heading>
                     <Select
                       value={selectedStyle}
@@ -288,12 +307,7 @@ export default function IndexOnceUI() {
                       <SelectContent>
                         {STYLE_OPTIONS.map((style) => (
                           <SelectItem key={style.value} value={style.value}>
-                            <div className="flex flex-col">
-                              <span>{style.label}</span>
-                              <span className="text-xs text-muted-foreground font-arabic">
-                                {style.nameAr}
-                              </span>
-                            </div>
+                            {t(style.labelKey)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -308,7 +322,7 @@ export default function IndexOnceUI() {
                       className="mb-4 font-arabic"
                       animate
                     >
-                      نسبة العرض للارتفاع
+                      {t("pages.homepage.aspectRatioSection.title")}
                     </Heading>
                     <Flex gap="3">
                       {["1:1", "3:2", "2:3"].map((ratio) => (
@@ -335,13 +349,15 @@ export default function IndexOnceUI() {
                       className="mb-4 font-arabic"
                       animate
                     >
-                      وصف التحويل
+                      {t("pages.homepage.promptSection.title")}
                     </Heading>
                     <Textarea
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       className="glass min-h-[120px] resize-none"
-                      placeholder="صف كيف تريد تحويل صورتك..."
+                      placeholder={t(
+                        "pages.homepage.promptSection.placeholder",
+                      )}
                     />
                     <Flex align="center" gap="2" className="mt-2">
                       <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">
@@ -351,7 +367,7 @@ export default function IndexOnceUI() {
                         size="xs"
                         className="text-muted-foreground font-arabic"
                       >
-                        يستغرق التوليد 3-5 دقائق، لا تقم بتحديث الصفحة
+                        {t("common.messages.generationTakes")}
                       </Text>
                     </Flex>
                   </div>
@@ -382,7 +398,9 @@ export default function IndexOnceUI() {
                             }}
                             className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                           />
-                          <span className="font-arabic">جاري التوليد...</span>
+                          <span className="font-arabic">
+                            {t("common.buttons.generating")}
+                          </span>
                         </motion.div>
                       ) : (
                         <motion.div
@@ -394,7 +412,7 @@ export default function IndexOnceUI() {
                         >
                           <Zap className="w-5 h-5" />
                           <span className="font-arabic">
-                            توليد الصورة (1 رصيد)
+                            {t("common.buttons.generateImage")}
                           </span>
                         </motion.div>
                       )}
@@ -439,7 +457,7 @@ export default function IndexOnceUI() {
                     >
                       <GradientText gradient="primary">
                         <Heading as="h1" size="4xl" className="mb-4">
-                          حوّل أي صورة إلى تصميم ثلاثي الأبعاد مميز
+                          {t("pages.homepage.hero.title")}
                         </Heading>
                       </GradientText>
                     </motion.div>
@@ -453,8 +471,7 @@ export default function IndexOnceUI() {
                         size="lg"
                         className="text-muted-foreground mb-6 max-w-2xl mx-auto font-arabic"
                       >
-                        استخدم الذكاء الاصطناعي لتحويل صورك إلى تصاميم إبداعية
-                        ثلاثية الأبعاد بخلفية شفافة، مثالية للمصممين والمبدعين
+                        {t("pages.homepage.hero.subtitle")}
                       </Text>
                     </motion.div>
 
@@ -486,7 +503,7 @@ export default function IndexOnceUI() {
                           size="sm"
                           className="text-muted-foreground font-arabic"
                         >
-                          +12,500 مستخدم استفاد من هذا التأثير
+                          {t("pages.homepage.hero.ratingText")}
                         </Text>
                       </Flex>
                     </motion.div>
@@ -501,10 +518,12 @@ export default function IndexOnceUI() {
                   >
                     <Flex justify="between" align="center" className="mb-6">
                       <Heading as="h2" size="lg" className="font-arabic">
-                        🎨 أمثلة على التصاميم ثلاثية الأبعاد
+                        {t("pages.homepage.examplesSection.title")}
                       </Heading>
                       <Button variant="secondary" size="sm">
-                        <span className="font-arabic">المزيد من الأمثلة</span>
+                        <span className="font-arabic">
+                          {t("common.buttons.moreExamples")}
+                        </span>
                         <span className="flip-for-rtl ms-1">←</span>
                       </Button>
                     </Flex>
@@ -534,7 +553,9 @@ export default function IndexOnceUI() {
                                   variant="secondary"
                                   className="absolute top-2 start-2"
                                 >
-                                  الأصلية
+                                  {t(
+                                    "pages.homepage.examplesSection.beforeLabel",
+                                  )}
                                 </Badge>
                               </div>
                               <div className="relative border-s-2 border-primary">
@@ -547,7 +568,9 @@ export default function IndexOnceUI() {
                                   variant="default"
                                   className="absolute top-2 end-2"
                                 >
-                                  ثلاثي الأبعاد
+                                  {t(
+                                    "pages.homepage.examplesSection.afterLabel",
+                                  )}
                                 </Badge>
                               </div>
                             </div>
@@ -559,7 +582,9 @@ export default function IndexOnceUI() {
                     <Flex justify="center" className="mt-6">
                       <Button variant="gradient" animate>
                         <Upload className="w-5 h-5 me-2" />
-                        <span className="font-arabic">ارفع صورتك الآن</span>
+                        <span className="font-arabic">
+                          {t("common.buttons.uploadNow")}
+                        </span>
                       </Button>
                     </Flex>
                   </motion.div>
