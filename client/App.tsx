@@ -13,6 +13,7 @@ import { Providers } from "./providers";
 import { TooltipProvider } from "@/components/design-system";
 import DockNavigation from "./components/navigation/DockNavigation";
 import { LanguageRoute } from "./components/routing/LanguageRoute";
+import { suppressResizeObserverErrors } from "./lib/resize-observer-fix";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -130,6 +131,9 @@ const App = () => {
     root.setAttribute("data-scaling", "100");
     root.setAttribute("data-viz-style", "categorical");
     root.setAttribute("data-theme", "dark"); // Default to dark theme
+
+    // Suppress ResizeObserver errors
+    suppressResizeObserverErrors();
   }, []);
 
   return (
