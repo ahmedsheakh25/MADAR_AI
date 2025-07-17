@@ -3,7 +3,7 @@ import "./lib/i18n"; // Initialize i18n
 
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Gallery from "./pages/Gallery";
@@ -12,25 +12,101 @@ import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
 import { TooltipProvider } from "@/components/design-system";
 import DockNavigation from "./components/navigation/DockNavigation";
+import { LanguageRoute } from "./components/routing/LanguageRoute";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
 function AppWithLanguage() {
-  // Initialize language system
-  useLanguage();
+  const { language } = useLanguage();
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/my-images" element={<Gallery />} />
-        <Route path="/signup" element={<Login />} />
-        <Route path="/forgot-password" element={<Login />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
+        {/* Root redirect to default language */}
+        <Route path="/" element={<Navigate to={`/${language}`} replace />} />
+
+        {/* Language-prefixed routes */}
+        <Route
+          path="/:lang"
+          element={
+            <LanguageRoute>
+              <Index />
+            </LanguageRoute>
+          }
+        />
+        <Route
+          path="/:lang/login"
+          element={
+            <LanguageRoute>
+              <Login />
+            </LanguageRoute>
+          }
+        />
+        <Route
+          path="/:lang/gallery"
+          element={
+            <LanguageRoute>
+              <Gallery />
+            </LanguageRoute>
+          }
+        />
+        <Route
+          path="/:lang/my-images"
+          element={
+            <LanguageRoute>
+              <Gallery />
+            </LanguageRoute>
+          }
+        />
+        <Route
+          path="/:lang/signup"
+          element={
+            <LanguageRoute>
+              <Login />
+            </LanguageRoute>
+          }
+        />
+        <Route
+          path="/:lang/forgot-password"
+          element={
+            <LanguageRoute>
+              <Login />
+            </LanguageRoute>
+          }
+        />
+
+        {/* Legacy routes without language prefix - redirect to language version */}
+        <Route
+          path="/login"
+          element={<Navigate to={`/${language}/login`} replace />}
+        />
+        <Route
+          path="/gallery"
+          element={<Navigate to={`/${language}/gallery`} replace />}
+        />
+        <Route
+          path="/my-images"
+          element={<Navigate to={`/${language}/my-images`} replace />}
+        />
+        <Route
+          path="/signup"
+          element={<Navigate to={`/${language}/signup`} replace />}
+        />
+        <Route
+          path="/forgot-password"
+          element={<Navigate to={`/${language}/forgot-password`} replace />}
+        />
+
+        {/* 404 for unmatched routes */}
+        <Route
+          path="*"
+          element={
+            <LanguageRoute>
+              <NotFound />
+            </LanguageRoute>
+          }
+        />
       </Routes>
       <DockNavigation />
     </BrowserRouter>
