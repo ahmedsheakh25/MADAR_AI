@@ -10,3 +10,4 @@ export * from "./Select";
 export * from "./DropdownMenu";
 export * from "./Badge";
 export * from "./Dock";
+export * from "./Separator";
