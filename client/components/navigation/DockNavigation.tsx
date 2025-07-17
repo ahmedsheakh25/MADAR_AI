@@ -80,10 +80,10 @@ const DockNavigation = () => {
   const navigationItems = navItems.map((item) => (
     <DockIcon
       key={item.id}
-      className={`bg-background border-2 ${
+      className={`bg-background/80 backdrop-blur-sm border-2 transition-all duration-200 ${
         isCurrentPath(item.path)
-          ? "border-primary bg-primary/10"
-          : "border-border hover:border-primary/50 hover:bg-accent"
+          ? "border-primary bg-primary/20 shadow-lg scale-105"
+          : "border-border hover:border-primary/50 hover:bg-accent hover:shadow-lg"
       }`}
     >
       <Tooltip>
