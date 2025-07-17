@@ -397,7 +397,7 @@ export default function Index() {
                     direction="column"
                     align="center"
                     justify="center"
-                    className="text-center py-12 flex-0 h-auto"
+                    className="text-center py-6 flex-1 min-h-0"
                   >
                     <motion.div
                       animate={{
