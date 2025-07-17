@@ -79,7 +79,7 @@ export default function Gallery() {
                   </h1>
                   <p className="text-xs text-muted-foreground font-arabic">
                     {language === "ar"
-                      ? t("brand.name")
+                      ? t("brand.nameEnglish")
                       : t("brand.nameArabic")}
                   </p>
                 </div>
