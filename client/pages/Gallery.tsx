@@ -88,9 +88,11 @@ export default function Gallery() {
               <span className="text-sm text-foreground font-medium">
                 معرض أعمالي
               </span>
-              <Button variant="outline" size="sm">
-                تسجيل الخروج
-              </Button>
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  تسجيل الخروج
+                </Button>
+              </Link>
             </nav>
           </div>
         </div>
