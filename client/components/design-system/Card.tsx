@@ -13,19 +13,11 @@ const cardVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-    },
   },
   hover: {
     y: -5,
     scale: 1.02,
     boxShadow: "0 20px 50px rgba(0, 0, 0, 0.2)",
-    transition: {
-      duration: 0.3,
-      ease: "easeInOut",
-    },
   },
 };
 
