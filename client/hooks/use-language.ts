@@ -4,9 +4,9 @@ export type Language = "en" | "ar";
 
 export function useLanguage() {
   const [language, setLanguage] = useState<Language>(() => {
-    // Get from localStorage or default to Arabic since the app is primarily Arabic
+    // Get from localStorage or default to English
     const stored = localStorage.getItem("language") as Language;
-    return stored && ["en", "ar"].includes(stored) ? stored : "ar";
+    return stored && ["en", "ar"].includes(stored) ? stored : "en";
   });
 
   useEffect(() => {
