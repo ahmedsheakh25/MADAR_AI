@@ -1,24 +1,9 @@
 import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useOnceUITheme } from "@/hooks/use-once-ui-theme";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    // Get theme from localStorage or default to dark
-    const storedTheme = localStorage.getItem("data-theme") as "light" | "dark";
-    const initialTheme = storedTheme || "dark";
-    setTheme(initialTheme);
-    document.documentElement.setAttribute("data-theme", initialTheme);
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("data-theme", newTheme);
-  };
+  const { theme, toggleTheme } = useOnceUITheme();
 
   return (
     <motion.button
