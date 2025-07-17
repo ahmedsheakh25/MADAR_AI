@@ -60,51 +60,7 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">
-                    {language === "ar"
-                      ? t("brand.nameArabic").charAt(0)
-                      : t("brand.nameEnglish").charAt(0)}
-                  </span>
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                    {t("brand.name")}
-                  </h1>
-                  <p className="text-xs text-muted-foreground font-arabic">
-                    {language === "ar"
-                      ? t("brand.nameEnglish")
-                      : t("brand.nameArabic")}
-                  </p>
-                </div>
-              </Link>
-            </div>
-
-            <nav className="hidden md:flex items-center gap-6">
-              <Link
-                to="/"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                {t("common.navigation.generator")}
-              </Link>
-              <span className="text-sm text-foreground font-medium">
-                {t("common.navigation.gallery")}
-              </span>
-              <Link to="/login">
-                <Button variant="outline" size="sm">
-                  {t("common.buttons.signOut")}
-                </Button>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      {/* Header removed - navigation moved to dock */}
 
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
