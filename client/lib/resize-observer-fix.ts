@@ -20,6 +20,31 @@ export function suppressResizeObserverErrors() {
     // For all other errors, use the original console.error
     originalError.apply(console, args);
   };
+
+  // Add global error handler for unhandled ResizeObserver errors
+  window.addEventListener("error", (event) => {
+    if (
+      event.message?.includes(
+        "ResizeObserver loop completed with undelivered notifications",
+      )
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    }
+  });
+
+  // Handle unhandled promise rejections related to ResizeObserver
+  window.addEventListener("unhandledrejection", (event) => {
+    if (
+      event.reason?.message?.includes(
+        "ResizeObserver loop completed with undelivered notifications",
+      )
+    ) {
+      event.preventDefault();
+      return false;
+    }
+  });
 }
 
 // Debounced resize observer to prevent rapid firing
