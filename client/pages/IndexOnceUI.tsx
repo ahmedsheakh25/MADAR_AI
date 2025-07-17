@@ -16,7 +16,7 @@ import {
   Badge,
   Avatar,
 } from "@once-ui-system/core";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { LanguageSwitcherOnceUI as LanguageSwitcher } from "@/components/LanguageSwitcherOnceUI";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 
