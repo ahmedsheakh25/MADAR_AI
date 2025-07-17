@@ -58,7 +58,9 @@ const App = () => {
   return (
     <Providers>
       <QueryClientProvider client={queryClient}>
-        <AppWithLanguage />
+        <TooltipProvider>
+          <AppWithLanguage />
+        </TooltipProvider>
       </QueryClientProvider>
     </Providers>
   );
