@@ -110,7 +110,7 @@ export default function Gallery() {
 
           <Link to="/">
             <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
-              <ArrowRight className="w-4 h-4 mr-2" />
+              <ArrowRight className="w-4 h-4 me-2 flip-for-rtl" />
               <span className="font-arabic">العودة للمولد</span>
             </Button>
           </Link>
