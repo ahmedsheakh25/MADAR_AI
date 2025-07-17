@@ -139,7 +139,7 @@ export default function IndexOnceUI() {
       exit="out"
       variants={pageVariants}
       transition={pageTransition}
-      className="min-h-screen bg-background"
+            className="min-h-screen bg-background"
     >
       <VersionSwitcher />
       {/* Header */}
@@ -149,14 +149,13 @@ export default function IndexOnceUI() {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50"
       >
-        <Flex
-          as="div"
+                <Flex
           className="container mx-auto px-4 py-4"
-          justifyContent="space-between"
-          alignItems="center"
+          justify="between"
+          align="center"
         >
-          <Flex alignItems="center" gap="4">
-            <Flex alignItems="center" gap="2">
+                    <Flex align="center" gap="4">
+                        <Flex align="center" gap="2">
               <motion.div
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
@@ -167,13 +166,11 @@ export default function IndexOnceUI() {
                 </Text>
               </motion.div>
               <div>
-                <Heading
-                  as="h1"
-                  size="lg"
-                  className="bg-gradient-primary bg-clip-text text-transparent"
-                >
-                  Madar
-                </Heading>
+                                <GradientText gradient="primary">
+                  <Heading as="h1" size="lg">
+                    Madar
+                  </Heading>
+                </GradientText>
                 <Text size="xs" className="text-muted-foreground font-arabic">
                   مدار
                 </Text>
@@ -181,7 +178,7 @@ export default function IndexOnceUI() {
             </Flex>
           </Flex>
 
-          <Flex as="nav" className="hidden md:flex" alignItems="center" gap="6">
+                    <Flex as="nav" className="hidden md:flex" align="center" gap="6">
             <Text size="sm" weight="medium" className="text-foreground">
               المولد
             </Text>
@@ -202,11 +199,14 @@ export default function IndexOnceUI() {
         </Flex>
       </motion.header>
 
-      <Flex as="div" className="container mx-auto px-4 py-8">
+            <Container size="xl" className="py-8">
         <Grid
           className="max-w-7xl mx-auto"
-          columns={{ initial: 1, lg: 3 }}
+          cols={1}
+          responsive={{ lg: 3 }}
           gap="8"
+          animate
+          stagger
         >
           {/* Left Sidebar - Controls */}
           <motion.div
@@ -314,24 +314,34 @@ export default function IndexOnceUI() {
                   <Heading as="h3" size="md" className="mb-4 font-arabic">
                     نمط التصميم
                   </Heading>
-                  <Select
+                                    <Select
                     value={selectedStyle}
                     onValueChange={setSelectedStyle}
                   >
-                    {STYLE_OPTIONS.map((style) => (
-                      <option key={style.value} value={style.value}>
-                        {style.label} - {style.nameAr}
-                      </option>
-                    ))}
+                    <SelectTrigger className="glass">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STYLE_OPTIONS.map((style) => (
+                        <SelectItem key={style.value} value={style.value}>
+                          <div className="flex flex-col">
+                            <span>{style.label}</span>
+                            <span className="text-xs text-muted-foreground font-arabic">
+                              {style.nameAr}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
 
                 {/* Aspect Ratio */}
                 <div>
                   <Heading as="h3" size="md" className="mb-4 font-arabic">
-                    نسبة العرض للارتفاع
+                    نس��ة العرض للارتفاع
                   </Heading>
-                  <Flex gap="3">
+                                    <Flex gap="3">
                     {["1:1", "3:2", "2:3"].map((ratio) => (
                       <motion.div
                         key={ratio}
@@ -361,7 +371,7 @@ export default function IndexOnceUI() {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     className="glass min-h-[120px] resize-none"
-                    placeholder="صف كيف تريد تحويل صورتك..."
+                    placeholder="صف كيف تريد ��حويل صورتك..."
                   />
                   <Flex alignItems="center" gap="2" className="mt-2">
                     <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">
@@ -484,7 +494,7 @@ export default function IndexOnceUI() {
                       size="lg"
                       className="text-muted-foreground mb-6 max-w-2xl mx-auto font-arabic"
                     >
-                      استخدم الذكاء الاصطناعي لتحويل صورك إلى تصاميم إبداعية
+                      استخدم الذكاء الاصطناعي لتحويل صورك إلى تص��ميم إبداعية
                       ثلاثية الأبعاد بخلفية شفافة، مثالية للمصممين والمبدعين
                     </Text>
                   </motion.div>
