@@ -8,20 +8,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/design-system";
 import { useLanguage, type Language } from "@/hooks/use-language";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface LanguageOption {
   code: Language;
-  label: string;
+  labelKey: string;
   nativeLabel: string;
 }
 
 const languages: LanguageOption[] = [
-  { code: "ar", label: "Arabic", nativeLabel: "العربية" },
-  { code: "en", label: "English", nativeLabel: "English" },
+  { code: "ar", labelKey: "common.languages.arabic", nativeLabel: "العربية" },
+  { code: "en", labelKey: "common.languages.english", nativeLabel: "English" },
 ];
 
 export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   const currentLanguage = languages.find((lang) => lang.code === language);
 
@@ -52,7 +54,7 @@ export function LanguageSwitcher() {
                 <div className="flex flex-col">
                   <span className="font-medium">{lang.nativeLabel}</span>
                   <span className="text-xs text-muted-foreground">
-                    {lang.label}
+                    {t(lang.labelKey)}
                   </span>
                 </div>
               </DropdownMenuItem>
