@@ -55,6 +55,7 @@
   },
   "brand": {
     "name": "Madar",
+    "nameEnglish": "Madar",
     "nameArabic": "مدار",
     "tagline": "AI-Powered Design"
   },
