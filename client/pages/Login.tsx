@@ -179,13 +179,13 @@ export default function Login() {
         <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center opacity-10" />
 
         {/* Floating Elements */}
-        <div className="absolute top-20 right-20 w-16 h-16 bg-gradient-primary rounded-full opacity-20 animate-float" />
+        <div className="absolute top-20 end-20 w-16 h-16 bg-gradient-primary rounded-full opacity-20 animate-float" />
         <div
-          className="absolute bottom-32 right-32 w-8 h-8 bg-gradient-primary rounded-full opacity-30 animate-float"
+          className="absolute bottom-32 end-32 w-8 h-8 bg-gradient-primary rounded-full opacity-30 animate-float"
           style={{ animationDelay: "2s" }}
         />
         <div
-          className="absolute top-1/2 right-12 w-12 h-12 bg-gradient-primary rounded-full opacity-15 animate-float"
+          className="absolute top-1/2 end-12 w-12 h-12 bg-gradient-primary rounded-full opacity-15 animate-float"
           style={{ animationDelay: "4s" }}
         />
 
