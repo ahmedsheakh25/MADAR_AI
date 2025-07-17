@@ -38,12 +38,12 @@ const buttonVariants = cva(
 // Animation variants for buttons
 const buttonAnimationVariants = {
   hover: {
-    scale: 1.02,
-    y: -2,
-    boxShadow: "0 10px 25px rgba(138, 43, 226, 0.15)",
+    scale: 1.01, // Reduced scale to minimize resize events
+    y: -1, // Reduced movement
+    boxShadow: "0 5px 15px rgba(138, 43, 226, 0.15)",
   },
   tap: {
-    scale: 0.98,
+    scale: 0.99, // Reduced scale
     y: 0,
   },
 };
@@ -68,7 +68,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           variants={buttonAnimationVariants}
           whileHover="hover"
           whileTap="tap"
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          transition={{
+            duration: 0.15,
+            ease: "easeOut",
+            layout: false, // Prevent layout animations
+          }}
           className="inline-block flex flex-col justify-center items-center"
         >
           <Comp
