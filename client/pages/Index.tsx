@@ -131,64 +131,7 @@ export default function Index() {
       transition={pageTransition}
       className="min-h-screen bg-background"
     >
-      {/* Header */}
-      <motion.header
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50"
-      >
-        <Container size="full">
-          <Flex className="py-4" justify="between" align="center">
-            <Flex align="center" gap="4">
-              <Flex align="center" gap="2">
-                <motion.div
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.6 }}
-                  className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center"
-                >
-                  <Text size="sm" weight="bold" className="text-white">
-                    {language === "ar"
-                      ? t("brand.nameArabic").charAt(0)
-                      : t("brand.nameEnglish").charAt(0)}
-                  </Text>
-                </motion.div>
-                <div>
-                  <GradientText gradient="primary">
-                    <Heading as="h1" size="lg">
-                      {t("brand.name")}
-                    </Heading>
-                  </GradientText>
-                  <Text size="xs" className="text-muted-foreground font-arabic">
-                    {language === "ar"
-                      ? t("brand.nameEnglish")
-                      : t("brand.nameArabic")}
-                  </Text>
-                </div>
-              </Flex>
-            </Flex>
-
-            <Flex as="nav" className="hidden md:flex" align="center" gap="6">
-              <Text size="sm" weight="medium" className="text-foreground">
-                {t("common.navigation.generator")}
-              </Text>
-              <Link
-                to="/gallery"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                {t("common.navigation.gallery")}
-              </Link>
-              <LanguageSwitcher />
-              <ThemeToggle />
-              <Link to="/login">
-                <Button variant="secondary" size="sm">
-                  {t("common.buttons.signIn")}
-                </Button>
-              </Link>
-            </Flex>
-          </Flex>
-        </Container>
-      </motion.header>
+      {/* Header removed - navigation moved to dock */}
 
       <Container size="xl" className="py-8">
         <Grid cols={1} responsive={{ lg: 3 }} gap="8" animate stagger>
