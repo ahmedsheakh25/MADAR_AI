@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Upload,
   Image as ImageIcon,
@@ -281,7 +282,7 @@ export default function Index() {
                     </div>
 
                     <h1 className="text-4xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
-                      حوّل أي ص��رة إلى تصميم ثلاثي الأبعاد مميز
+                      حوّل أي صورة إلى تصميم ثلاثي الأبعاد مميز
                     </h1>
                     <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-arabic">
                       استخدم الذكاء الاصطناعي لتحويل صورك إلى تصاميم إبداعية
