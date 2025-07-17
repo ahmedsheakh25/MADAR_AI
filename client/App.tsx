@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
+import { useLanguage } from "./hooks/use-language";
 
 const queryClient = new QueryClient();
 
