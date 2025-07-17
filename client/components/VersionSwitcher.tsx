@@ -19,17 +19,17 @@ export function VersionSwitcher() {
               : "hover:bg-accent"
           }`}
         >
-          Original
+          Once UI
         </Link>
         <Link
-          to="/once-ui"
+          to="/original"
           className={`px-3 py-1 rounded text-sm transition-colors ${
-            location.pathname === "/once-ui"
+            location.pathname === "/original"
               ? "bg-primary text-primary-foreground"
               : "hover:bg-accent"
           }`}
         >
-          Once UI
+          Original
         </Link>
       </div>
     </motion.div>
