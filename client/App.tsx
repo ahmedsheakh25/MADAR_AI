@@ -14,23 +14,32 @@ import { useLanguage } from "./hooks/use-language";
 
 const queryClient = new QueryClient();
 
+function AppWithLanguage() {
+  // Initialize language system
+  useLanguage();
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/my-images" element={<Gallery />} />
+        <Route path="/signup" element={<Login />} />
+        <Route path="/forgot-password" element={<Login />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/my-images" element={<Gallery />} />
-          <Route path="/signup" element={<Login />} />
-          <Route path="/forgot-password" element={<Login />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppWithLanguage />
     </TooltipProvider>
   </QueryClientProvider>
 );
