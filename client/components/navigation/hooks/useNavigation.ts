@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLanguageAwareNavigation } from "../../../lib/routing";
 
 export interface NavigationAction {
   path: string;
@@ -7,8 +7,11 @@ export interface NavigationAction {
 }
 
 export const useNavigation = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const {
+    navigateToPath: navigate,
+    isCurrentPath,
+    currentPathWithoutLang,
+  } = useLanguageAwareNavigation();
 
   const navigateToPath = useCallback(
     (action: NavigationAction) => {
@@ -22,21 +25,14 @@ export const useNavigation = () => {
         // For now, just navigate normally
       }
 
-      navigate(action.path);
+      navigate({ path: action.path, requiresAuth: action.requiresAuth });
     },
     [navigate],
-  );
-
-  const isCurrentPath = useCallback(
-    (path: string) => {
-      return location.pathname === path;
-    },
-    [location.pathname],
   );
 
   return {
     navigateToPath,
     isCurrentPath,
-    currentPath: location.pathname,
+    currentPath: currentPathWithoutLang,
   };
 };
