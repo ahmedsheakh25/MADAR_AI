@@ -69,7 +69,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           whileHover="hover"
           whileTap="tap"
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="inline-block"
+          className="inline-block flex flex-col justify-center items-center"
         >
           <Comp
             className={cn(buttonVariants({ variant, size, className }))}
