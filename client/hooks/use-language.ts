@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import i18n from "../lib/i18n";
 
 export type Language = "en" | "ar";
 
@@ -19,10 +20,15 @@ export function useLanguage() {
 
     // Store preference
     localStorage.setItem("language", language);
+
+    // Update i18next language
+    i18n.changeLanguage(language);
   }, [language]);
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "ar" : "en"));
+    const newLanguage = language === "en" ? "ar" : "en";
+    setLanguage(newLanguage);
+    // i18next will be updated via useEffect
   };
 
   const setLanguageDirectly = (lang: Language) => {
