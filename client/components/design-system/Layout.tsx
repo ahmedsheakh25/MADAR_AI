@@ -188,7 +188,7 @@ const Grid = React.forwardRef<HTMLDivElement, GridProps>(
       : "";
 
     const classes = cn(
-      "grid",
+      "grid h-full",
       colClasses[cols],
       gapClasses[gap],
       responsiveClasses,
