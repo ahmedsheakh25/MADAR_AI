@@ -55,7 +55,9 @@ export default function Login() {
                   {t("brand.name")}
                 </h1>
                 <p className="text-sm text-muted-foreground font-arabic">
-                  {language === "ar" ? t("brand.name") : t("brand.nameArabic")}
+                  {language === "ar"
+                    ? t("brand.nameEnglish")
+                    : t("brand.nameArabic")}
                 </p>
               </div>
             </div>
