@@ -37,7 +37,7 @@ export default function Login() {
               <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center">
                 <span className="text-white font-bold text-xl">م</span>
               </div>
-              <div className="text-left">
+              <div className="text-start">
                 <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                   Madar
                 </h1>
@@ -64,13 +64,13 @@ export default function Login() {
                     Email Address
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Mail className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 glass"
+                      className="ps-10 glass"
                       placeholder="your@email.com"
                       required
                     />
@@ -82,20 +82,20 @@ export default function Login() {
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Lock className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 glass"
+                      className="ps-10 pe-10 glass"
                       placeholder="Enter your password"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      className="absolute end-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {showPassword ? (
                         <EyeOff className="w-4 h-4" />
