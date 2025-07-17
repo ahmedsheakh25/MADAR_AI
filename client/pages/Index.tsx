@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const STYLE_OPTIONS = [
   {
@@ -150,7 +151,7 @@ export default function Index() {
                         <ImageIcon className="w-14 h-14 text-muted-foreground mx-auto" />
                         <div>
                           <p className="text-sm text-foreground mb-2 font-arabic">
-                            اضغط لرفع الصورة أو اسحبها هنا
+                            اضغط لرفع الصورة أو اسحب��ا هنا
                           </p>
                           <p className="text-xs text-muted-foreground font-arabic">
                             يدعم PNG، JPG، JPEG
