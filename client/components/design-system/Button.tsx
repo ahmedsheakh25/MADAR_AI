@@ -41,17 +41,10 @@ const buttonAnimationVariants = {
     scale: 1.02,
     y: -2,
     boxShadow: "0 10px 25px rgba(138, 43, 226, 0.15)",
-    transition: {
-      duration: 0.2,
-      ease: "easeOut",
-    },
   },
   tap: {
     scale: 0.98,
     y: 0,
-    transition: {
-      duration: 0.1,
-    },
   },
 };
 
