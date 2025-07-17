@@ -16,6 +16,7 @@ import { useNavItems } from "./NavItems";
 import { useNavigation } from "./hooks/useNavigation";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslation } from "@/hooks/use-translation";
+import { extractLanguageFromPath } from "@/lib/routing";
 
 const DockNavigation = () => {
   const location = useLocation();
@@ -24,11 +25,14 @@ const DockNavigation = () => {
   const navItems = useNavItems();
   const { navigateToPath, isCurrentPath } = useNavigation();
 
-  // Hide dock on login page
+  // Extract path without language for hiding dock
+  const { pathWithoutLang } = extractLanguageFromPath(location.pathname);
+
+  // Hide dock on login pages
   if (
-    location.pathname === "/login" ||
-    location.pathname === "/signup" ||
-    location.pathname === "/forgot-password"
+    pathWithoutLang === "/login" ||
+    pathWithoutLang === "/signup" ||
+    pathWithoutLang === "/forgot-password"
   ) {
     return null;
   }
