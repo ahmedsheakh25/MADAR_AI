@@ -132,15 +132,15 @@ export default function Index() {
     >
       {/* Header removed - navigation moved to dock */}
 
-      <Container size="xl" className="py-8">
+      <Container size="xl" className="p-[90px]">
         <Grid cols={1} responsive={{ lg: 3 }} gap="8" animate stagger>
           {/* Left Sidebar - Controls */}
           <div className="lg:col-span-1">
-            <Card animate hoverEffect className="glass gradient-border h-fit">
-              <CardContent className="p-6">
-                <Flex direction="column" gap="6">
+            <Card animate hoverEffect className="glass gradient-border h-full">
+              <CardContent className="p-6 h-full flex-1">
+                <Flex direction="column" gap="6" className="h-fit flex-1">
                   {/* Upload Section */}
-                  <div>
+                  <div className="w-auto self-stretch">
                     <Heading
                       as="h3"
                       size="md"
@@ -151,7 +151,7 @@ export default function Index() {
                     </Heading>
                     <motion.div
                       whileHover={{ borderColor: "hsl(264, 100%, 50%)" }}
-                      className="border-2 border-dashed border-border hover:border-primary/50 transition-colors rounded-xl p-6 text-center"
+                      className="border-2 border-dashed border-border hover:border-primary/50 transition-colors rounded-xl p-6 text-center flex flex-col"
                     >
                       <input
                         type="file"
