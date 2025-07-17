@@ -384,10 +384,14 @@ export default function Index() {
           </div>
 
           {/* Right Side - Preview & Examples */}
-          <div className="lg:col-span-2">
-            <Card animate hoverEffect className="glass gradient-border h-full">
-              <CardContent className="p-6 flex-1 h-full flex flex-col">
-                <Flex direction="column" className="h-full flex-0">
+          <div className="lg:col-span-2 h-full">
+            <Card
+              animate
+              hoverEffect
+              className="glass gradient-border h-full max-h-full"
+            >
+              <CardContent className="p-4 flex-1 h-full flex flex-col overflow-hidden">
+                <Flex direction="column" className="h-full">
                   {/* Hero Section */}
                   <Flex
                     direction="column"
