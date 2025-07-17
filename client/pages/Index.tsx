@@ -92,7 +92,7 @@ const buttonVariants = {
   },
 };
 
-export default function IndexOnceUI() {
+export default function Index() {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const [selectedStyle, setSelectedStyle] = useState("3d-pixel-isometric");
