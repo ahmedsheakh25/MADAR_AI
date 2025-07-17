@@ -49,8 +49,10 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Inter", "Noto Sans Arabic", "sans-serif"],
-        arabic: ["Noto Sans Arabic", "Inter", "sans-serif"],
+        sans: ["Inter", "IBM Plex Sans Arabic", "sans-serif"],
+        arabic: ["IBM Plex Sans Arabic", "sans-serif"],
+        heading: ["Funnel Display", "sans-serif"],
+        body: ["Inter", "sans-serif"],
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",
