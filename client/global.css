@@ -11,9 +11,13 @@
 
 @layer base {
   /**
-   * Tailwind CSS theme - Updated for Madar app
+   * Tailwind CSS theme - Updated for Madar app with RTL support
    */
   :root {
+    /* Font family definitions */
+    --font-heading-en: "Funnel Display", sans-serif;
+    --font-body-en: "Inter", sans-serif;
+    --font-arabic: "IBM Plex Sans Arabic", sans-serif;
     --background: 0 0% 2%;
     --foreground: 210 40% 98%;
 
