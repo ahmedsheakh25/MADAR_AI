@@ -148,7 +148,7 @@ export default function Login() {
                 className="w-full glass border-border/50 hover:border-primary/50"
               >
                 <svg
-                  className="w-5 h-5 mr-2"
+                  className="w-5 h-5 me-2"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
