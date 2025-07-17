@@ -15,9 +15,9 @@ const cardVariants = {
     scale: 1,
   },
   hover: {
-    y: -5,
-    scale: 1.02,
-    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.2)",
+    y: -2, // Reduced movement to prevent layout shifts
+    scale: 1.01, // Reduced scale to minimize resize events
+    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
   },
 };
 
@@ -40,7 +40,11 @@ const Card = React.forwardRef<
         initial="hidden"
         animate="visible"
         whileHover={hoverEffect ? "hover" : undefined}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{
+          duration: 0.3,
+          ease: "easeOut",
+          layout: false, // Prevent layout animations that trigger ResizeObserver
+        }}
         {...props}
       />
     );
