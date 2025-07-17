@@ -3,7 +3,7 @@ import "./global.css";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import IndexOnceUI from "./pages/IndexOnceUI";
+import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
