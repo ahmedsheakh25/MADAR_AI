@@ -9,3 +9,4 @@ export * from "./Textarea";
 export * from "./Select";
 export * from "./DropdownMenu";
 export * from "./Badge";
+export * from "./Dock";
