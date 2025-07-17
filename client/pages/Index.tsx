@@ -23,17 +23,30 @@ import {
 } from "@/components/ui/select";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
+import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/hooks/use-language";
 
 const STYLE_OPTIONS = [
   {
     value: "3d-pixel-isometric",
-    label: "3D Pixel Isometric",
-    nameAr: "أيزومترك بكسل ثلاثي الأبعاد",
+    labelKey: "pages.homepage.styleSection.styles.3dPixelIsometric",
   },
-  { value: "minimal-icon", label: "Minimal Icon", nameAr: "أيقونة بسيطة" },
-  { value: "toy-figurine", label: "Toy Figurine", nameAr: "دمية لعبة" },
-  { value: "glass-morph", label: "Glass Morphism", nameAr: "تأثير زجاجي" },
-  { value: "neon-glow", label: "Neon Glow", nameAr: "توهج نيون" },
+  {
+    value: "minimal-icon",
+    labelKey: "pages.homepage.styleSection.styles.minimalIcon",
+  },
+  {
+    value: "toy-figurine",
+    labelKey: "pages.homepage.styleSection.styles.toyFigurine",
+  },
+  {
+    value: "glass-morph",
+    labelKey: "pages.homepage.styleSection.styles.glassMorphism",
+  },
+  {
+    value: "neon-glow",
+    labelKey: "pages.homepage.styleSection.styles.neonGlow",
+  },
 ];
 
 const EXAMPLE_IMAGES = [
@@ -43,10 +56,12 @@ const EXAMPLE_IMAGES = [
 ];
 
 export default function Index() {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const [selectedStyle, setSelectedStyle] = useState("3d-pixel-isometric");
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [prompt, setPrompt] = useState(
-    "Transform the uploaded image into a collectible toy figure that could be included as a gift with a McDonald's burger meal. Stylize the character as a small, plastic figurine placed on a simple display base. Include a realistic McDonald's burger and its branded packaging in the background to give the impression of a Happy Meal toy promotion. Use soft lighting and a clean background, keeping the colors vibrant and playful.",
+    t("pages.homepage.promptSection.defaultPrompt"),
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -80,14 +95,20 @@ export default function Index() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">م</span>
+                  <span className="text-white font-bold text-sm">
+                    {language === "ar"
+                      ? t("brand.nameArabic")
+                      : t("brand.name").charAt(0)}
+                  </span>
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                    Madar
+                    {t("brand.name")}
                   </h1>
                   <p className="text-xs text-muted-foreground font-arabic">
-                    مدار
+                    {language === "ar"
+                      ? t("brand.name")
+                      : t("brand.nameArabic")}
                   </p>
                 </div>
               </div>
@@ -95,18 +116,18 @@ export default function Index() {
 
             <nav className="hidden md:flex items-center gap-6">
               <span className="text-sm text-foreground font-medium">
-                المولد
+                {t("common.navigation.generator")}
               </span>
               <Link
                 to="/gallery"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                معرض أعمالي
+                {t("common.navigation.gallery")}
               </Link>
               <LanguageSwitcher />
               <Link to="/login">
                 <Button variant="outline" size="sm">
-                  تسجيل الدخول
+                  {t("common.buttons.signIn")}
                 </Button>
               </Link>
             </nav>
@@ -123,7 +144,7 @@ export default function Index() {
                 {/* Upload Section */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4 font-arabic">
-                    رفع الصورة
+                    {t("pages.homepage.uploadSection.title")}
                   </h3>
                   <div className="border-2 border-dashed border-border hover:border-primary/50 transition-colors rounded-xl p-6 text-center">
                     <input
@@ -145,7 +166,7 @@ export default function Index() {
                           className="cursor-pointer"
                         >
                           <Button variant="secondary" size="sm" asChild>
-                            <span>تغيير الصورة</span>
+                            <span>{t("common.buttons.changeImage")}</span>
                           </Button>
                         </Label>
                       </div>
@@ -154,10 +175,10 @@ export default function Index() {
                         <ImageIcon className="w-14 h-14 text-muted-foreground mx-auto" />
                         <div>
                           <p className="text-sm text-foreground mb-2 font-arabic">
-                            اضغط لرفع الصورة أو اسحبها هنا
+                            {t("common.messages.clickToUpload")}
                           </p>
                           <p className="text-xs text-muted-foreground font-arabic">
-                            يدعم PNG، JPG، JPEG
+                            {t("common.messages.supportedFormats")}
                           </p>
                         </div>
                         <Label
@@ -168,7 +189,7 @@ export default function Index() {
                             size="sm"
                             className="bg-gradient-primary hover:bg-gradient-primary/90"
                           >
-                            اختيار صورة
+                            {t("common.buttons.chooseImage")}
                           </Button>
                         </Label>
                       </div>
@@ -179,7 +200,7 @@ export default function Index() {
                 {/* Style Selection */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4 font-arabic">
-                    نمط التصميم
+                    {t("pages.homepage.styleSection.title")}
                   </h3>
                   <Select
                     value={selectedStyle}
@@ -191,12 +212,7 @@ export default function Index() {
                     <SelectContent>
                       {STYLE_OPTIONS.map((style) => (
                         <SelectItem key={style.value} value={style.value}>
-                          <div className="flex flex-col">
-                            <span>{style.label}</span>
-                            <span className="text-xs text-muted-foreground font-arabic">
-                              {style.nameAr}
-                            </span>
-                          </div>
+                          {t(style.labelKey)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -206,7 +222,7 @@ export default function Index() {
                 {/* Aspect Ratio */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4 font-arabic">
-                    نسبة العرض للارتفاع
+                    {t("pages.homepage.aspectRatioSection.title")}
                   </h3>
                   <RadioGroup
                     value={aspectRatio}
@@ -234,20 +250,20 @@ export default function Index() {
                 {/* Prompt */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4 font-arabic">
-                    وصف التحويل
+                    {t("pages.homepage.promptSection.title")}
                   </h3>
                   <Textarea
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     className="glass min-h-[120px] resize-none"
-                    placeholder="صف كيف تريد تحويل صورتك..."
+                    placeholder={t("pages.homepage.promptSection.placeholder")}
                   />
                   <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                     <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">
                       <span className="text-black text-xs">!</span>
                     </div>
                     <span className="font-arabic">
-                      يستغرق التوليد 3-5 دقائق، لا تقم بتحديث الصفحة
+                      {t("common.messages.generationTakes")}
                     </span>
                   </div>
                 </div>
@@ -261,12 +277,16 @@ export default function Index() {
                   {isGenerating ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span className="font-arabic">جاري التوليد...</span>
+                      <span className="font-arabic">
+                        {t("common.buttons.generating")}
+                      </span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <Zap className="w-5 h-5" />
-                      <span className="font-arabic">توليد الصورة (1 رصيد)</span>
+                      <span className="font-arabic">
+                        {t("common.buttons.generateImage")}
+                      </span>
                     </div>
                   )}
                 </Button>
@@ -286,11 +306,10 @@ export default function Index() {
                     </div>
 
                     <h1 className="text-4xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
-                      حوّل أي صورة إلى تصميم ثلاثي الأبعاد مميز
+                      {t("pages.homepage.hero.title")}
                     </h1>
                     <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto font-arabic">
-                      استخدم الذكاء الاصطناعي لتحويل صورك إلى تصاميم إبداعية
-                      ثلاثية الأبعاد بخلفية شفافة، مثالية للمصممين والمبدعين
+                      {t("pages.homepage.hero.subtitle")}
                     </p>
 
                     {/* Rating */}
@@ -304,7 +323,7 @@ export default function Index() {
                         ))}
                       </div>
                       <p className="text-sm text-muted-foreground font-arabic">
-                        +12,500 مستخدم استفاد من هذا التأثير
+                        {t("pages.homepage.hero.ratingText")}
                       </p>
                     </div>
                   </div>
@@ -313,10 +332,12 @@ export default function Index() {
                   <div className="mt-auto">
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-bold font-arabic">
-                        🎨 أمثلة على التصاميم ثلاثية الأبعاد
+                        {t("pages.homepage.examplesSection.title")}
                       </h2>
                       <Button variant="outline" size="sm">
-                        <span className="font-arabic">المزيد من الأمثلة</span>
+                        <span className="font-arabic">
+                          {t("common.buttons.moreExamples")}
+                        </span>
                         <span className="flip-for-rtl ms-1">←</span>
                       </Button>
                     </div>
@@ -334,7 +355,9 @@ export default function Index() {
                                   className="w-full h-full object-cover"
                                 />
                                 <div className="absolute top-2 start-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                                  الأصلية
+                                  {t(
+                                    "pages.homepage.examplesSection.beforeLabel",
+                                  )}
                                 </div>
                               </div>
                               <div className="relative border-s-2 border-primary">
@@ -344,7 +367,9 @@ export default function Index() {
                                   className="w-full h-full object-cover"
                                 />
                                 <div className="absolute top-2 end-2 bg-primary text-white text-xs px-2 py-1 rounded">
-                                  ثلاثي الأبعاد
+                                  {t(
+                                    "pages.homepage.examplesSection.afterLabel",
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -356,7 +381,9 @@ export default function Index() {
                     <div className="flex justify-center mt-6">
                       <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
                         <Upload className="w-5 h-5 me-2" />
-                        <span className="font-arabic">ارفع صورتك الآن</span>
+                        <span className="font-arabic">
+                          {t("common.buttons.uploadNow")}
+                        </span>
                       </Button>
                     </div>
                   </div>
