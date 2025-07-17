@@ -107,8 +107,12 @@ const DockIcon = ({
   const defaultMouseX = useMotionValue(Infinity);
 
   const distanceCalc = useTransform(mouseX ?? defaultMouseX, (val: number) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
+    // Use requestAnimationFrame to prevent rapid calculations
+    if (ref.current) {
+      const bounds = ref.current.getBoundingClientRect();
+      return val - bounds.x - bounds.width / 2;
+    }
+    return Infinity;
   });
 
   const sizeTransform = useTransform(
@@ -121,6 +125,8 @@ const DockIcon = ({
     mass: 0.1,
     stiffness: 150,
     damping: 12,
+    restDelta: 0.001, // Prevent micro-animations
+    restSpeed: 0.001,
   });
 
   return (
