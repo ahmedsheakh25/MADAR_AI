@@ -474,8 +474,8 @@ export default function Index() {
                       </Button>
                     </Flex>
 
-                    <Grid cols={1} responsive={{ md: 2 }} gap="4">
-                      {EXAMPLE_IMAGES.map((img, index) => (
+                    <Grid cols={1} responsive={{ md: 1 }} gap="4">
+                      {EXAMPLE_IMAGES.slice(0, 1).map((img, index) => (
                         <motion.div
                           key={img.id}
                           initial={{ opacity: 0, y: 30 }}
@@ -524,15 +524,6 @@ export default function Index() {
                         </motion.div>
                       ))}
                     </Grid>
-
-                    <Flex justify="center" className="mt-6">
-                      <Button variant="gradient" animate>
-                        <Upload className="w-5 h-5 me-2" />
-                        <span className="font-arabic">
-                          {t("common.buttons.uploadNow")}
-                        </span>
-                      </Button>
-                    </Flex>
                   </motion.div>
                 </Flex>
               </CardContent>
