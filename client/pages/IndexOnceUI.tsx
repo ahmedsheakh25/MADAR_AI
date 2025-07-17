@@ -18,6 +18,7 @@ import {
 } from "@once-ui-system/core";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { VersionSwitcher } from "@/components/VersionSwitcher";
 
 const STYLE_OPTIONS = [
   {
@@ -133,6 +134,7 @@ export default function IndexOnceUI() {
       transition={pageTransition}
       className="min-h-screen bg-background"
     >
+      <VersionSwitcher />
       {/* Header */}
       <motion.header
         initial={{ y: -50, opacity: 0 }}
