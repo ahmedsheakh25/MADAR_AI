@@ -21,7 +21,7 @@ import {
   Label,
   GradientText,
 } from "@/components/design-system";
-import { LanguageSwitcherOnceUI as LanguageSwitcher } from "@/components/LanguageSwitcherOnceUI";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
