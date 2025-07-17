@@ -5,17 +5,24 @@ import { Upload, Image as ImageIcon, Zap, Star, Play } from "lucide-react";
 import {
   Button,
   Card,
+  CardContent,
   Text,
   Heading,
   Flex,
   Grid,
-  Icon,
+  Container,
   Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Textarea,
   Input,
   Badge,
   Avatar,
-} from "@once-ui-system/core";
+  Label,
+  GradientText,
+} from "@/components/design-system";
 import { LanguageSwitcherOnceUI as LanguageSwitcher } from "@/components/LanguageSwitcherOnceUI";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
