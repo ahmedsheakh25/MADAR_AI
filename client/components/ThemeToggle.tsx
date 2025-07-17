@@ -32,4 +32,19 @@ export function ThemeToggle() {
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
     >
       <motion.div
-        key={theme}\n        initial={{ y: -20, opacity: 0, rotate: -90 }}\n        animate={{ y: 0, opacity: 1, rotate: 0 }}\n        exit={{ y: 20, opacity: 0, rotate: 90 }}\n        transition={{ duration: 0.2 }}\n        className="w-5 h-5 text-foreground"\n      >\n        {theme === "dark" ? (\n          <Sun className="w-5 h-5" />\n        ) : (\n          <Moon className="w-5 h-5" />\n        )}\n      </motion.div>\n    </motion.button>\n  );\n}
+        key={theme}
+        initial={{ y: -20, opacity: 0, rotate: -90 }}
+        animate={{ y: 0, opacity: 1, rotate: 0 }}
+        exit={{ y: 20, opacity: 0, rotate: 90 }}
+        transition={{ duration: 0.2 }}
+        className="w-5 h-5 text-foreground"
+      >
+        {theme === "dark" ? (
+          <Sun className="w-5 h-5" />
+        ) : (
+          <Moon className="w-5 h-5" />
+        )}
+      </motion.div>
+    </motion.button>
+  );
+}
