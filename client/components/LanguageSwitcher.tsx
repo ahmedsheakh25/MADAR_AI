@@ -20,7 +20,7 @@ const languages: LanguageOption[] = [
   { code: "en", label: "English", nativeLabel: "English" },
 ];
 
-export function LanguageSwitcherOnceUI() {
+export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
 
   const currentLanguage = languages.find((lang) => lang.code === language);
