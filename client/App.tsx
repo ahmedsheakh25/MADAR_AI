@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import IndexOnceUI from "./pages/IndexOnceUI";
 import Login from "./pages/Login";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
@@ -24,6 +25,7 @@ function AppWithLanguage() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/once-ui" element={<IndexOnceUI />} />
         <Route path="/login" element={<Login />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/my-images" element={<Gallery />} />
