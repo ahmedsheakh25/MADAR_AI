@@ -49,7 +49,7 @@ const DockNavigation = () => {
 
   const authButtonContent = (
     <DockIcon
-      className={`bg-background border-2 ${isAuthenticated ? "border-red-500 hover:bg-red-50" : "border-primary hover:bg-primary/10"}`}
+      className={`bg-background/80 backdrop-blur-sm border-2 transition-all duration-200 ${isAuthenticated ? "border-red-500 hover:bg-red-50 hover:shadow-lg" : "border-primary hover:bg-primary/10 hover:shadow-lg"}`}
     >
       <Tooltip>
         <TooltipTrigger asChild>
