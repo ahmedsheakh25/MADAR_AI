@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/hooks/use-language";
 
 // Mock data for demonstration
 const MOCK_IMAGES = [
@@ -43,6 +45,8 @@ const MOCK_IMAGES = [
 ];
 
 export default function Gallery() {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [images] = useState(MOCK_IMAGES);
@@ -65,14 +69,20 @@ export default function Gallery() {
             <div className="flex items-center gap-4">
               <Link to="/" className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">م</span>
+                  <span className="text-white font-bold text-sm">
+                    {language === "ar"
+                      ? t("brand.nameArabic")
+                      : t("brand.name").charAt(0)}
+                  </span>
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                    Madar
+                    {t("brand.name")}
                   </h1>
                   <p className="text-xs text-muted-foreground font-arabic">
-                    مدار
+                    {language === "ar"
+                      ? t("brand.name")
+                      : t("brand.nameArabic")}
                   </p>
                 </div>
               </Link>
@@ -83,14 +93,14 @@ export default function Gallery() {
                 to="/"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                المولد
+                {t("common.navigation.generator")}
               </Link>
               <span className="text-sm text-foreground font-medium">
-                معرض أعمالي
+                {t("common.navigation.gallery")}
               </span>
               <Link to="/login">
                 <Button variant="outline" size="sm">
-                  تسجيل الخروج
+                  {t("common.buttons.signOut")}
                 </Button>
               </Link>
             </nav>
@@ -102,16 +112,20 @@ export default function Gallery() {
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2 font-arabic">معرض أعمالي</h1>
+            <h1 className="text-3xl font-bold mb-2 font-arabic">
+              {t("pages.gallery.title")}
+            </h1>
             <p className="text-muted-foreground font-arabic">
-              جميع التصاميم التي قمت بإنشائها باستخدام الذكاء الاصطناعي
+              {t("pages.gallery.subtitle")}
             </p>
           </div>
 
           <Link to="/">
             <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
               <ArrowRight className="w-4 h-4 me-2 flip-for-rtl" />
-              <span className="font-arabic">العودة للمولد</span>
+              <span className="font-arabic">
+                {t("common.buttons.backToGenerator")}
+              </span>
             </Button>
           </Link>
         </div>
@@ -124,7 +138,7 @@ export default function Gallery() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="ps-10 glass"
-              placeholder="ابحث في تصاميمك..."
+              placeholder={t("pages.gallery.searchPlaceholder")}
             />
           </div>
 
@@ -145,7 +159,7 @@ export default function Gallery() {
             </Button>
             <Button variant="outline" size="sm">
               <Filter className="w-4 h-4 mr-2" />
-              <span className="font-arabic">تصفية</span>
+              <span className="font-arabic">{t("common.buttons.filter")}</span>
             </Button>
           </div>
         </div>
@@ -166,6 +180,8 @@ export default function Gallery() {
 }
 
 function EmptyState({ searchQuery }: { searchQuery: string }) {
+  const { t } = useTranslation();
+
   return (
     <Card className="glass gradient-border">
       <CardContent className="py-16 text-center">
@@ -175,18 +191,22 @@ function EmptyState({ searchQuery }: { searchQuery: string }) {
 
         {searchQuery ? (
           <>
-            <h3 className="text-xl font-semibold mb-2">لم نجد نتائج للبحث</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              {t("pages.gallery.emptyState.noResults")}
+            </h3>
             <p className="text-muted-foreground mb-6 font-arabic">
-              لم نجد أي تصاميم تحتوي على "{searchQuery}"
+              {t("pages.gallery.emptyState.noResultsText", {
+                searchQuery: searchQuery,
+              })}
             </p>
           </>
         ) : (
           <>
             <h3 className="text-xl font-semibold mb-2 font-arabic">
-              لا توجد تصاميم بعد
+              {t("pages.gallery.emptyState.noDesigns")}
             </h3>
             <p className="text-muted-foreground mb-6 font-arabic">
-              ابدأ في إنشاء تصاميمك الأولى باستخدام الذكاء الاصطناعي
+              {t("pages.gallery.emptyState.noDesignsText")}
             </p>
           </>
         )}
@@ -194,7 +214,9 @@ function EmptyState({ searchQuery }: { searchQuery: string }) {
         <Link to="/">
           <Button className="bg-gradient-primary hover:bg-gradient-primary/90">
             <Star className="w-4 h-4 mr-2" />
-            <span className="font-arabic">ابدأ التصميم الآن</span>
+            <span className="font-arabic">
+              {t("common.buttons.startDesigning")}
+            </span>
           </Button>
         </Link>
       </CardContent>
@@ -211,6 +233,8 @@ function ImageGrid({
   viewMode: "grid" | "list";
   onDownload: (id: number) => void;
 }) {
+  const { t } = useTranslation();
+
   if (viewMode === "list") {
     return (
       <div className="space-y-4">
@@ -243,7 +267,9 @@ function ImageGrid({
                   size="sm"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  <span className="font-arabic">تحميل</span>
+                  <span className="font-arabic">
+                    {t("common.buttons.download")}
+                  </span>
                 </Button>
               </div>
             </CardContent>
@@ -270,7 +296,9 @@ function ImageGrid({
                   className="bg-white text-black hover:bg-white/90"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  <span className="font-arabic">تحميل</span>
+                  <span className="font-arabic">
+                    {t("common.buttons.download")}
+                  </span>
                 </Button>
               </div>
             </div>
