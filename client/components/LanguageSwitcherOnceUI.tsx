@@ -1,6 +1,15 @@
 import { Globe } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button, Dropdown, Flex, Text } from "@once-ui-system/core";
+import {
+  Button,
+  Dropdown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Flex,
+  Text,
+} from "@/components/design-system";
 import { useLanguage, type Language } from "@/hooks/use-language";
 
 interface LanguageOption {
@@ -21,38 +30,39 @@ export function LanguageSwitcherOnceUI() {
 
   return (
     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-      <Dropdown>
-        <Button variant="secondary" size="sm" as="trigger" className="gap-2">
-          <Globe className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {currentLanguage?.nativeLabel}
-          </span>
-        </Button>
-
-        <Dropdown.Menu align="end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Globe className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              {currentLanguage?.nativeLabel}
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
           {languages.map((lang) => (
             <motion.div
               key={lang.code}
               whileHover={{ backgroundColor: "rgba(138, 43, 226, 0.1)" }}
               transition={{ duration: 0.2 }}
             >
-              <Dropdown.Item
+              <DropdownMenuItem
                 onClick={() => setLanguage(lang.code)}
                 className={`cursor-pointer ${
                   language === lang.code ? "bg-accent" : ""
                 }`}
               >
-                <Flex direction="column">
-                  <Text weight="medium">{lang.nativeLabel}</Text>
-                  <Text size="xs" className="text-muted-foreground">
+                <div className="flex flex-col">
+                  <span className="font-medium">{lang.nativeLabel}</span>
+                  <span className="text-xs text-muted-foreground">
                     {lang.label}
-                  </Text>
-                </Flex>
-              </Dropdown.Item>
+                  </span>
+                </div>
+              </DropdownMenuItem>
             </motion.div>
           ))}
-        </Dropdown.Menu>
-      </Dropdown>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </motion.div>
   );
 }
