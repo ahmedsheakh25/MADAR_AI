@@ -1,213 +1,183 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AuthManager, UserCache } from '../lib/auth-manager';
-import { useLanguage } from '../hooks/use-language';
-import { useTranslation } from '../hooks/use-translation';
-import { Heading, Text } from '../components/design-system/Typography';
-import { motion } from 'framer-motion';
-
-interface CallbackState {
-  status: 'processing' | 'success' | 'error';
-  message: string;
-  error?: string;
-}
+import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/use-auth";
+import { APIManager } from "../lib/api-manager";
+import { AuthManager } from "../lib/auth-manager";
+import { motion } from "framer-motion";
+import { useNavigation } from "../components/navigation/hooks/useNavigation";
+import { useTranslation } from "../hooks/use-translation";
 
 export default function AuthCallback() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { language } = useLanguage();
   const { t } = useTranslation();
-  
-  const [state, setState] = useState<CallbackState>({
-    status: 'processing',
-    message: 'Processing authentication...',
-  });
+  const { navigateToPath } = useNavigation();
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    handleCallback();
-  }, []);
+    const handleOAuthCallback = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+        const error = urlParams.get("error");
 
-  const handleCallback = async () => {
-    try {
-      const code = searchParams.get('code');
-      const error = searchParams.get('error');
+        if (error) {
+          setStatus("error");
+          setMessage(`OAuth error: ${error}`);
+          setTimeout(() => {
+            navigateToPath({ path: "/login" });
+          }, 3000);
+          return;
+        }
 
-      // Handle OAuth errors
-      if (error) {
-        setState({
-          status: 'error',
-          message: 'Authentication failed',
-          error: `OAuth error: ${error}`,
+        if (!code) {
+          setStatus("error");
+          setMessage("No authorization code received");
+          setTimeout(() => {
+            navigateToPath({ path: "/login" });
+          }, 3000);
+          return;
+        }
+
+        // Call the callback API to exchange code for token
+        const response = await fetch(`/api/auth/callback?code=${code}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
-        
+
+        const data = await response.json();
+
+        if (data.success && data.token) {
+          // Store the auth token
+          AuthManager.setToken(data.token);
+
+          // Store user data in cache
+          if (data.user) {
+            localStorage.setItem("user-cache", JSON.stringify(data.user));
+          }
+
+          setStatus("success");
+          setMessage(data.isNewUser ? "Welcome to MADAR AI!" : "Welcome back!");
+
+          // Redirect to generator after successful auth
+          setTimeout(() => {
+            navigateToPath({ path: "/generator" });
+          }, 2000);
+        } else {
+          throw new Error(data.error || "Authentication failed");
+        }
+      } catch (error) {
+        console.error("Auth callback error:", error);
+        setStatus("error");
+        setMessage(
+          error instanceof Error ? error.message : "Authentication failed",
+        );
         setTimeout(() => {
-          navigate(`/${language}/login`);
+          navigateToPath({ path: "/login" });
         }, 3000);
-        return;
       }
+    };
 
-      if (!code) {
-        setState({
-          status: 'error',
-          message: 'Authentication failed',
-          error: 'No authorization code received',
-        });
-        
-        setTimeout(() => {
-          navigate(`/${language}/login`);
-        }, 3000);
-        return;
-      }
-
-      setState({
-        status: 'processing',
-        message: 'Completing authentication...',
-      });
-
-      // Call the callback API
-      const response = await fetch(`/api/auth/callback?code=${code}`);
-      const result = await response.json();
-
-      if (result.success && result.token && result.user) {
-        // Store authentication data
-        AuthManager.setToken(result.token);
-        UserCache.save(result.user);
-
-        setState({
-          status: 'success',
-          message: result.isNewUser 
-            ? 'Account created successfully! Welcome to Madar AI!' 
-            : 'Welcome back to Madar AI!',
-        });
-
-        // Redirect to generator page
-        setTimeout(() => {
-          navigate(`/${language}/generator`);
-        }, 2000);
-
-      } else {
-        throw new Error(result.error || 'Authentication failed');
-      }
-
-    } catch (error) {
-      console.error('OAuth callback error:', error);
-      
-      setState({
-        status: 'error',
-        message: 'Authentication failed',
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-      });
-
-      setTimeout(() => {
-        navigate(`/${language}/login`);
-      }, 3000);
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.4, 0, 0.2, 1],
-      },
-    },
-  };
-
-  const getStatusColor = () => {
-    switch (state.status) {
-      case 'processing':
-        return 'text-blue-500';
-      case 'success':
-        return 'text-green-500';
-      case 'error':
-        return 'text-red-500';
-      default:
-        return 'text-foreground';
-    }
-  };
-
-  const getStatusIcon = () => {
-    switch (state.status) {
-      case 'processing':
-        return (
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent" />
-        );
-      case 'success':
-        return (
-          <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center">
-            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-        );
-      case 'error':
-        return (
-          <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center">
-            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+    handleOAuthCallback();
+  }, [navigateToPath]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <motion.div
-        className="max-w-md w-full text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="mb-6 flex justify-center">
-          {getStatusIcon()}
-        </div>
-
-        <Heading 
-          as="h1" 
-          size="2xl" 
-          className={`mb-4 ${getStatusColor()}`}
-        >
-          {state.status === 'processing' && 'Authenticating...'}
-          {state.status === 'success' && 'Success!'}
-          {state.status === 'error' && 'Authentication Failed'}
-        </Heading>
-
-        <Text className="mb-6 text-muted-foreground">
-          {state.message}
-        </Text>
-
-        {state.error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <Text className="text-red-700 text-sm">
-              {state.error}
-            </Text>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center space-y-6">
+        {status === "loading" && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-4"
+          >
+            <motion.div
+              className="w-16 h-16 mx-auto border-4 border-primary border-t-transparent rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            <h2 className="text-xl font-semibold text-foreground">
+              {t("auth.callback.authenticating")}
+            </h2>
+            <p className="text-muted-foreground">
+              {t("auth.callback.pleaseWait")}
+            </p>
+          </motion.div>
         )}
 
-        <div className="flex justify-center space-x-2">
-          <div className="h-2 w-2 bg-current rounded-full animate-pulse" />
-          <div className="h-2 w-2 bg-current rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-          <div className="h-2 w-2 bg-current rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
-        </div>
-
-        {state.status === 'success' && (
-          <Text className="mt-4 text-sm text-muted-foreground">
-            Redirecting to generator...
-          </Text>
+        {status === "success" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <motion.div
+              className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </motion.div>
+            <h2 className="text-xl font-semibold text-foreground">
+              {t("auth.callback.success")}
+            </h2>
+            <p className="text-muted-foreground">{message}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("auth.callback.redirecting")}
+            </p>
+          </motion.div>
         )}
 
-        {state.status === 'error' && (
-          <Text className="mt-4 text-sm text-muted-foreground">
-            Redirecting to login page...
-          </Text>
+        {status === "error" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <motion.div
+              className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              <svg
+                className="w-8 h-8 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </motion.div>
+            <h2 className="text-xl font-semibold text-foreground">
+              {t("auth.callback.error")}
+            </h2>
+            <p className="text-red-600">{message}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("auth.callback.redirectingToLogin")}
+            </p>
+          </motion.div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
-} 
+}
