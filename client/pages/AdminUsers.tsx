@@ -121,7 +121,7 @@ export default function AdminUsers() {
     };
 
     fetchUsers();
-  }, [user?.isAdmin, authLoading]);
+  }, [currentUser?.isAdmin, authLoading]);
 
   // Show loading state while checking auth
   if (authLoading) {
@@ -138,7 +138,7 @@ export default function AdminUsers() {
   }
 
   // Don't render if not admin (will redirect)
-  if (!user?.isAdmin) {
+  if (!currentUser?.isAdmin) {
     return null;
   }
 
