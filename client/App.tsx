@@ -11,7 +11,6 @@ import NotFound from "./pages/NotFound";
 import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
 import { TooltipProvider } from "@/components/design-system";
-import DockNavigation from "./components/navigation/DockNavigation";
 import { LanguageRoute } from "./components/routing/LanguageRoute";
 import { suppressResizeObserverErrors } from "./lib/resize-observer-fix";
 import { useEffect } from "react";
@@ -53,14 +52,6 @@ function AppWithLanguage() {
           }
         />
         <Route
-          path="/:lang/my-images"
-          element={
-            <LanguageRoute>
-              <Gallery />
-            </LanguageRoute>
-          }
-        />
-        <Route
           path="/:lang/signup"
           element={
             <LanguageRoute>
@@ -87,10 +78,6 @@ function AppWithLanguage() {
           element={<Navigate to={`/${language}/gallery`} replace />}
         />
         <Route
-          path="/my-images"
-          element={<Navigate to={`/${language}/my-images`} replace />}
-        />
-        <Route
           path="/signup"
           element={<Navigate to={`/${language}/signup`} replace />}
         />
@@ -109,7 +96,6 @@ function AppWithLanguage() {
           }
         />
       </Routes>
-      <DockNavigation />
     </BrowserRouter>
   );
 }

@@ -51,19 +51,26 @@
     "languages": {
       "arabic": "Arabic",
       "english": "English"
+    },
+    "errors": {
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required"
     }
   },
   "brand": {
     "name": "Madar",
     "nameEnglish": "Madar",
     "nameArabic": "مدار",
+    "beta": "Beta",
     "tagline": "AI-Powered Design"
   },
   "pages": {
     "homepage": {
       "hero": {
-        "title": "Transform any image into a distinctive 3D design",
-        "subtitle": "Use artificial intelligence to transform your images into creative 3D designs with transparent backgrounds, perfect for designers and creators",
+        "title": "Create Amazing 3D Objects with AI",
+        "subtitle": "Transform your ideas into stunning 3D models using advanced AI technology. Upload reference images and generate professional 3D content instantly.",
+        "getStarted": "Get Started",
+        "freeText": "Its 100% Free!",
         "ratingText": "+12,500 users benefited from this effect"
       },
       "uploadSection": {
@@ -72,7 +79,7 @@
         "supportedFormats": "Supports PNG, JPG, JPEG"
       },
       "styleSection": {
-        "title": "Design Style",
+        "title": "Generative Style",
         "styles": {
           "3dPixelIsometric": "3D Pixel Isometric",
           "minimalIcon": "Minimal Icon",
@@ -93,12 +100,50 @@
         "title": "🎨 Examples of 3D Designs",
         "beforeLabel": "Original",
         "afterLabel": "3D"
+      },
+      "styleSelection": {
+        "title": "Style Selection",
+        "styles": {
+          "realistic": "Realistic",
+          "cartoon": "Cartoon",
+          "minimalist": "Minimalist",
+          "cyberpunk": "Cyberpunk"
+        }
+      },
+      "colorSection": {
+        "title": "Use Custom Colors"
+      },
+      "colorPicker": {
+        "addColor": "Add color",
+        "maxColors": "Maximum 2 colors allowed"
+      },
+      "fileUpload": {
+        "dropFiles": "Drop your files here",
+        "chooseFile": "Choose a file or drag & drop it here.",
+        "uploading": "Uploading",
+        "completed": "Completed",
+        "failed": "Failed",
+        "retry": "Retry"
+      },
+      "promptInput": {
+        "placeholder": "Describe your 3D object or scene in detail... (Cmd+Enter to generate)",
+        "charCount": "{{count}}/500",
+        "generateButton": "Generate"
+      },
+      "navigation": {
+        "generatorTitle": "Generator",
+        "galleryTitle": "Gallery",
+        "signOut": "Sign Out"
       }
     },
     "gallery": {
       "title": "My Gallery",
       "subtitle": "All designs you created using artificial intelligence",
       "searchPlaceholder": "Search in your designs...",
+      "filters": {
+        "newest": "Newest first",
+        "oldest": "Oldest first"
+      },
       "emptyState": {
         "noResults": "No search results found",
         "noResultsText": "We couldn't find any designs containing \"{{searchQuery}}\"",

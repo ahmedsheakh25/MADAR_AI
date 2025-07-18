@@ -12,48 +12,40 @@ import "swiper/css/autoplay";
 
 import { cn } from "../../lib/utils";
 import { Button } from "../design-system/Button";
+import { useTranslation } from "../../hooks/use-translation";
 
 const Hero211 = () => {
+  const { t } = useTranslation();
   const images = [
     {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/random11.jpeg",
-      alt: "Portrait of Joanna Doe in urban setting",
-      name: "Joanna Doe",
+      src: "https://cdn.builder.io/o/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2F410a3151b0e04c31b16b2fa811b010d6?alt=media&token=0c7f06f3-7d62-4b04-b45b-9dd99bfa2aa7&apiKey=3f900ffbafd84b58a77a4df01e4d869c",
+      alt: "3D Style Example 1",
+      name: "Style 1",
     },
     {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/random1.jpeg",
-      alt: "Portrait of Joan Doe in natural lighting",
-      name: "Joan Doe",
+      src: "https://cdn.builder.io/o/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Ff247b3d4ad5c42489a207df73147e781?alt=media&token=ef9f481e-cffd-4dee-8cf2-aadd19d75984&apiKey=3f900ffbafd84b58a77a4df01e4d869c",
+      alt: "3D Style Example 2",
+      name: "Style 2",
     },
     {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/random2.jpeg",
-      alt: "Portrait of Sarah Chen in studio setting",
-      name: "Sarah Chen",
+      src: "https://cdn.builder.io/o/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc12cd84fc6ac457f87e4e84fa37e5d42?alt=media&token=6fd8b27f-2183-44b2-afdf-71079796d6c5&apiKey=3f900ffbafd84b58a77a4df01e4d869c",
+      alt: "3D Style Example 3",
+      name: "Style 3",
     },
     {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/person1.jpeg",
-      alt: "Portrait of Joanna Doe in urban setting",
-      name: "Joanna Doe",
+      src: "https://cdn.builder.io/o/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2F76fbd13e4c7549a0b62438f39eef35a4?alt=media&token=05934085-674e-4985-9c54-c0a085edeca1&apiKey=3f900ffbafd84b58a77a4df01e4d869c",
+      alt: "3D Style Example 4",
+      name: "Style 4",
     },
     {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/person2.jpeg",
-      alt: "Portrait of Joan Doe in natural lighting",
-      name: "Joan Doe",
+      src: "https://cdn.builder.io/o/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc7f3b2331b3b4344a48def6baa70715b?alt=media&token=f762499c-39c3-44f2-ba79-99ab0d4d3177&apiKey=3f900ffbafd84b58a77a4df01e4d869c",
+      alt: "3D Style Example 5",
+      name: "Style 5",
     },
     {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/person3.jpeg",
-      alt: "Portrait of Sarah Chen in studio setting",
-      name: "Sarah Chen",
-    },
-    {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/person4.jpeg",
-      alt: "Portrait of Joanna Doe in urban setting",
-      name: "Joanna Doe",
-    },
-    {
-      src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/bw11.jpeg",
-      alt: "Portrait of Joan Doe in natural lighting",
-      name: "Joan Doe",
+      src: "https://cdn.builder.io/o/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fa611edc775cd44bfb251ff0515872774?alt=media&token=3f9bfe10-0e70-461e-bf8f-90f3d1ad8c09&apiKey=3f900ffbafd84b58a77a4df01e4d869c",
+      alt: "3D Style Example 6",
+      name: "Style 6",
     },
   ];
 
@@ -105,17 +97,15 @@ const Hero211 = () => {
 `;
 
   return (
-    <section className="relative w-full overflow-hidden py-16 sm:py-24 md:py-32">
+    <section className="relative w-full overflow-hidden py-16 sm:py-24 md:py-32 bg-background">
       <style>{css}</style>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center justify-center gap-4">
           <h1 className="text-center font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground break-words">
-            Create Amazing 3D Objects with AI
+            {t("pages.homepage.hero.title")}
           </h1>
           <p className="px-4 sm:px-10 text-center text-sm sm:text-base lg:text-lg text-muted-foreground max-w-xl">
-            Transform your ideas into stunning 3D models using advanced AI
-            technology. Upload reference images and generate professional 3D
-            content instantly.
+            {t("pages.homepage.hero.subtitle")}
           </p>
         </div>
 
@@ -161,7 +151,7 @@ const Hero211 = () => {
 
         <div className="relative z-10 mx-auto mt-8 sm:mt-10 flex w-fit justify-center">
           <Button className="rounded-full px-6 py-3 active:scale-105">
-            Get Started
+            {t("pages.homepage.hero.getStarted")}
           </Button>
           <motion.div
             initial={{ opacity: 0, translateY: 20 }}
@@ -170,7 +160,7 @@ const Hero211 = () => {
             className="absolute -top-[18px] left-[150px] h-1 hidden sm:block"
           >
             <p className="font-caveat text-xl tracking-tight text-muted-foreground">
-              Its 100% Free!
+              {t("pages.homepage.hero.freeText")}
             </p>
             <svg
               width="82"

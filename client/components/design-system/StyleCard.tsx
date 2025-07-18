@@ -90,7 +90,7 @@ export function StyleCard({
       )}
 
       {/* Image Container */}
-      <div className="relative w-full aspect-[184/140.62] rounded-2xl overflow-hidden">
+      <div className="relative w-full aspect-square rounded-2xl overflow-hidden">
         {isSkeletonState ? (
           <motion.div
             className="w-full h-full animate-pulse"
@@ -104,8 +104,8 @@ export function StyleCard({
             style={{
               backgroundImage: `url('${image}')`,
               backgroundColor: "#F4F2EF",
-              backgroundSize: "61.6% 82.133%",
-              backgroundPosition: "35.328px 13.221px",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
             whileHover={{
               scale: 1.1,

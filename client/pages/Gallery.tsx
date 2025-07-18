@@ -77,13 +77,23 @@ const FILTER_OPTIONS = [
   { id: "animation", label: "Animation", active: false, shortcut: "⌘ +" },
 ];
 
-const SORT_OPTIONS = [
-  { id: "newest", label: "Newest first", active: true, shortcut: "⌘ 0" },
-  { id: "oldest", label: "Oldest first", active: false, shortcut: "⌘ 0" },
-];
-
 export default function Gallery() {
   const { t } = useTranslation();
+
+  const SORT_OPTIONS = [
+    {
+      id: "newest",
+      label: t("pages.gallery.filters.newest"),
+      active: true,
+      shortcut: "⌘ 0",
+    },
+    {
+      id: "oldest",
+      label: t("pages.gallery.filters.oldest"),
+      active: false,
+      shortcut: "⌘ 0",
+    },
+  ];
   const [searchQuery, setSearchQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [undoDisabled] = useState(true);
@@ -253,6 +263,9 @@ export default function Gallery() {
                   alt={scene.title}
                   className="w-full h-full object-cover"
                 />
+                <div className="text-[rgb(2,8,23)] bg-black font-normal text-base leading-6 font-inter">
+                  <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full overflow-hidden overscroll-none touch-pan-x touch-pan-y font-normal" />
+                </div>
                 {/* Hover Hand Pointer - only show on hover */}
                 {scene.isHovered && (
                   <div className="absolute right-22 bottom-21 w-[34px] h-[34px] opacity-100 group-hover:opacity-100 transition-opacity">

@@ -1,11 +1,20 @@
 import { motion } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useLanguage } from "@/hooks/use-language";
 
 export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleLanguage = () => {
-    setLanguage(language === "ar" ? "en" : "ar");
+    const newLanguage = language === "ar" ? "en" : "ar";
+    setLanguage(newLanguage);
+
+    // Get current path without language prefix
+    const currentPath = location.pathname.replace(/^\/[a-z]{2}/, "") || "/";
+    // Navigate to the same path but with new language prefix
+    navigate(`/${newLanguage}${currentPath}`, { replace: true });
   };
 
   return (
