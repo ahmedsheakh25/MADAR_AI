@@ -183,9 +183,23 @@ export class AuthService {
   // Generate Google OAuth URL
   static getGoogleAuthUrl(): string {
     const baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+
+    // Determine the correct redirect URI based on environment
+    let redirectUri = process.env.GOOGLE_REDIRECT_URI || "";
+
+    // If no explicit redirect URI is set, auto-detect based on environment
+    if (!redirectUri || redirectUri.includes("localhost")) {
+      // Check if we're in production (Fly.dev)
+      if (process.env.FLY_APP_NAME || process.env.NODE_ENV === "production") {
+        redirectUri = "https://madar-ai.fly.dev/api/auth/callback";
+      } else {
+        redirectUri = "http://localhost:8080/api/auth/callback";
+      }
+    }
+
     const params = new URLSearchParams({
       client_id: process.env.GOOGLE_CLIENT_ID || "",
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI || "",
+      redirect_uri: redirectUri,
       response_type: "code",
       scope: "openid email profile",
       access_type: "offline",
