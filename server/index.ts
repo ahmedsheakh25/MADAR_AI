@@ -202,45 +202,6 @@ export function createServer() {
     }
   });
 
-  // Migration route to add role column (development only)
-  app.get("/add-role-migration", async (req, res) => {
-    try {
-      const { neon } = await import("@neondatabase/serverless");
-
-      if (!process.env.DATABASE_URL) {
-        throw new Error("DATABASE_URL not configured");
-      }
-
-      const sql = neon(process.env.DATABASE_URL);
-
-      // Add role column to users table
-      await sql`
-        ALTER TABLE "users"
-        ADD COLUMN IF NOT EXISTS "role" varchar(20) DEFAULT 'user'
-      `;
-
-      // Set master admin role for the specified email
-      await sql`
-        UPDATE "users"
-        SET "role" = 'admin'
-        WHERE "email" = 'ahmed.sheakh@gmail.com'
-      `;
-
-      res.json({
-        success: true,
-        message: "Role column added and master admin set successfully",
-        timestamp: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("Role migration error:", error);
-      res.status(500).json({
-        success: false,
-        error: error instanceof Error ? error.message : "Role migration failed",
-        timestamp: new Date().toISOString(),
-      });
-    }
-  });
-
   // Placeholder routes for other endpoints
   app.get("/gallery", (req, res) => {
     res.json({ images: [] });
