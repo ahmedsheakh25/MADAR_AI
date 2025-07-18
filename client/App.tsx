@@ -92,6 +92,14 @@ function AppWithLanguage() {
             </LanguageRoute>
           }
         />
+        <Route
+          path="/:lang/privacy"
+          element={
+            <LanguageRoute>
+              <Privacy />
+            </LanguageRoute>
+          }
+        />
 
         {/* Legacy routes without language prefix - redirect to language version */}
         <Route
