@@ -51,15 +51,14 @@ export default function Login() {
     }
   }, [language]);
 
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     setIsLoading(true);
-
-    // In development mode, simulate login
-    setTimeout(() => {
-      signIn();
+    try {
+      await signIn();
+    } catch (error) {
+      console.error("Sign in failed:", error);
       setIsLoading(false);
-      navigateToPath({ path: "/generator" });
-    }, 1000);
+    }
   };
 
   const toggleAuthMode = () => {
