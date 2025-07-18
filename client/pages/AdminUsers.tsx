@@ -8,6 +8,8 @@ import {
   Calendar,
   Mail,
   Hash,
+  Shield,
+  Crown,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
