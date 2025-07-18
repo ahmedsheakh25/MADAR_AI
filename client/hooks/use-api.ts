@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { APIManager } from "../lib/api-manager";
+import { GenerationManager } from "../lib/auth-manager";
 import type {
   GenerateImageRequest,
   GenerateImageResponse,
@@ -12,44 +14,75 @@ import type {
 export function useGenerateImage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<string>("");
 
   const generateImage = useCallback(
     async (params: GenerateImageRequest): Promise<GenerateImageResponse> => {
+      const generationId = `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
       setIsGenerating(true);
       setError(null);
+      setProgress("Starting generation...");
 
       try {
-        const response = await fetch("/api/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(params),
+        // Save generation progress
+        GenerationManager.saveProgress(generationId, {
+          prompt: params.prompt,
+          style: params.styleId,
+          status: 'starting'
         });
 
-        const result: GenerateImageResponse = await response.json();
+        setProgress("Sending request to AI...");
+        
+        const result = await APIManager.generateImage(params);
 
         if (!result.success) {
           throw new Error(result.error || "Generation failed");
         }
+
+        setProgress("Generation completed!");
+        
+        // Clear generation progress on success
+        GenerationManager.clearProgress(generationId);
 
         return result;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Generation failed";
         setError(errorMessage);
+        
+        // Save error state
+        GenerationManager.saveProgress(generationId, {
+          prompt: params.prompt,
+          style: params.styleId,
+          status: 'error',
+          error: errorMessage
+        });
+        
         throw new Error(errorMessage);
       } finally {
         setIsGenerating(false);
+        setProgress("");
       }
     },
     [],
   );
 
+  // Restore any ongoing generations on mount
+  const restoreGenerations = useCallback(() => {
+    const restoredGenerations = GenerationManager.restoreProgress();
+    if (restoredGenerations.length > 0) {
+      console.log('Restored ongoing generations:', restoredGenerations);
+      // You can set state here if needed for UI
+    }
+  }, []);
+
   return {
     generateImage,
     isGenerating,
     error,
+    progress,
+    restoreGenerations,
   };
 }
 
@@ -63,15 +96,7 @@ export function useSaveImage() {
       setError(null);
 
       try {
-        const response = await fetch("/api/save", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(params),
-        });
-
-        const result: SaveImageResponse = await response.json();
+        const result = await APIManager.saveImage(params);
 
         if (!result.success) {
           throw new Error(result.error || "Save failed");

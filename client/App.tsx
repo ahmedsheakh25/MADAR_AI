@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Gallery from "./pages/Gallery";
 import AdminUsers from "./pages/AdminUsers";
 import AdminStyles from "./pages/AdminStyles";
+import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
@@ -20,6 +21,7 @@ import { LoadingBoundary } from "./components/LoadingBoundary";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AppDebug } from "./components/AppDebug";
 import { suppressResizeObserverErrors } from "./lib/resize-observer-fix";
+import { AuthManager } from "./lib/auth-manager";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,14 @@ function AppWithLanguage() {
           element={
             <LanguageRoute>
               <Login />
+            </LanguageRoute>
+          }
+        />
+        <Route
+          path="/:lang/auth/callback"
+          element={
+            <LanguageRoute>
+              <AuthCallback />
             </LanguageRoute>
           }
         />
@@ -141,6 +151,9 @@ const App = () => {
     root.setAttribute("data-transition", "all");
     root.setAttribute("data-scaling", "100");
     root.setAttribute("data-viz-style", "categorical");
+
+    // Initialize authentication manager
+    AuthManager.initialize();
 
     // Suppress ResizeObserver errors
     suppressResizeObserverErrors();
