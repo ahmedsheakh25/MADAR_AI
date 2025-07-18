@@ -67,16 +67,39 @@
     --theme-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* System theme preference detection */
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --background: 0 0% 100%;
-      --foreground: 222.2 84% 4.9%;
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
-      --glass-bg: rgba(255, 255, 255, 0.6);
-      --glass-border: rgba(0, 0, 0, 0.1);
-    }
+  /* Light theme colors */
+  [data-theme="light"],
+  :root:not([data-theme="dark"]) {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 264 100% 50%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 264 100% 50%;
+
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -119,6 +142,20 @@
   html[lang="ar"] {
     font-family: var(--font-arabic);
     direction: rtl;
+  }
+
+  /* Enhanced Arabic font application */
+  html[lang="ar"] body,
+  html[lang="ar"] * {
+    font-family: "IBM Plex Sans Arabic", sans-serif;
+  }
+
+  /* Specific Arabic font enforcement for components */
+  [lang="ar"] .font-arabic,
+  [lang="ar"] .font-arabic *,
+  [dir="rtl"] .font-arabic,
+  [dir="rtl"] .font-arabic * {
+    font-family: "IBM Plex Sans Arabic", sans-serif !important;
   }
 
   /* Heading styles for English */
@@ -175,6 +212,12 @@
   /* Arabic font family */
   .font-arabic {
     font-family: var(--font-arabic);
+  }
+
+  /* Ensure Arabic text gets proper font */
+  .font-arabic,
+  .font-arabic * {
+    font-family: "IBM Plex Sans Arabic", sans-serif !important;
   }
 
   /* English font families */
@@ -448,5 +491,33 @@
 
   .animate-marquee-vertical {
     animation: marquee-vertical var(--duration) linear infinite;
+  }
+
+  /* Shimmer animation for AnimatedShinyText */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  /* Shiny text animation for AnimatedShinyText */
+  @keyframes shiny-text {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-shiny-text {
+    animation: shiny-text 2s ease-in-out infinite;
   }
 }

@@ -51,22 +51,6 @@ function AppWithLanguage() {
             </LanguageRoute>
           }
         />
-        <Route
-          path="/:lang/signup"
-          element={
-            <LanguageRoute>
-              <Login />
-            </LanguageRoute>
-          }
-        />
-        <Route
-          path="/:lang/forgot-password"
-          element={
-            <LanguageRoute>
-              <Login />
-            </LanguageRoute>
-          }
-        />
 
         {/* Legacy routes without language prefix - redirect to language version */}
         <Route
@@ -76,14 +60,6 @@ function AppWithLanguage() {
         <Route
           path="/gallery"
           element={<Navigate to={`/${language}/gallery`} replace />}
-        />
-        <Route
-          path="/signup"
-          element={<Navigate to={`/${language}/signup`} replace />}
-        />
-        <Route
-          path="/forgot-password"
-          element={<Navigate to={`/${language}/forgot-password`} replace />}
         />
 
         {/* 404 for unmatched routes */}
@@ -116,7 +92,6 @@ const App = () => {
     root.setAttribute("data-transition", "all");
     root.setAttribute("data-scaling", "100");
     root.setAttribute("data-viz-style", "categorical");
-    root.setAttribute("data-theme", "dark"); // Default to dark theme
 
     // Suppress ResizeObserver errors
     suppressResizeObserverErrors();

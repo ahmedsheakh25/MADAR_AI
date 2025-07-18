@@ -24,7 +24,10 @@
       "signUpFree": "Sign up for free",
       "generateImage": "Generate Image (1 Credit)",
       "generating": "Generating...",
-      "signingIn": "Signing In..."
+      "signingIn": "Signing In...",
+      "signingUp": "Signing up...",
+      "signUpWithGoogle": "Sign up with Google",
+      "createAccount": "Create new account"
     },
     "navigation": {
       "home": "Home",
@@ -43,6 +46,7 @@
     "messages": {
       "welcomeBack": "Welcome Back",
       "dontHaveAccount": "Don't have an account?",
+      "haveAccount": "Already have an account?",
       "orContinueWith": "Or continue with",
       "generationTakes": "Generation takes 3-5 minutes, do not refresh the page",
       "supportedFormats": "Supports PNG, JPG, JPEG",
@@ -161,6 +165,11 @@
     },
     "login": {
       "title": "Welcome Back",
+      "freeText": "✨ Free For Arabic designers Community"
+    },
+    "signup": {
+      "title": "Join Madaar",
+      "freeText": "✨ Free For Arabic designers Community",
       "subtitle": "Welcome back to the creative design platform",
       "signInCard": "Sign In",
       "heroTitle": "Transform your idea into a distinctive 3D visual design using artificial intelligence",

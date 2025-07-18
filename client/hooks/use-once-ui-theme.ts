@@ -3,23 +3,22 @@ import { useEffect, useState } from "react";
 export type OnceUITheme = "light" | "dark";
 
 export function useOnceUITheme() {
-  const [theme, setTheme] = useState<OnceUITheme>("dark");
-
-  useEffect(() => {
+  const [theme, setTheme] = useState<OnceUITheme>(() => {
     // Get theme from localStorage or detect system preference
     const storedTheme = localStorage.getItem("data-theme") as OnceUITheme;
-    let initialTheme: OnceUITheme;
-
     if (storedTheme) {
-      initialTheme = storedTheme;
-    } else {
-      // Detect system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      initialTheme = prefersDark ? "dark" : "light";
+      return storedTheme;
     }
+    // Detect system preference
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    return prefersDark ? "dark" : "light";
+  });
 
-    setTheme(initialTheme);
-    applyTheme(initialTheme);
+  useEffect(() => {
+    // Apply the current theme immediately
+    applyTheme(theme);
 
     // Listen for system theme changes
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -32,14 +31,19 @@ export function useOnceUITheme() {
     };
 
     mediaQuery.addEventListener("change", handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
-  }, []);
+    return () =>
+      mediaQuery.removeEventListener("change", handleSystemThemeChange);
+  }, [theme]);
 
   const applyTheme = (newTheme: OnceUITheme) => {
     const root = document.documentElement;
+    const body = document.body;
 
     // Set Once UI theme attribute
     root.setAttribute("data-theme", newTheme);
+
+    // Also apply to body for better compatibility
+    body.setAttribute("data-theme", newTheme);
 
     // Update CSS custom properties for existing components
     if (newTheme === "light") {
@@ -69,7 +73,8 @@ export function useOnceUITheme() {
       root.style.setProperty("--glass-border", "rgba(0, 0, 0, 0.1)");
 
       // Update body background for light theme
-      document.body.style.background = "radial-gradient(ellipse at top, hsl(264, 100%, 95%) 0%, hsl(0, 0%, 100%) 50%)";
+      document.body.style.background =
+        "radial-gradient(ellipse at top, hsl(264, 100%, 95%) 0%, hsl(0, 0%, 100%) 50%)";
     } else {
       // Dark theme (original values)
       root.style.setProperty("--background", "0 0% 2%");
@@ -97,13 +102,16 @@ export function useOnceUITheme() {
       root.style.setProperty("--glass-border", "rgba(255, 255, 255, 0.1)");
 
       // Update body background for dark theme
-      document.body.style.background = "radial-gradient(ellipse at top, hsl(264, 100%, 10%) 0%, hsl(0, 0%, 2%) 50%)";
+      document.body.style.background =
+        "radial-gradient(ellipse at top, hsl(264, 100%, 10%) 0%, hsl(0, 0%, 2%) 50%)";
     }
 
     // Trigger a custom event for components that need to react to theme changes
-    window.dispatchEvent(new CustomEvent('theme-change', { 
-      detail: { theme: newTheme } 
-    }));
+    window.dispatchEvent(
+      new CustomEvent("theme-change", {
+        detail: { theme: newTheme },
+      }),
+    );
   };
 
   const toggleTheme = () => {

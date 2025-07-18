@@ -30,11 +30,7 @@ const DockNavigation = () => {
   const { pathWithoutLang } = extractLanguageFromPath(location.pathname);
 
   // Hide dock on login pages
-  if (
-    pathWithoutLang === "/login" ||
-    pathWithoutLang === "/signup" ||
-    pathWithoutLang === "/forgot-password"
-  ) {
+  if (pathWithoutLang === "/login") {
     return null;
   }
 
