@@ -37,6 +37,23 @@ export function createServer() {
   app.get("/auth/callback", handleAuthCallback);
   app.post("/auth/logout", handleLogout);
 
+  // Debug endpoint to check OAuth config
+  app.get("/auth/config", (req, res) => {
+    const isProduction =
+      process.env.FLY_APP_NAME || process.env.NODE_ENV === "production";
+    const redirectUri = isProduction
+      ? "https://madar-ai.fly.dev/api/auth/callback"
+      : "http://localhost:8080/api/auth/callback";
+
+    res.json({
+      environment: isProduction ? "production" : "development",
+      redirectUri,
+      clientId: process.env.GOOGLE_CLIENT_ID ? "***configured***" : "not set",
+      flyAppName: process.env.FLY_APP_NAME || "not set",
+      nodeEnv: process.env.NODE_ENV || "not set",
+    });
+  });
+
   // Admin routes
   app.get("/admin/users", handleGetAllUsers);
   app.post("/admin/users/:userId/promote", handlePromoteUser);
