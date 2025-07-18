@@ -444,6 +444,13 @@ export default function Generator() {
     if (promptText.trim().length === 0 || isGenerating || isGeneratingAPI)
       return;
 
+    // Check authentication
+    if (!isAuthenticated) {
+      alert("Please sign in to generate images.");
+      navigateToPath({ path: "/login" });
+      return;
+    }
+
     // Check user quota
     if (userStats && userStats.remainingGenerations <= 0) {
       alert(
