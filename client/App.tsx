@@ -122,6 +122,10 @@ function AppWithLanguage() {
           path="/admin/styles"
           element={<Navigate to={`/${language}/admin/styles`} replace />}
         />
+        <Route
+          path="/privacy"
+          element={<Navigate to={`/${language}/privacy`} replace />}
+        />
 
         {/* 404 for unmatched routes */}
         <Route
