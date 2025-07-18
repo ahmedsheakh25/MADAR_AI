@@ -184,6 +184,13 @@ export class AuthService {
   static getGoogleAuthUrl(): string {
     const baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
 
+    // Get and validate client ID
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.error("GOOGLE_CLIENT_ID environment variable is not set");
+      throw new Error("Google OAuth configuration error: Missing client ID");
+    }
+
     // Determine the correct redirect URI based on environment
     let redirectUri = process.env.GOOGLE_REDIRECT_URI || "";
 
@@ -198,7 +205,7 @@ export class AuthService {
     }
 
     const params = new URLSearchParams({
-      client_id: process.env.GOOGLE_CLIENT_ID || "",
+      client_id: clientId,
       redirect_uri: redirectUri,
       response_type: "code",
       scope: "openid email profile",
@@ -206,7 +213,13 @@ export class AuthService {
       prompt: "consent",
     });
 
-    return `${baseUrl}?${params.toString()}`;
+    const authUrl = `${baseUrl}?${params.toString()}`;
+    console.log(
+      "Generated OAuth URL with client_id:",
+      clientId.substring(0, 10) + "...",
+    );
+
+    return authUrl;
   }
 
   // Check if user is master admin
