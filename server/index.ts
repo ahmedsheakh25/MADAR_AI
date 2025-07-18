@@ -37,6 +37,15 @@ export function createServer() {
   app.get("/auth/callback", handleAuthCallback);
   app.post("/auth/logout", handleLogout);
 
+  // Admin routes
+  app.get("/admin/users", handleGetAllUsers);
+  app.post("/admin/users/:userId/promote", handlePromoteUser);
+  app.post("/admin/users/:userId/demote", handleDemoteUser);
+  app.post(
+    "/admin/users/:userId/reset-generations",
+    handleResetUserGenerations,
+  );
+
   // Migration route (development only)
   app.get("/run-migration", async (req, res) => {
     try {
