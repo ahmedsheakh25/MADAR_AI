@@ -14,3 +14,7 @@ export * from "./Layout";
 export * from "./Dock";
 export * from "./Form";
 export * from "./GalleryCard";
+export * from "./SceneCard";
+export * from "./StyleCard";
+export * from "./ColorPicker";
+export * from "./Slider";

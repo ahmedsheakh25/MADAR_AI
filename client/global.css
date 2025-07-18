@@ -1,6 +1,7 @@
 /* English Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap");
 
 /* Arabic Font */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap");
@@ -21,6 +22,7 @@
     /* Font family definitions */
     --font-heading-en: "Funnel Display", sans-serif;
     --font-body-en: "Inter", sans-serif;
+    --font-caveat: "Caveat", cursive;
     --font-arabic: "IBM Plex Sans Arabic", sans-serif;
     --background: 0 0% 2%;
     --foreground: 210 40% 98%;
@@ -82,10 +84,12 @@
   * {
     @apply border-border;
     /* Add theme transition to all elements for smooth switching */
-    transition: 
+    transition:
       color var(--theme-transition-duration) var(--theme-transition-easing),
-      background-color var(--theme-transition-duration) var(--theme-transition-easing),
-      border-color var(--theme-transition-duration) var(--theme-transition-easing),
+      background-color var(--theme-transition-duration)
+        var(--theme-transition-easing),
+      border-color var(--theme-transition-duration)
+        var(--theme-transition-easing),
       box-shadow var(--theme-transition-duration) var(--theme-transition-easing);
   }
 
@@ -103,7 +107,8 @@
     padding: 0;
     height: 100%;
     /* Smooth theme transitions for root element */
-    transition: color-scheme var(--theme-transition-duration) var(--theme-transition-easing);
+    transition: color-scheme var(--theme-transition-duration)
+      var(--theme-transition-easing);
   }
 
   /* Language-specific font application */
@@ -128,11 +133,7 @@
 
   body {
     @apply bg-background text-foreground;
-    background: radial-gradient(
-      ellipse at top,
-      hsl(264, 100%, 10%) 0%,
-      hsl(0, 0%, 2%) 50%
-    );
+    background: rgb(0, 0, 0);
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -142,7 +143,8 @@
     overflow: hidden;
     padding-bottom: 80px; /* Reduced space for dock navigation */
     /* Smooth background transitions */
-    transition: background var(--theme-transition-duration) var(--theme-transition-easing);
+    transition: background var(--theme-transition-duration)
+      var(--theme-transition-easing);
   }
 
   /* Light theme body background */
@@ -184,21 +186,28 @@
     font-family: var(--font-body-en);
   }
 
+  .font-caveat {
+    font-family: var(--font-caveat);
+  }
+
   /* Glass morphism effects with theme transitions */
   .glass {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
-    transition: 
-      background-color var(--theme-transition-duration) var(--theme-transition-easing),
-      border-color var(--theme-transition-duration) var(--theme-transition-easing);
+    transition:
+      background-color var(--theme-transition-duration)
+        var(--theme-transition-easing),
+      border-color var(--theme-transition-duration)
+        var(--theme-transition-easing);
   }
 
   .gradient-border {
     position: relative;
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
-    transition: background-color var(--theme-transition-duration) var(--theme-transition-easing);
+    transition: background-color var(--theme-transition-duration)
+      var(--theme-transition-easing);
   }
 
   .gradient-border::before {
@@ -221,13 +230,15 @@
 
   ::-webkit-scrollbar-track {
     background: hsl(var(--muted));
-    transition: background-color var(--theme-transition-duration) var(--theme-transition-easing);
+    transition: background-color var(--theme-transition-duration)
+      var(--theme-transition-easing);
   }
 
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--primary));
     border-radius: 3px;
-    transition: background-color var(--theme-transition-duration) var(--theme-transition-easing);
+    transition: background-color var(--theme-transition-duration)
+      var(--theme-transition-easing);
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -361,21 +372,23 @@
 
   /* Theme transition utilities */
   .theme-transition {
-    transition: 
+    transition:
       color var(--theme-transition-duration) var(--theme-transition-easing),
-      background-color var(--theme-transition-duration) var(--theme-transition-easing),
-      border-color var(--theme-transition-duration) var(--theme-transition-easing);
+      background-color var(--theme-transition-duration)
+        var(--theme-transition-easing),
+      border-color var(--theme-transition-duration)
+        var(--theme-transition-easing);
   }
 
   .theme-transition-fast {
-    transition: 
+    transition:
       color 150ms var(--theme-transition-easing),
       background-color 150ms var(--theme-transition-easing),
       border-color 150ms var(--theme-transition-easing);
   }
 
   .theme-transition-slow {
-    transition: 
+    transition:
       color 500ms var(--theme-transition-easing),
       background-color 500ms var(--theme-transition-easing),
       border-color 500ms var(--theme-transition-easing);
@@ -385,7 +398,8 @@
   .focus-visible-enhanced:focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
-    transition: outline-color var(--theme-transition-duration) var(--theme-transition-easing);
+    transition: outline-color var(--theme-transition-duration)
+      var(--theme-transition-easing);
   }
 
   /* High contrast mode support */
@@ -407,5 +421,32 @@
       background: hsl(var(--card));
       backdrop-filter: none;
     }
+  }
+
+  /* Marquee animations for Hero211 component */
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee var(--duration) linear infinite;
+  }
+
+  .animate-marquee-vertical {
+    animation: marquee-vertical var(--duration) linear infinite;
   }
 }

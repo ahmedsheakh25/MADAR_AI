@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ChevronUp, Plus, ArrowUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { StyleCard, ColorPicker, Slider } from "../components/design-system";
-import { Hero211 } from "../components/hero/Hero211";
 
 // Style selection data for generative styles
 const STYLE_DATA = [
@@ -48,8 +47,6 @@ export default function Index() {
   const [charCount, setCharCount] = useState<number>(0);
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [imageProcessed, setImageProcessed] = useState<boolean>(false);
-  const [processedImageData, setProcessedImageData] = useState(null);
 
   const handleGenerate = async () => {
     if (promptText.trim().length === 0 || isGenerating) return;
@@ -58,7 +55,6 @@ export default function Index() {
     // Simulate generation
     setTimeout(() => {
       setIsGenerating(false);
-      setImageProcessed(true); // Switch to processed view after generation
       console.log("Generating 3D object:", promptText);
     }, 3000);
   };
@@ -932,62 +928,56 @@ export default function Index() {
             backgroundColor: "var(--Surface-01, #FCFCFC)",
           }}
         >
-          {!imageProcessed ? (
-            <div className="hero-wrapper w-full h-full">
-              <Hero211 />
+          <div className="flex flex-col items-center justify-center gap-4 p-8">
+            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2L2 7L12 12L22 7L12 2Z"
+                  stroke="#7B7B7B"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2 17L12 22L22 17"
+                  stroke="#7B7B7B"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2 12L12 17L22 12"
+                  stroke="#7B7B7B"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
-          ) : (
-            <div className="processed-image-container w-full h-full flex flex-col items-center justify-center gap-4 p-8">
-              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 2L2 7L12 12L22 7L12 2Z"
-                    stroke="#7B7B7B"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2 17L12 22L22 17"
-                    stroke="#7B7B7B"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2 12L12 17L22 12"
-                    stroke="#7B7B7B"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+            <div className="text-center">
+              <div
+                className="text-lg font-medium mb-2"
+                style={{
+                  color: "var(--Text-Primary, #121212)",
+                  fontFamily: "Inter",
+                }}
+              >
+                3D Canvas
               </div>
-              <div className="text-center">
-                <div
-                  className="text-lg font-medium mb-2"
-                  style={{
-                    color: "var(--Text-Primary, #121212)",
-                    fontFamily: "Inter",
-                  }}
-                >
-                  Processed Image
-                </div>
-                <div
-                  className="text-sm"
-                  style={{
-                    color: "var(--Text-Secondary, #7B7B7B)",
-                    fontFamily: "Inter",
-                  }}
-                >
-                  Your processed 3D objects will appear here
-                </div>
+              <div
+                className="text-sm"
+                style={{
+                  color: "var(--Text-Secondary, #7B7B7B)",
+                  fontFamily: "Inter",
+                }}
+              >
+                Your 3D objects will appear here
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

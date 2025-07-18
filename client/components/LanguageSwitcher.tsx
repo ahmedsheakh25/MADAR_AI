@@ -1,67 +1,34 @@
-import { Globe } from "lucide-react";
 import { motion } from "framer-motion";
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/design-system";
-import { useLanguage, type Language } from "@/hooks/use-language";
-import { useTranslation } from "@/hooks/use-translation";
-
-interface LanguageOption {
-  code: Language;
-  labelKey: string;
-  nativeLabel: string;
-}
-
-const languages: LanguageOption[] = [
-  { code: "ar", labelKey: "common.languages.arabic", nativeLabel: "العربية" },
-  { code: "en", labelKey: "common.languages.english", nativeLabel: "English" },
-];
+import { useLanguage } from "@/hooks/use-language";
 
 export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
-  const { t } = useTranslation();
 
-  const currentLanguage = languages.find((lang) => lang.code === language);
+  const toggleLanguage = () => {
+    setLanguage(language === "ar" ? "en" : "ar");
+  };
 
   return (
-    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Globe className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {currentLanguage?.nativeLabel}
-            </span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {languages.map((lang) => (
-            <motion.div
-              key={lang.code}
-              whileHover={{ backgroundColor: "rgba(138, 43, 226, 0.1)" }}
-              transition={{ duration: 0.2 }}
-            >
-              <DropdownMenuItem
-                onClick={() => setLanguage(lang.code)}
-                className={`cursor-pointer ${
-                  language === lang.code ? "bg-accent" : ""
-                }`}
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium">{lang.nativeLabel}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {t(lang.labelKey)}
-                  </span>
-                </div>
-              </DropdownMenuItem>
-            </motion.div>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </motion.div>
+    <motion.button
+      onClick={toggleLanguage}
+      className="relative p-2 rounded-lg bg-background/50 backdrop-blur-sm border border-border hover:border-primary/50 transition-all duration-200"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, rotate: -180 }}
+      animate={{ opacity: 1, rotate: 0 }}
+      transition={{ duration: 0.3 }}
+      aria-label={`Switch to ${language === "ar" ? "English" : "Arabic"} language`}
+    >
+      <motion.div
+        key={language}
+        initial={{ y: -20, opacity: 0, rotate: -90 }}
+        animate={{ y: 0, opacity: 1, rotate: 0 }}
+        exit={{ y: 20, opacity: 0, rotate: 90 }}
+        transition={{ duration: 0.2 }}
+        className="w-5 h-5 text-xl flex items-center justify-center"
+      >
+        {language === "ar" ? "🇺🇸" : "🇵🇸"}
+      </motion.div>
+    </motion.button>
   );
 }

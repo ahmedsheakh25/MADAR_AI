@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useLocation } from "react-router-dom";
 import { LogIn, LogOut } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   Dock,
   DockIcon,
@@ -52,67 +53,68 @@ const DockNavigation = () => {
   };
 
   const authButtonContent = (
-    <DockIcon
-      className={`bg-background/80 backdrop-blur-sm border-2 transition-all duration-200 ${isAuthenticated ? "border-red-500 hover:bg-red-50 hover:shadow-lg" : "border-primary hover:bg-primary/10 hover:shadow-lg"}`}
-    >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleAuthAction}
-            className="w-full h-full"
-          >
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <motion.button
+          onClick={handleAuthAction}
+          className="relative p-2 rounded-lg bg-background/50 backdrop-blur-sm border border-border hover:border-primary/50 transition-all duration-200"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label={
+            isAuthenticated
+              ? t("common.buttons.signOut")
+              : t("common.buttons.signIn")
+          }
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
             {isAuthenticated ? (
               <LogOut className="h-4 w-4 text-red-600" />
             ) : (
               <LogIn className="h-4 w-4 text-primary" />
             )}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          <p>
-            {isAuthenticated
-              ? t("common.buttons.signOut")
-              : t("common.buttons.signIn")}
-          </p>
-        </TooltipContent>
-      </Tooltip>
-    </DockIcon>
+          </div>
+        </motion.button>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p>
+          {isAuthenticated
+            ? t("common.buttons.signOut")
+            : t("common.buttons.signIn")}
+        </p>
+      </TooltipContent>
+    </Tooltip>
   );
 
   const navigationItems = navItems.map((item) => (
-    <DockIcon
-      key={item.id}
-      className={`bg-background/80 backdrop-blur-sm border-2 transition-all duration-200 ${
-        isCurrentPath(item.path)
-          ? "border-primary bg-primary/20 shadow-lg scale-105"
-          : "border-border hover:border-primary/50 hover:bg-accent hover:shadow-lg"
-      }`}
-    >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() =>
-              navigateToPath({
-                path: item.path,
-                requiresAuth: item.requiresAuth,
-              })
-            }
-            className="w-full h-full"
-          >
+    <Tooltip key={item.id}>
+      <TooltipTrigger asChild>
+        <motion.button
+          onClick={() =>
+            navigateToPath({
+              path: item.path,
+              requiresAuth: item.requiresAuth,
+            })
+          }
+          className={`relative p-2 rounded-lg bg-background/50 backdrop-blur-sm border transition-all duration-200 ${
+            isCurrentPath(item.path)
+              ? "border-primary bg-primary/20"
+              : "border-border hover:border-primary/50"
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label={item.label}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
             <item.icon
               className={`h-4 w-4 ${isCurrentPath(item.path) ? "text-primary" : "text-foreground"}`}
             />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          <p>{item.label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </DockIcon>
+          </div>
+        </motion.button>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p>{item.label}</p>
+      </TooltipContent>
+    </Tooltip>
   ));
 
   const separatorElement = <Separator className="mx-1" />;
