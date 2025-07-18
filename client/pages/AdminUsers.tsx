@@ -80,15 +80,15 @@ export default function AdminUsers() {
 
   // Check admin access
   useEffect(() => {
-    if (!authLoading && (!isAuthenticated || !user?.isAdmin)) {
+    if (!authLoading && (!isAuthenticated || !currentUser?.isAdmin)) {
       navigateToPath({ path: "/generator" });
       return;
     }
-  }, [authLoading, isAuthenticated, user, navigateToPath]);
+  }, [authLoading, isAuthenticated, currentUser, navigateToPath]);
 
   // Fetch users data
   useEffect(() => {
-    if (!user?.isAdmin || authLoading) return;
+    if (!currentUser?.isAdmin || authLoading) return;
 
     const fetchUsers = async () => {
       setIsLoading(true);
