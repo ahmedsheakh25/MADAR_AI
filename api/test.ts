@@ -1,8 +1,7 @@
 export const runtime = 'edge';
 
-export default async function handler(req: Request) {
+export async function GET(req: Request) {
   const url = new URL(req.url);
-  const method = req.method;
   
   try {
     // Test environment variables (without exposing them)
@@ -12,7 +11,7 @@ export default async function handler(req: Request) {
     const responseData = {
       success: true,
       message: 'Edge Function test successful',
-      method,
+      method: 'GET',
       path: url.pathname,
       timestamp: new Date().toISOString(),
       environment: {

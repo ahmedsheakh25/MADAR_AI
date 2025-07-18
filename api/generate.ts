@@ -5,13 +5,7 @@ export const runtime = 'edge';
 
 const MAX_GENERATIONS_PER_MONTH = 30;
 
-export default async function handler(req: Request) {
-  if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ success: false, error: 'Method not allowed' }),
-      { status: 405, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
+export async function POST(req: Request) {
 
   try {
     const body: GenerateImageRequest = await req.json();

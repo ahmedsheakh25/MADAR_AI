@@ -3,13 +3,7 @@ import type { SaveImageRequest, SaveImageResponse } from '../shared/api.js';
 
 export const runtime = 'edge';
 
-export default async function handler(req: Request) {
-  if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ success: false, error: 'Method not allowed' }),
-      { status: 405, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
+export async function POST(req: Request) {
 
   try {
     const body: SaveImageRequest = await req.json();

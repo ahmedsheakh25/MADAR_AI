@@ -2,7 +2,7 @@ import { testDatabaseConnection } from '../lib/db.js';
 
 export const runtime = 'edge';
 
-export default async function handler(req: Request) {
+export async function GET(req: Request) {
   try {
     const dbTest = await testDatabaseConnection();
     
