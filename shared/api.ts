@@ -117,8 +117,13 @@ export interface AdminUser {
   id: string;
   email: string;
   name?: string;
+  role?: string;
   generationCount: number;
   resetDate: string;
+  createdAt?: string;
+  lastLoginAt?: string;
+  isAdmin?: boolean;
+  isMasterAdmin?: boolean;
 }
 
 export interface AdminUsersResponse {
