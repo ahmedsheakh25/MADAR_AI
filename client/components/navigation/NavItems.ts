@@ -1,4 +1,4 @@
-import { Home, ImageIcon, User, Settings } from "lucide-react";
+import { Home, ImageIcon, User, Settings, Grid } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 
 export interface NavItem {
@@ -18,6 +18,13 @@ export const useNavItems = () => {
       labelKey: "common.navigation.home",
       icon: Home,
       path: "/",
+      requiresAuth: false,
+    },
+    {
+      id: "generator",
+      labelKey: "common.navigation.generator",
+      icon: Grid,
+      path: "/generator",
       requiresAuth: false,
     },
     {

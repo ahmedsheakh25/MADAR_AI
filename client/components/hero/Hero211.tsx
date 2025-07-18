@@ -13,9 +13,22 @@ import "swiper/css/autoplay";
 import { cn } from "../../lib/utils";
 import { Button } from "../design-system/Button";
 import { useTranslation } from "../../hooks/use-translation";
+import { useNavigation } from "../navigation/hooks/useNavigation";
+import { useAuth } from "../../hooks/use-auth";
 
 const Hero211 = () => {
   const { t } = useTranslation();
+  const { navigateToPath } = useNavigation();
+  const { user, isDevMode } = useAuth();
+
+  const handleGetStartedClick = () => {
+    if (user) {
+      navigateToPath({ path: "/generator" });
+    } else {
+      // Always redirect to login page since we're using dev auth
+      navigateToPath({ path: "/login" });
+    }
+  };
   const images = [
     {
       src: "https://cdn.builder.io/o/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2F410a3151b0e04c31b16b2fa811b010d6?alt=media&token=0c7f06f3-7d62-4b04-b45b-9dd99bfa2aa7&apiKey=3f900ffbafd84b58a77a4df01e4d869c",
@@ -150,7 +163,10 @@ const Hero211 = () => {
         </div>
 
         <div className="relative z-10 mx-auto mt-8 sm:mt-10 flex w-fit justify-center">
-          <Button className="rounded-full px-6 py-3 active:scale-105">
+          <Button
+            className="rounded-full px-6 py-3 active:scale-105"
+            onClick={handleGetStartedClick}
+          >
             {t("pages.homepage.hero.getStarted")}
           </Button>
           <motion.div

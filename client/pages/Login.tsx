@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
 import { useOnceUITheme } from "@/hooks/use-once-ui-theme";
+import { useNavigation } from "@/components/navigation/hooks/useNavigation";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Heading, Text } from "@/components/design-system/Typography";
@@ -12,14 +13,24 @@ import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { useTheme } from "next-themes";
+import { useAuth } from "../hooks/use-auth";
 
 export default function Login() {
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
   const { theme: onceTheme } = useOnceUITheme();
   const { theme } = useTheme();
+  const { navigateToPath } = useNavigation();
+  const { user, signIn, isDevMode } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+
+  // Redirect to generator if user is already authenticated
+  useEffect(() => {
+    if (user) {
+      navigateToPath({ path: "/generator" });
+    }
+  }, [user, navigateToPath]);
 
   // Debug font loading
   React.useEffect(() => {
@@ -42,11 +53,13 @@ export default function Login() {
 
   const handleGoogleAuth = () => {
     setIsLoading(true);
-    // Google OAuth logic would go here
+
+    // In development mode, simulate login
     setTimeout(() => {
+      signIn();
       setIsLoading(false);
-      console.log(isSignUp ? "Google sign up" : "Google sign in");
-    }, 2000);
+      navigateToPath({ path: "/generator" });
+    }, 1000);
   };
 
   const toggleAuthMode = () => {
@@ -100,7 +113,9 @@ export default function Login() {
       animate="visible"
       style={{
         fontFamily:
-          language === "ar" ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif" : "var(--font-body-en)",
+          language === "ar"
+            ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+            : "var(--font-body-en)",
       }}
     >
       {/* Transparent Navigation */}

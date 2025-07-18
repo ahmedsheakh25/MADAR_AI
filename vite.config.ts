@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist/spa",
   },
+  define: {
+    global: "globalThis",
+  },
   plugins: [react(), expressPlugin()],
   resolve: {
     alias: {

@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
+import Generator from "./pages/Generator";
 import Login from "./pages/Login";
 import Gallery from "./pages/Gallery";
 import NotFound from "./pages/NotFound";
@@ -13,6 +14,9 @@ import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
 import { TooltipProvider } from "@/components/design-system";
 import { LanguageRoute } from "./components/routing/LanguageRoute";
+import { LoadingBoundary } from "./components/LoadingBoundary";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { AppDebug } from "./components/AppDebug";
 import { suppressResizeObserverErrors } from "./lib/resize-observer-fix";
 
 const queryClient = new QueryClient();
@@ -44,6 +48,14 @@ function AppWithLanguage() {
           }
         />
         <Route
+          path="/:lang/generator"
+          element={
+            <LanguageRoute>
+              <Generator />
+            </LanguageRoute>
+          }
+        />
+        <Route
           path="/:lang/gallery"
           element={
             <LanguageRoute>
@@ -56,6 +68,10 @@ function AppWithLanguage() {
         <Route
           path="/login"
           element={<Navigate to={`/${language}/login`} replace />}
+        />
+        <Route
+          path="/generator"
+          element={<Navigate to={`/${language}/generator`} replace />}
         />
         <Route
           path="/gallery"
@@ -98,13 +114,18 @@ const App = () => {
   }, []);
 
   return (
-    <Providers>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <AppWithLanguage />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </Providers>
+    <ErrorBoundary>
+      <Providers>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <LoadingBoundary>
+              <AppWithLanguage />
+              {import.meta.env.DEV && <AppDebug />}
+            </LoadingBoundary>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </Providers>
+    </ErrorBoundary>
   );
 };
 
