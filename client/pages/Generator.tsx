@@ -1381,6 +1381,7 @@ export default function Generator() {
                   promptText.trim().length === 0 ||
                   isGenerating ||
                   isGeneratingAPI ||
+                  !isAuthenticated ||
                   (userStats?.remainingGenerations || 0) <= 0
                 }
                 onClick={handleGenerate}
