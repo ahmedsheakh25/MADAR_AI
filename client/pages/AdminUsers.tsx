@@ -205,6 +205,92 @@ export default function AdminUsers() {
     return { status: "good", color: "text-green-500" };
   };
 
+  // Handle promote user to admin (master admin only)
+  const handlePromoteUser = async (userId: string) => {
+    if (!currentUser?.isMasterAdmin) {
+      alert("Only master admin can promote users");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("madar_auth_token");
+      if (!token) throw new Error("No auth token");
+
+      const response = await fetch(`/api/admin/users/${userId}/promote`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        setUsers(
+          users.map((user) =>
+            user.id === userId
+              ? { ...user, role: "admin", isAdmin: true }
+              : user,
+          ),
+        );
+        alert("User promoted to admin successfully");
+      } else {
+        throw new Error(data.error || "Failed to promote user");
+      }
+    } catch (err) {
+      console.error("Failed to promote user:", err);
+      alert("Failed to promote user");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle demote user from admin (master admin only)
+  const handleDemoteUser = async (userId: string) => {
+    if (!currentUser?.isMasterAdmin) {
+      alert("Only master admin can demote users");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("madar_auth_token");
+      if (!token) throw new Error("No auth token");
+
+      const response = await fetch(`/api/admin/users/${userId}/demote`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        setUsers(
+          users.map((user) =>
+            user.id === userId
+              ? { ...user, role: "user", isAdmin: false }
+              : user,
+          ),
+        );
+        alert("User demoted from admin successfully");
+      } else {
+        throw new Error(data.error || "Failed to demote user");
+      }
+    } catch (err) {
+      console.error("Failed to demote user:", err);
+      alert("Failed to demote user");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background font-inter">
       {/* Header */}
