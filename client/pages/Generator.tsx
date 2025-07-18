@@ -172,8 +172,21 @@ export default function Generator() {
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(new Set());
   const [failedFiles, setFailedFiles] = useState<Set<string>>(new Set());
 
+  // Check authentication and redirect if not logged in
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigateToPath({ path: "/login" });
+      return;
+    }
+  }, [authLoading, isAuthenticated, navigateToPath]);
+
   // Initialize component and load data
   useEffect(() => {
+    // Don't initialize if not authenticated
+    if (!isAuthenticated || authLoading) {
+      return;
+    }
+
     const initializeData = async () => {
       try {
         console.log("Starting data initialization...");
