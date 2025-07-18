@@ -14,31 +14,7 @@ export interface AuthResult {
 // Middleware to require authentication
 export async function requireAuth(req: Request): Promise<AuthResult> {
   try {
-    // Check if we're in development mode (Google OAuth not configured)
-    const isDevMode =
-      !process.env.GOOGLE_CLIENT_ID ||
-      process.env.GOOGLE_CLIENT_ID === "your_google_client_id_here";
-
-    if (isDevMode) {
-      console.log("🔧 Development mode: Using mock authentication");
-      // In development mode, create a mock user
-      const devUser: User = {
-        id: "dev-user-1",
-        email: "dev@example.com",
-        name: "Dev User",
-        generationCount: 5,
-        resetDate: new Date(),
-        createdAt: new Date(),
-        lastLoginAt: new Date(),
-        googleId: null,
-        profilePicture: null,
-      };
-
-      return {
-        success: true,
-        user: devUser,
-      };
-    }
+    // Real authentication is now enabled - no dev mode
 
     const user = await AuthService.getUserFromRequest(req);
 
