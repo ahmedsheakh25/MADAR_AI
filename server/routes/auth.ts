@@ -55,7 +55,11 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
       await AuthService.authenticateWithGoogle(googleUser);
 
     // Redirect to frontend callback page with token and user data in URL
-    const callbackUrl = new URL("/ar/auth/callback", "http://localhost:8080");
+    const baseUrl =
+      process.env.FLY_APP_NAME || process.env.NODE_ENV === "production"
+        ? "https://madar-ai.fly.dev"
+        : "http://localhost:8080";
+    const callbackUrl = new URL("/ar/auth/callback", baseUrl);
     callbackUrl.searchParams.set("token", token);
     callbackUrl.searchParams.set(
       "user",
