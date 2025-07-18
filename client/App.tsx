@@ -93,9 +93,16 @@ function AppWithLanguage() {
 }
 
 const App = () => {
-  // Set up Once UI theme attributes to prevent FOUC
+  // Set up Once UI theme attributes and defaults to prevent FOUC
   useEffect(() => {
     const root = document.documentElement;
+
+    // Set default theme to dark
+    root.setAttribute("data-theme", "dark");
+
+    // Set default language to Arabic
+    root.setAttribute("lang", "ar");
+    root.setAttribute("dir", "rtl");
 
     // Set default Once UI attributes
     root.setAttribute("data-neutral", "gray");
