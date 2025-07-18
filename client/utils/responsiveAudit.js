@@ -75,6 +75,8 @@ window.addEventListener('resize', debouncedAudit);
 window.addEventListener('orientationchange', debouncedAudit);
 
 // Export for manual testing
-window.auditResponsive = auditResponsive;
+if (typeof window !== 'undefined') {
+  window.auditResponsive = auditResponsive;
+}
 
 export { auditResponsive }; 

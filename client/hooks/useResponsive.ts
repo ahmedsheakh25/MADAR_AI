@@ -18,6 +18,33 @@ export interface ResponsiveDimensions {
 }
 
 export const useResponsive = (): ResponsiveDimensions => {
+  // Define calculateScale function before using it in initial state
+  const calculateScale = (width: number): number => {
+    const baseWidth = 1440;
+    const minScale = 0.8;
+    const maxScale = 1.2;
+    
+    let scale = width / baseWidth;
+    scale = Math.max(minScale, Math.min(maxScale, scale));
+    
+    return scale;
+  };
+
+  const getSafeArea = () => {
+    if (typeof window === 'undefined') {
+      return { top: 0, right: 0, bottom: 0, left: 0 };
+    }
+
+    const style = getComputedStyle(document.documentElement);
+    
+    return {
+      top: parseInt(style.getPropertyValue('--sat') || '0', 10),
+      right: parseInt(style.getPropertyValue('--sar') || '0', 10),
+      bottom: parseInt(style.getPropertyValue('--sab') || '0', 10),
+      left: parseInt(style.getPropertyValue('--sal') || '0', 10)
+    };
+  };
+
   const [dimensions, setDimensions] = useState<ResponsiveDimensions>(() => {
     if (typeof window === 'undefined') {
       return {
@@ -53,7 +80,7 @@ export const useResponsive = (): ResponsiveDimensions => {
     };
   });
 
-  const calculateScale = useCallback((width: number): number => {
+  const calculateScaleMemo = useCallback((width: number): number => {
     // Dynamic scale calculation based on design base width
     const baseWidth = 1440;
     const minScale = 0.8;
@@ -65,7 +92,7 @@ export const useResponsive = (): ResponsiveDimensions => {
     return scale;
   }, []);
 
-  const getSafeArea = useCallback(() => {
+  const getSafeAreaMemo = useCallback(() => {
     if (typeof window === 'undefined') {
       return { top: 0, right: 0, bottom: 0, left: 0 };
     }
@@ -90,8 +117,8 @@ export const useResponsive = (): ResponsiveDimensions => {
     const isTablet = width >= 640 && width < 1024;
     const isDesktop = width >= 1024;
     const isLandscape = width > height;
-    const scale = calculateScale(width);
-    const safeArea = getSafeArea();
+    const scale = calculateScaleMemo(width);
+    const safeArea = getSafeAreaMemo();
     
     setDimensions({
       width,
@@ -114,7 +141,7 @@ export const useResponsive = (): ResponsiveDimensions => {
     // Update viewport height for mobile browsers
     const vh = height * 0.01;
     root.style.setProperty('--vh', `${vh}px`);
-  }, [calculateScale, getSafeArea]);
+  }, [calculateScaleMemo, getSafeAreaMemo]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
