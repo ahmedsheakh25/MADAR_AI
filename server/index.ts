@@ -102,15 +102,14 @@ export function createServer() {
           FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
       `;
 
-      // Run the migration using tagged template
-      await sql`
-        -- Drop existing tables if they exist to start fresh
-        DROP TABLE IF EXISTS "images" CASCADE;
-        DROP TABLE IF EXISTS "sessions" CASCADE;
-        DROP TABLE IF EXISTS "styles" CASCADE;
-        DROP TABLE IF EXISTS "users" CASCADE;
+      // Run the migration statements separately
+      await sql`DROP TABLE IF EXISTS "images" CASCADE`;
+      await sql`DROP TABLE IF EXISTS "sessions" CASCADE`;
+      await sql`DROP TABLE IF EXISTS "styles" CASCADE`;
+      await sql`DROP TABLE IF EXISTS "users" CASCADE`;
 
-        -- Create users table
+      // Create users table
+      await sql`
         CREATE TABLE "users" (
           "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "email" text NOT NULL,
@@ -123,9 +122,11 @@ export function createServer() {
           "last_login_at" timestamp,
           CONSTRAINT "users_email_unique" UNIQUE("email"),
           CONSTRAINT "users_google_id_unique" UNIQUE("google_id")
-        );
+        )
+      `;
 
-        -- Create sessions table
+      // Create sessions table
+      await sql`
         CREATE TABLE "sessions" (
           "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "user_id" uuid,
@@ -133,18 +134,22 @@ export function createServer() {
           "expires_at" timestamp NOT NULL,
           "created_at" timestamp DEFAULT now(),
           CONSTRAINT "sessions_token_unique" UNIQUE("token")
-        );
+        )
+      `;
 
-        -- Create styles table
+      // Create styles table
+      await sql`
         CREATE TABLE "styles" (
           "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "name" text,
           "description" text,
           "thumbnail" text,
           "prompt_json" jsonb
-        );
+        )
+      `;
 
-        -- Create images table
+      // Create images table
+      await sql`
         CREATE TABLE "images" (
           "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
           "user_id" uuid,
@@ -153,14 +158,18 @@ export function createServer() {
           "style_name" text,
           "colors" text[],
           "created_at" timestamp DEFAULT now()
-        );
+        )
+      `;
 
-        -- Add foreign key constraints
+      // Add foreign key constraints
+      await sql`
         ALTER TABLE "images" ADD CONSTRAINT "images_user_id_users_id_fk"
-          FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+        FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action
+      `;
 
+      await sql`
         ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk"
-          FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+        FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action
       `;
 
       res.json({
