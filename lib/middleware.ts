@@ -77,3 +77,30 @@ export async function optionalAuth(req: Request): Promise<User | null> {
     return null;
   }
 }
+
+// Middleware to require admin authentication
+export async function requireAdmin(req: Request): Promise<AuthResult> {
+  try {
+    // First check if user is authenticated
+    const authResult = await requireAuth(req);
+    if (!authResult.success || !authResult.user) {
+      return authResult;
+    }
+
+    // Check if user has admin privileges
+    if (!AuthService.isAdmin(authResult.user)) {
+      return {
+        success: false,
+        error: "Admin access required",
+      };
+    }
+
+    return authResult;
+  } catch (error) {
+    console.error("Admin authentication middleware error:", error);
+    return {
+      success: false,
+      error: "Admin authentication failed",
+    };
+  }
+}
