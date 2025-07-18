@@ -1,138 +1,151 @@
-{
-  "common": {
-    "buttons": {
-      "submit": "Submit",
-      "cancel": "Cancel",
-      "signIn": "Sign In",
-      "signUp": "Sign Up",
-      "signOut": "Sign Out",
-      "login": "Log In",
-      "logout": "Log Out",
-      "download": "Download",
-      "upload": "Upload",
-      "generate": "Generate",
-      "backToGenerator": "Back to Generator",
-      "startDesigning": "Start Designing Now",
-      "moreExamples": "More Examples",
-      "uploadNow": "Upload Your Image Now",
-      "chooseImage": "Choose Image",
-      "changeImage": "Change Image",
-      "filter": "Filter",
-      "searchInDesigns": "Search in your designs...",
-      "forgotPassword": "Forgot Password?",
-      "loginWithGoogle": "Login with Google",
-      "signUpFree": "Sign up for free",
-      "generateImage": "Generate Image (1 Credit)",
-      "generating": "Generating...",
-      "signingIn": "Signing In...",
-      "signingUp": "Signing up...",
-      "signUpWithGoogle": "Sign up with Google",
-      "createAccount": "Create new account"
+[
+  {
+    "common": {
+      "buttons": {
+        "submit": "Submit",
+        "cancel": "Cancel",
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "signOut": "Sign Out",
+        "login": "Log In",
+        "logout": "Log Out",
+        "download": "Download",
+        "upload": "Upload",
+        "generate": "Generate",
+        "backToGenerator": "Back to Generator",
+        "startDesigning": "Start Designing Now",
+        "moreExamples": "More Examples",
+        "uploadNow": "Upload Your Image Now",
+        "chooseImage": "Choose Image",
+        "changeImage": "Change Image",
+        "filter": "Filter",
+        "searchInDesigns": "Search in your designs...",
+        "forgotPassword": "Forgot Password?",
+        "loginWithGoogle": "Continue with Google",
+        "signUpFree": "Sign up for free",
+        "generateImage": "Generate Image (1 Credit)",
+        "share": "Share",
+        "view": "View",
+        "generating": "Generating...",
+        "signingIn": "Signing In...",
+        "signingUp": "Signing up...",
+        "signUpWithGoogle": "Sign up with Google",
+        "createAccount": "Create Account"
+      },
+      "navigation": {
+        "home": "Home",
+        "generator": "Generator",
+        "gallery": "My Gallery",
+        "myWorks": "My Works",
+        "about": "About",
+        "contact": "Contact Us"
+      },
+      "forms": {
+        "emailAddress": "Email Address",
+        "password": "Password",
+        "emailPlaceholder": "your@email.com",
+        "passwordPlaceholder": "Enter your password"
+      },
+      "messages": {
+        "welcomeBack": "Welcome Back",
+        "dontHaveAccount": "Don't have an account?",
+        "haveAccount": "Already have an account?",
+        "orContinueWith": "Or continue with",
+        "generationTakes": "Generation takes 3-5 minutes, do not refresh the page",
+        "supportedFormats": "Supports PNG, JPG, JPEG",
+        "clickToUpload": "Click to upload image or drag it here"
+      },
+      "languages": {
+        "arabic": "Arabic",
+        "english": "English"
+      },
+      "errors": {
+        "emailRequired": "Email is required",
+        "passwordRequired": "Password is required"
+      }
     },
-    "navigation": {
-      "home": "Home",
-      "generator": "Generator",
-      "gallery": "My Gallery",
-      "myWorks": "My Works",
-      "about": "About",
-      "contact": "Contact Us"
+    "brand": {
+      "name": "Madar",
+      "nameEnglish": "Madar",
+      "nameArabic": "مدار",
+      "beta": "Beta",
+      "tagline": "AI-Powered Design"
     },
-    "forms": {
-      "emailAddress": "Email Address",
-      "password": "Password",
-      "emailPlaceholder": "your@email.com",
-      "passwordPlaceholder": "Enter your password"
-    },
-    "messages": {
-      "welcomeBack": "Welcome Back",
-      "dontHaveAccount": "Don't have an account?",
-      "haveAccount": "Already have an account?",
-      "orContinueWith": "Or continue with",
-      "generationTakes": "Generation takes 3-5 minutes, do not refresh the page",
-      "supportedFormats": "Supports PNG, JPG, JPEG",
-      "clickToUpload": "Click to upload image or drag it here"
-    },
-    "languages": {
-      "arabic": "Arabic",
-      "english": "English"
-    },
-    "errors": {
-      "emailRequired": "Email is required",
-      "passwordRequired": "Password is required"
-    }
-  },
-  "brand": {
-    "name": "Madar",
-    "nameEnglish": "Madar",
-    "nameArabic": "مدار",
-    "beta": "Beta",
-    "tagline": "AI-Powered Design"
-  },
-  "pages": {
-    "homepage": {
-      "hero": {
-        "title": "Create Amazing 3D Objects with AI",
-        "subtitle": "Transform your ideas into stunning 3D models using advanced AI technology. Upload reference images and generate professional 3D content instantly.",
-        "getStarted": "Get Started",
-        "freeText": "Its 100% Free!",
-        "ratingText": "+12,500 users benefited from this effect"
-      },
-      "uploadSection": {
-        "title": "Upload Image",
-        "uploadText": "Click to upload image or drag it here",
-        "supportedFormats": "Supports PNG, JPG, JPEG"
-      },
-      "styleSection": {
-        "title": "Generative Style",
-        "styles": {
-          "3dPixelIsometric": "3D Pixel Isometric",
-          "minimalIcon": "Minimal Icon",
-          "toyFigurine": "Toy Figurine",
-          "glassMorphism": "Glass Morphism",
-          "neonGlow": "Neon Glow"
-        }
-      },
-      "aspectRatioSection": {
-        "title": "Aspect Ratio"
-      },
-      "promptSection": {
-        "title": "Transformation Description",
-        "placeholder": "Describe how you want to transform your image...",
-        "defaultPrompt": "Transform the uploaded image into a collectible toy figure that could be included as a gift with a McDonald's burger meal. Stylize the character as a small, plastic figurine placed on a simple display base. Include a realistic McDonald's burger and its branded packaging in the background to give the impression of a Happy Meal toy promotion. Use soft lighting and a clean background, keeping the colors vibrant and playful."
-      },
-      "examplesSection": {
-        "title": "🎨 Examples of 3D Designs",
-        "beforeLabel": "Original",
-        "afterLabel": "3D"
-      },
-      "styleSelection": {
-        "title": "Style Selection",
-        "styles": {
-          "realistic": "Realistic",
-          "cartoon": "Cartoon",
-          "minimalist": "Minimalist",
-          "cyberpunk": "Cyberpunk"
-        }
-      },
-      "colorSection": {
-        "title": "Use Custom Colors"
-      },
-      "colorPicker": {
-        "addColor": "Add color",
-        "maxColors": "Maximum 2 colors allowed"
-      },
-      "fileUpload": {
-        "dropFiles": "Drop your files here",
-        "chooseFile": "Choose a file or drag & drop it here.",
-        "uploading": "Uploading",
-        "completed": "Completed",
-        "failed": "Failed",
-        "retry": "Retry"
-      },
-      "promptInput": {
-        "placeholder": "Describe your 3D object or scene in detail... (Cmd+Enter to generate)",
-        "charCount": "{{count}}/500",
-        "generateButton": "Generate"
+    "pages": {
+      "homepage": {
+        "hero": {
+          "title": "Create Amazing 3D Objects with AI",
+          "subtitle": "Transform your ideas into stunning 3D models using advanced AI technology. Upload reference images and generate professional 3D content instantly.",
+          "getStarted": "Get Started",
+          "freeText": "Its 100% Free!",
+          "ratingText": "+12,500 users benefited from this effect"
+        },
+        "uploadSection": {
+          "title": "Upload Image",
+          "uploadText": "Click to upload image or drag it here",
+          "supportedFormats": "Supports PNG, JPG, JPEG"
+        },
+        "styleSection": {
+          "title": "Generative Style",
+          "styles": {
+            "3dPixelIsometric": "3D Pixel Isometric",
+            "minimalIcon": "Minimal Icon",
+            "toyFigurine": "Toy Figurine",
+            "glassMorphism": "Glass Morphism",
+            "neonGlow": "Neon Glow"
+          }
+        },
+        "aspectRatioSection": {
+          "title": "Aspect Ratio"
+        },
+        "promptSection": {
+          "title": "Transformation Description",
+          "placeholder": "Describe how you want to transform your image...",
+          "defaultPrompt": "Transform the uploaded image into a collectible toy figure that could be included as a gift with a McDonald's burger meal. Stylize the character as a small, plastic figurine placed on a simple display base. Include a realistic McDonald's burger and its branded packaging in the background to give the impression of a Happy Meal toy promotion. Use soft lighting and a clean background, keeping the colors vibrant and playful."
+        },
+        "examplesSection": {
+          "title": "🎨 Examples of 3D Designs",
+          "beforeLabel": "Original",
+          "afterLabel": "3D"
+        },
+        "styleSelection": {
+          "title": "Style Selection",
+          "styles": {
+            "realistic": "Realistic",
+            "cartoon": "Cartoon",
+            "minimalist": "Minimalist",
+            "cyberpunk": "Cyberpunk"
+          }
+        },
+        "colorSection": {
+          "title": "Use Custom Colors"
+        },
+        "colorPicker": {
+          "addColor": "Add color",
+          "maxColors": "Maximum 2 colors allowed"
+        },
+        "fileUpload": {
+          "dropFiles": "Drop your files here",
+          "chooseFile": "Choose a file or drag & drop it here.",
+          "uploading": "Uploading",
+          "completed": "Completed",
+          "failed": "Failed",
+          "retry": "Retry"
+        },
+        "promptInput": {
+          "placeholder": "Describe your 3D object or scene in detail... (Cmd+Enter to generate)",
+          "charCount": "{{count}}/500",
+          "generateButton": "Generate"
+        },
+        "inputType": {
+          "title": "Input Type",
+          "text": "Text Prompt",
+          "image": "Upload Image"
+        },
+        "aspectRatioSection": {
+          "title": "Aspect Ratio"
+        },
+        "generating": "Generating..."
       },
       "navigation": {
         "generatorTitle": "Generator",
@@ -144,6 +157,9 @@
       "title": "My Gallery",
       "subtitle": "All designs you created using artificial intelligence",
       "searchPlaceholder": "Search in your designs...",
+      "resultsCount": "{{count}} designs",
+      "searchResults": "Results for \"{{query}}\"",
+      "startCreating": "Start Creating",
       "filters": {
         "newest": "Newest first",
         "oldest": "Oldest first"
@@ -161,10 +177,34 @@
         "original": "Original",
         "generated": "Generated",
         "uploaded": "Uploaded"
+      },
+      "auth": {
+        "title": "Sign in to view your gallery",
+        "message": "Create an account to save and manage your AI-generated designs."
+      },
+      "actions": {
+        "copyPrompt": "Copy Prompt",
+        "like": "Like",
+        "unlike": "Unlike"
+      },
+      "imageDetails": {
+        "title": "Image Details",
+        "actions": "Actions",
+        "shortcuts": "Keyboard Shortcuts"
+      },
+      "shortcuts": {
+        "navigate": "Navigate",
+        "zoom": "Zoom in/out",
+        "rotate": "Rotate",
+        "reset": "Reset view",
+        "toggleInfo": "Toggle info",
+        "fullscreen": "Fullscreen",
+        "close": "Close"
       }
     },
     "login": {
       "title": "Welcome Back",
+      "subtitle": "Sign in to your account to continue creating amazing 3D designs",
       "freeText": "✨ Free For Arabic designers Community"
     },
     "signup": {
@@ -181,17 +221,47 @@
       },
       "activeUsers": "Active Users"
     },
+    "generation": {
+      "status": {
+        "uploading": "Uploading image...",
+        "processing": "Processing your request...",
+        "generating": "Creating your 3D design...",
+        "finalizing": "Adding final touches...",
+        "completed": "Generation Complete!",
+        "error": "Generation Failed",
+        "success": "Your design is ready!",
+        "successMessage": "Your 3D design has been generated successfully.",
+        "errorMessage": "Something went wrong during generation. Please try again.",
+        "pleaseWait": "This may take a few minutes. Please don't close this window.",
+        "progress": "Progress",
+        "estimatedTime": "Estimated time: 2-4 minutes"
+      },
+      "details": {
+        "prompt": "Prompt",
+        "style": "Style",
+        "aspectRatio": "Aspect Ratio",
+        "colors": "Colors",
+        "created": "Created",
+        "generationInfo": "Generation Details"
+      },
+      "actions": {
+        "generateAgain": "Generate Another",
+        "tryAgain": "Try Again"
+      }
+    },
     "notFound": {
       "title": "404",
       "message": "Oops! Page not found",
       "returnHome": "Return to Home"
     }
   },
-  "_metadata": {
+  "_metadata",
+  ":",
+  {
     "language": "en",
     "direction": "ltr",
     "fontFamily": "Inter, sans-serif",
     "version": "1.0.0",
     "lastUpdated": "2024-01-15"
   }
-}
+]
