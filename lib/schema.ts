@@ -15,6 +15,7 @@ export const usersTable = pgTable("users", {
   name: text("name"),
   googleId: text("google_id").unique(),
   profilePicture: text("profile_picture"),
+  role: varchar("role", { length: 20 }).default("user"), // 'user', 'admin'
   generationCount: integer("generation_count").default(0),
   resetDate: timestamp("reset_date").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
