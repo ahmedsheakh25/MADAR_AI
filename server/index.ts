@@ -4,6 +4,11 @@ import cors from "cors";
 // Import Express route handlers
 import { handleUserStats } from "./routes/user.js";
 import { handleStyles } from "./routes/styles.js";
+import {
+  handleGoogleAuth,
+  handleAuthCallback,
+  handleLogout,
+} from "./routes/auth.js";
 
 export function createServer() {
   const app = express();
