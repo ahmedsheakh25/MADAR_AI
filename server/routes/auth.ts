@@ -54,20 +54,23 @@ export const handleAuthCallback = async (req: Request, res: Response) => {
     const { user, token, isNewUser } =
       await AuthService.authenticateWithGoogle(googleUser);
 
-    // Return success response with token
-    res.json({
-      success: true,
-      user: {
+    // Redirect to frontend callback page with token and user data in URL
+    const callbackUrl = new URL("/ar/auth/callback", "http://localhost:8080");
+    callbackUrl.searchParams.set("token", token);
+    callbackUrl.searchParams.set(
+      "user",
+      JSON.stringify({
         id: user.id,
         email: user.email,
         name: user.name,
         profilePicture: user.profilePicture,
         generationCount: user.generationCount,
         resetDate: user.resetDate?.toISOString(),
-      },
-      token,
-      isNewUser,
-    });
+      }),
+    );
+    callbackUrl.searchParams.set("isNewUser", isNewUser.toString());
+
+    res.redirect(callbackUrl.toString());
   } catch (error) {
     console.error("Google OAuth callback error:", error);
 
