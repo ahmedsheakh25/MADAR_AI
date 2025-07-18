@@ -13,6 +13,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminStyles from "./pages/AdminStyles";
 import AuthCallback from "./pages/AuthCallback";
 import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
