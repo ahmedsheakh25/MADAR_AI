@@ -18,7 +18,9 @@ export default function AuthCallback() {
     const handleOAuthCallback = async () => {
       try {
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get("code");
+        const token = urlParams.get("token");
+        const userParam = urlParams.get("user");
+        const isNewUserParam = urlParams.get("isNewUser");
         const error = urlParams.get("error");
 
         if (error) {
@@ -30,43 +32,35 @@ export default function AuthCallback() {
           return;
         }
 
-        if (!code) {
+        if (!token || !userParam) {
           setStatus("error");
-          setMessage("No authorization code received");
+          setMessage("No authentication data received");
           setTimeout(() => {
             navigateToPath({ path: "/login" });
           }, 3000);
           return;
         }
 
-        // Call the callback API to exchange code for token
-        const response = await fetch(`/api/auth/callback?code=${code}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        try {
+          // Parse user data
+          const userData = JSON.parse(userParam);
+          const isNewUser = isNewUserParam === "true";
 
-        const data = await response.json();
-
-        if (data.success && data.token) {
           // Store the auth token
-          AuthManager.setToken(data.token);
+          AuthManager.setToken(token);
 
           // Store user data in cache
-          if (data.user) {
-            localStorage.setItem("user-cache", JSON.stringify(data.user));
-          }
+          localStorage.setItem("user-cache", JSON.stringify(userData));
 
           setStatus("success");
-          setMessage(data.isNewUser ? "Welcome to MADAR AI!" : "Welcome back!");
+          setMessage(isNewUser ? "Welcome to MADAR AI!" : "Welcome back!");
 
           // Redirect to generator after successful auth
           setTimeout(() => {
             navigateToPath({ path: "/generator" });
           }, 2000);
-        } else {
-          throw new Error(data.error || "Authentication failed");
+        } catch (parseError) {
+          throw new Error("Failed to parse authentication data");
         }
       } catch (error) {
         console.error("Auth callback error:", error);
