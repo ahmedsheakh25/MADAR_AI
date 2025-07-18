@@ -55,25 +55,7 @@ export function createUnauthorizedResponse(message?: string): Response {
 // Optional authentication (doesn't fail if no auth)
 export async function optionalAuth(req: Request): Promise<User | null> {
   try {
-    // Check if we're in development mode (Google OAuth not configured)
-    const isDevMode =
-      !process.env.GOOGLE_CLIENT_ID ||
-      process.env.GOOGLE_CLIENT_ID === "your_google_client_id_here";
-
-    if (isDevMode) {
-      // In development mode, return mock user
-      return {
-        id: "dev-user-1",
-        email: "dev@example.com",
-        name: "Dev User",
-        generationCount: 5,
-        resetDate: new Date(),
-        createdAt: new Date(),
-        lastLoginAt: new Date(),
-        googleId: null,
-        profilePicture: null,
-      };
-    }
+    // Real authentication is now enabled - no dev mode
 
     return await AuthService.getUserFromRequest(req);
   } catch (error) {
