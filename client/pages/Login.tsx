@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
@@ -8,11 +10,14 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Heading, Text } from "@/components/design-system/Typography";
 import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
+import { MagicCard } from "@/components/magicui/magic-card";
+import { useTheme } from "next-themes";
 
 export default function Login() {
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-  const { theme } = useOnceUITheme();
+  const { theme: onceTheme } = useOnceUITheme();
+  const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
 
@@ -95,249 +100,256 @@ export default function Login() {
       <div className="flex flex-1">
         {/* Left Panel - Sign In Form */}
         <div className="flex w-full lg:w-[640px] flex-col items-center justify-center px-4 lg:px-40 py-8 bg-background">
-          <motion.div
-            className="flex flex-col items-center justify-center max-w-[400px] w-auto bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg self-center"
-            variants={itemVariants}
-            style={{
-              height: "auto",
-              flexGrow: "0",
-              padding: "36px",
-            }}
+          <MagicCard
+            gradientColor={theme === "dark" ? "#262626" : "#D9D9D955"}
+            className="p-0"
           >
-            {/* Logo */}
-            <motion.div className="mb-10" variants={logoVariants}>
-              <motion.img
-                src={
-                  theme === "dark"
-                    ? "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fefbd0a6b9abd446c96eb7f1fea4c67bf?format=webp&width=800"
-                    : "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc39b14bbc4d54ee390a9493467c086d1?format=webp&width=800"
-                }
-                alt={t("brand.name") || "Madaar Logo"}
-                className="w-[230px] h-auto object-contain"
-                style={{ aspectRatio: "230/117.19" }}
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.div>
-
-            {/* Animated Shiny Text */}
             <motion.div
-              className="z-10 flex min-h-16 items-center justify-center mb-6 w-auto self-stretch"
+              className="flex flex-col items-center justify-center max-w-[400px] w-auto bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg self-center"
               variants={itemVariants}
+              style={{
+                height: "auto",
+                flexGrow: "0",
+                padding: "36px",
+              }}
             >
-              <div className="group rounded-full border border-border bg-muted transition-all ease-in hover:cursor-pointer hover:bg-muted/80 w-auto flex-grow">
-                <AnimatedShinyText
-                  className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-muted-foreground hover:duration-300 w-auto self-stretch"
-                  style={{
-                    fontFamily:
-                      language === "ar"
-                        ? "var(--font-arabic)"
-                        : "var(--font-body-en)",
-                  }}
-                >
-                  <span
-                    className="w-auto self-stretch"
+              {/* Logo */}
+              <motion.div className="mb-10" variants={logoVariants}>
+                <motion.img
+                  src={
+                    onceTheme === "dark"
+                      ? "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fefbd0a6b9abd446c96eb7f1fea4c67bf?format=webp&width=800"
+                      : "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc39b14bbc4d54ee390a9493467c086d1?format=webp&width=800"
+                  }
+                  alt={t("brand.name") || "Madaar Logo"}
+                  className="w-[230px] h-auto object-contain"
+                  style={{ aspectRatio: "230/117.19" }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.div>
+
+              {/* Animated Shiny Text */}
+              <motion.div
+                className="z-10 flex min-h-16 items-center justify-center mb-6 w-auto self-stretch"
+                variants={itemVariants}
+              >
+                <div className="group rounded-full border border-border bg-muted transition-all ease-in hover:cursor-pointer hover:bg-muted/80 w-auto flex-grow">
+                  <AnimatedShinyText
+                    className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-muted-foreground hover:duration-300 w-auto self-stretch"
                     style={{
                       fontFamily:
                         language === "ar"
                           ? "var(--font-arabic)"
                           : "var(--font-body-en)",
-                      direction: language === "ar" ? "rtl" : "ltr",
                     }}
                   >
-                    {isSignUp
-                      ? t("pages.signup.freeText") ||
-                        (language === "ar"
-                          ? "خدمة مجانية لمجتمع المصممين العرب ✨"
-                          : "✨ Free For Arabic designers Community")
-                      : t("pages.login.freeText") ||
-                        (language === "ar"
-                          ? "خدمة مجانية لمجتمع المصممين العرب ✨"
-                          : "✨ Free For Arabic designers Community")}
-                  </span>
-                  <ArrowRightIcon
-                    className={`ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5 ${isRTL ? "rotate-180" : ""}`}
-                  />
-                </AnimatedShinyText>
-              </div>
-            </motion.div>
-
-            {/* Title */}
-            <motion.div className="mb-10" variants={itemVariants}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={isSignUp ? "signup" : "signin"}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Heading
-                    as="h1"
-                    size="3xl"
-                    weight="normal"
-                    className="text-center"
-                    style={{
-                      fontFamily:
-                        language === "ar"
-                          ? "var(--font-arabic)"
-                          : "var(--font-heading-en)",
-                      direction: language === "ar" ? "rtl" : "ltr",
-                      fontSize: language === "ar" ? "28px" : "30px",
-                      lineHeight: language === "ar" ? "34px" : "36px",
-                      letterSpacing: language === "ar" ? "0" : "-0.75px",
-                    }}
-                  >
-                    {isSignUp
-                      ? t("pages.signup.title") || "Join Madaar"
-                      : t("pages.login.title") || "Welcome Back"}
-                  </Heading>
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
-
-            {/* Auth Options */}
-            <motion.div
-              className="flex flex-col items-center gap-6 w-full max-w-[320px]"
-              variants={itemVariants}
-            >
-              {/* Google Auth Button */}
-              <motion.button
-                onClick={handleGoogleAuth}
-                disabled={isLoading}
-                className="flex w-[320px] h-[44px] px-5 py-2 justify-center items-center gap-2 rounded-[10px] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed border border-border bg-card hover:bg-muted text-card-foreground"
-                variants={buttonVariants}
-                initial="idle"
-                whileHover="hover"
-                whileTap="tap"
-              >
-                {isLoading ? (
-                  <motion.div
-                    className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full"
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 1,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                  />
-                ) : (
-                  <motion.img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/1147e8965e9d996efd722b8f68d7a52c3847b3d6?width=48"
-                    alt="Google"
-                    className="w-6 h-6"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.2 }}
-                  />
-                )}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={isLoading ? "loading" : isSignUp ? "signup" : "signin"}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Text
-                      as="span"
-                      size="sm"
-                      weight="semibold"
+                    <span
+                      className="w-auto self-stretch"
                       style={{
                         fontFamily:
                           language === "ar"
                             ? "var(--font-arabic)"
                             : "var(--font-body-en)",
                         direction: language === "ar" ? "rtl" : "ltr",
-                        fontSize: "14px",
-                        lineHeight: "20px",
-                        letterSpacing: language === "ar" ? "0" : "-0.28px",
                       }}
                     >
-                      {isLoading
-                        ? isSignUp
-                          ? t("common.buttons.signingUp") || "Signing up..."
-                          : t("common.buttons.signingIn") || "Signing in..."
-                        : isSignUp
-                          ? t("common.buttons.signUpWithGoogle") ||
-                            "Sign up with Google"
-                          : t("common.buttons.loginWithGoogle") ||
-                            "Sign in with Google"}
-                    </Text>
+                      {isSignUp
+                        ? t("pages.signup.freeText") ||
+                          (language === "ar"
+                            ? "خدمة مجانية لمجتمع المصممين العرب ✨"
+                            : "✨ Free For Arabic designers Community")
+                        : t("pages.login.freeText") ||
+                          (language === "ar"
+                            ? "خدمة مجانية لمجتمع المصممين العرب ✨"
+                            : "✨ Free For Arabic designers Community")}
+                    </span>
+                    <ArrowRightIcon
+                      className={`ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5 ${isRTL ? "rotate-180" : ""}`}
+                    />
+                  </AnimatedShinyText>
+                </div>
+              </motion.div>
+
+              {/* Title */}
+              <motion.div className="mb-10" variants={itemVariants}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={isSignUp ? "signup" : "signin"}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Heading
+                      as="h1"
+                      size="3xl"
+                      weight="normal"
+                      className="text-center"
+                      style={{
+                        fontFamily:
+                          language === "ar"
+                            ? "var(--font-arabic)"
+                            : "var(--font-heading-en)",
+                        direction: language === "ar" ? "rtl" : "ltr",
+                        fontSize: language === "ar" ? "28px" : "30px",
+                        lineHeight: language === "ar" ? "34px" : "36px",
+                        letterSpacing: language === "ar" ? "0" : "-0.75px",
+                      }}
+                    >
+                      {isSignUp
+                        ? t("pages.signup.title") || "Join Madaar"
+                        : t("pages.login.title") || "Welcome Back"}
+                    </Heading>
                   </motion.div>
                 </AnimatePresence>
-              </motion.button>
+              </motion.div>
 
-              {/* Toggle Auth Mode Text */}
+              {/* Auth Options */}
               <motion.div
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-6 w-full max-w-[320px]"
                 variants={itemVariants}
               >
-                <Text
-                  as="p"
-                  size="xs"
-                  weight="medium"
-                  color="muted"
-                  className="text-center"
-                  style={{
-                    fontFamily:
-                      language === "ar"
-                        ? "var(--font-arabic)"
-                        : "var(--font-body-en)",
-                    direction: language === "ar" ? "rtl" : "ltr",
-                    fontSize: "12px",
-                    lineHeight: "16px",
-                    letterSpacing: language === "ar" ? "0" : "-0.11px",
-                  }}
-                >
-                  {isSignUp
-                    ? t("common.messages.haveAccount") ||
-                      "Already have an account?"
-                    : t("common.messages.dontHaveAccount") ||
-                      "Don't have an account?"}
-                </Text>
-
+                {/* Google Auth Button */}
                 <motion.button
-                  onClick={toggleAuthMode}
-                  className="hover:underline transition-all duration-200"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  onClick={handleGoogleAuth}
+                  disabled={isLoading}
+                  className="flex w-[320px] h-[44px] px-5 py-2 justify-center items-center gap-2 rounded-[10px] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed border border-border bg-card hover:bg-muted text-card-foreground"
+                  variants={buttonVariants}
+                  initial="idle"
+                  whileHover="hover"
+                  whileTap="tap"
                 >
+                  {isLoading ? (
+                    <motion.div
+                      className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  ) : (
+                    <motion.img
+                      src="https://api.builder.io/api/v1/image/assets/TEMP/1147e8965e9d996efd722b8f68d7a52c3847b3d6?width=48"
+                      alt="Google"
+                      className="w-6 h-6"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.2 }}
+                    />
+                  )}
                   <AnimatePresence mode="wait">
                     <motion.div
-                      key={isSignUp ? "signin" : "signup"}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
+                      key={
+                        isLoading ? "loading" : isSignUp ? "signup" : "signin"
+                      }
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
                       <Text
                         as="span"
-                        size="xs"
+                        size="sm"
                         weight="semibold"
-                        color="primary"
-                        className="text-center"
                         style={{
                           fontFamily:
                             language === "ar"
                               ? "var(--font-arabic)"
                               : "var(--font-body-en)",
                           direction: language === "ar" ? "rtl" : "ltr",
-                          fontSize: "12px",
-                          lineHeight: "16px",
-                          letterSpacing: language === "ar" ? "0" : "-0.11px",
+                          fontSize: "14px",
+                          lineHeight: "20px",
+                          letterSpacing: language === "ar" ? "0" : "-0.28px",
                         }}
                       >
-                        {isSignUp
-                          ? t("common.buttons.signIn") || "Sign in"
-                          : t("common.buttons.createAccount") ||
-                            "Create new account"}
+                        {isLoading
+                          ? isSignUp
+                            ? t("common.buttons.signingUp") || "Signing up..."
+                            : t("common.buttons.signingIn") || "Signing in..."
+                          : isSignUp
+                            ? t("common.buttons.signUpWithGoogle") ||
+                              "Sign up with Google"
+                            : t("common.buttons.loginWithGoogle") ||
+                              "Sign in with Google"}
                       </Text>
                     </motion.div>
                   </AnimatePresence>
                 </motion.button>
+
+                {/* Toggle Auth Mode Text */}
+                <motion.div
+                  className="flex flex-col items-center gap-2"
+                  variants={itemVariants}
+                >
+                  <Text
+                    as="p"
+                    size="xs"
+                    weight="medium"
+                    color="muted"
+                    className="text-center"
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "var(--font-arabic)"
+                          : "var(--font-body-en)",
+                      direction: language === "ar" ? "rtl" : "ltr",
+                      fontSize: "12px",
+                      lineHeight: "16px",
+                      letterSpacing: language === "ar" ? "0" : "-0.11px",
+                    }}
+                  >
+                    {isSignUp
+                      ? t("common.messages.haveAccount") ||
+                        "Already have an account?"
+                      : t("common.messages.dontHaveAccount") ||
+                        "Don't have an account?"}
+                  </Text>
+
+                  <motion.button
+                    onClick={toggleAuthMode}
+                    className="hover:underline transition-all duration-200"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={isSignUp ? "signin" : "signup"}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Text
+                          as="span"
+                          size="xs"
+                          weight="semibold"
+                          color="primary"
+                          className="text-center"
+                          style={{
+                            fontFamily:
+                              language === "ar"
+                                ? "var(--font-arabic)"
+                                : "var(--font-body-en)",
+                            direction: language === "ar" ? "rtl" : "ltr",
+                            fontSize: "12px",
+                            lineHeight: "16px",
+                            letterSpacing: language === "ar" ? "0" : "-0.11px",
+                          }}
+                        >
+                          {isSignUp
+                            ? t("common.buttons.signIn") || "Sign in"
+                            : t("common.buttons.createAccount") ||
+                              "Create new account"}
+                        </Text>
+                      </motion.div>
+                    </AnimatePresence>
+                  </motion.button>
+                </motion.div>
               </motion.div>
             </motion.div>
-          </motion.div>
+          </MagicCard>
         </div>
 
         {/* Right Panel - AI Generated Image */}

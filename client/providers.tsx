@@ -1,11 +1,19 @@
 import { ReactNode } from "react";
+import { ThemeProvider } from "next-themes";
 
 interface ProvidersProps {
   children: ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {
-  // Simple provider wrapper - no external dependencies needed
-  // Theme management is handled by our custom hooks
-  return <>{children}</>;
+  return (
+    <ThemeProvider
+      attribute="data-theme"
+      defaultTheme="system"
+      enableSystem={true}
+      themes={["light", "dark"]}
+    >
+      {children}
+    </ThemeProvider>
+  );
 }

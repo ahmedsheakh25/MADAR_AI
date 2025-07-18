@@ -1,6 +1,7 @@
 import "./global.css";
 import "./lib/i18n"; // Initialize i18n
 
+import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -13,7 +14,6 @@ import { Providers } from "./providers";
 import { TooltipProvider } from "@/components/design-system";
 import { LanguageRoute } from "./components/routing/LanguageRoute";
 import { suppressResizeObserverErrors } from "./lib/resize-observer-fix";
-import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
