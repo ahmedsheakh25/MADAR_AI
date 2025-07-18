@@ -381,9 +381,9 @@ export default function AdminUsers() {
                               <RefreshCw className="w-4 h-4 mr-2" />
                               Reset Quota
                             </DropdownMenuItem>
-                            {user?.isMasterAdmin && !user.isAdmin && (
+                            {user?.isMasterAdmin && !tableUser.isAdmin && (
                               <DropdownMenuItem
-                                onClick={() => handlePromoteUser(user.id)}
+                                onClick={() => handlePromoteUser(tableUser.id)}
                                 disabled={isLoading}
                               >
                                 <Shield className="w-4 h-4 mr-2" />
@@ -391,10 +391,10 @@ export default function AdminUsers() {
                               </DropdownMenuItem>
                             )}
                             {user?.isMasterAdmin &&
-                              user.isAdmin &&
-                              !user.isMasterAdmin && (
+                              tableUser.isAdmin &&
+                              !tableUser.isMasterAdmin && (
                                 <DropdownMenuItem
-                                  onClick={() => handleDemoteUser(user.id)}
+                                  onClick={() => handleDemoteUser(tableUser.id)}
                                   disabled={isLoading}
                                 >
                                   <UserCheck className="w-4 h-4 mr-2" />
