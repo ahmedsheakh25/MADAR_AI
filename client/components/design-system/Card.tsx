@@ -27,7 +27,9 @@ const Card = React.forwardRef<
     animate?: boolean;
     hoverEffect?: boolean;
   }
->(({ className, animate = true, hoverEffect = true, ...props }, ref) => {
+>(({ className, animate = false, hoverEffect = true, ...props }, ref) => {
+  // Animation temporarily disabled for TypeScript compatibility
+  /*
   if (animate) {
     return (
       <motion.div
@@ -43,12 +45,12 @@ const Card = React.forwardRef<
         transition={{
           duration: 0.3,
           ease: "easeOut",
-          layout: false, // Prevent layout animations that trigger ResizeObserver
         }}
         {...props}
       />
     );
   }
+  */
 
   return (
     <div

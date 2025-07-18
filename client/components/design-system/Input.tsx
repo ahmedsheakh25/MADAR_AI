@@ -27,7 +27,7 @@ const inputVariants = cva(
 );
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement>,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
     VariantProps<typeof inputVariants> {
   animate?: boolean;
   error?: string;
@@ -60,10 +60,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const currentVariant = error
       ? "error"
       : success
-      ? "success"
-      : warning
-      ? "warning"
-      : variant;
+        ? "success"
+        : warning
+          ? "warning"
+          : variant;
 
     const inputElement = (
       <div className="relative">
@@ -72,7 +72,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <div className="text-muted-foreground">{leftIcon}</div>
           </div>
         )}
-        
+
         <input
           type={type}
           className={cn(
@@ -85,7 +85,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           {...props}
         />
-        
+
         {(rightIcon || isLoading) && (
           <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
             {isLoading ? (

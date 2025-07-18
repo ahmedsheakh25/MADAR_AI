@@ -12,7 +12,7 @@ import {
   Wand2,
   ZoomIn,
   Download,
-  Home,
+  Home as HomeIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -56,7 +56,7 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               title={t("common.navigation.home")}
             >
-              <Home className="w-4 h-4" />
+              <HomeIcon className="w-4 h-4" />
             </motion.button>
 
             <motion.button

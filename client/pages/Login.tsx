@@ -83,18 +83,20 @@ export default function Login() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
     },
   };
+
+  const itemTransition = { duration: 0.5, ease: "easeOut" };
 
   const logoVariants = {
     hidden: { scale: 0.8, opacity: 0 },
     visible: {
       scale: 1,
       opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" },
     },
   };
+
+  const logoTransition = { duration: 0.6, ease: "easeOut" };
 
   const buttonVariants = {
     idle: { scale: 1 },

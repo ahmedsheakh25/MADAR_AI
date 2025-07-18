@@ -52,7 +52,7 @@ export const MagicCard: React.FC<MagicCardProps> = ({
         } as React.CSSProperties
       }
     >
-      <style jsx>{`
+      <style>{`
         .group:before {
           background: linear-gradient(
             135deg,

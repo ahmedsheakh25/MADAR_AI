@@ -71,7 +71,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           transition={{
             duration: 0.15,
             ease: "easeOut",
-            layout: false, // Prevent layout animations
           }}
           className="inline-block flex flex-col justify-center items-center"
         >

@@ -353,7 +353,7 @@ export default function Generator() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background font-inter">
       {/* CSS for PRO badge animation */}
-      <style jsx>{`
+      <style>{`
         .pro-badge {
           animation: pulse 2s infinite;
         }

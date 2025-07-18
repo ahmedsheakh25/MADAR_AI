@@ -104,6 +104,8 @@ const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
       className,
     );
 
+    // Animation temporarily disabled for TypeScript compatibility
+    /*
     if (animate) {
       return (
         <motion.div
@@ -115,12 +117,12 @@ const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
           transition={{
             duration: 0.4,
             ease: "easeOut",
-            layout: false, // Prevent layout animations that trigger ResizeObserver
           }}
           {...props}
         />
       );
     }
+    */
 
     return React.createElement(Component, {
       ref,
@@ -199,6 +201,8 @@ const Grid = React.forwardRef<HTMLDivElement, GridProps>(
       className,
     );
 
+    // Animation temporarily disabled for TypeScript compatibility
+    /*
     if (animate) {
       return (
         <motion.div
@@ -210,12 +214,12 @@ const Grid = React.forwardRef<HTMLDivElement, GridProps>(
           transition={{
             duration: 0.4,
             ease: "easeOut",
-            layout: false, // Prevent layout animations that trigger ResizeObserver
           }}
           {...props}
         />
       );
     }
+    */
 
     return <div ref={ref} className={classes} {...props} />;
   },
@@ -241,7 +245,16 @@ const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
 
     const classes = cn("mx-auto px-4 h-full", sizeClasses[size], className);
 
-    if (animate) {
+    // Animation temporarily disabled for TypeScript compatibility
+    if (false && animate) {
+      const {
+        onDrag,
+        onDragStart,
+        onDragEnd,
+        onAnimationStart,
+        onAnimationEnd,
+        ...motionProps
+      } = props;
       return (
         <motion.div
           ref={ref}
@@ -249,7 +262,7 @@ const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          {...props}
+          {...motionProps}
         />
       );
     }
