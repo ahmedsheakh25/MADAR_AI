@@ -189,9 +189,9 @@ export class AuthService {
 
     // If no explicit redirect URI is set, auto-detect based on environment
     if (!redirectUri || redirectUri.includes("localhost")) {
-      // Check if we're in production (Fly.dev)
+      // Check if we're in production
       if (process.env.FLY_APP_NAME || process.env.NODE_ENV === "production") {
-        redirectUri = "https://madar-ai.fly.dev/api/auth/callback";
+        redirectUri = "https://www.madar.ofspace.studio/api/auth/callback";
       } else {
         redirectUri = "http://localhost:8080/api/auth/callback";
       }
