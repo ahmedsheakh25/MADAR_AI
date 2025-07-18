@@ -519,6 +519,24 @@ export default function Generator() {
     }
   };
 
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <motion.div
+            className="w-16 h-16 mx-auto border-4 border-primary border-t-transparent rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <h2 className="text-xl font-semibold text-foreground">
+            {t("common.loading.authenticating")}
+          </h2>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background font-inter">
       {/* CSS for PRO badge animation */}
