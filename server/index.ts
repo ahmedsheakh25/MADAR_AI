@@ -9,6 +9,12 @@ import {
   handleAuthCallback,
   handleLogout,
 } from "./routes/auth.js";
+import {
+  handleGetAllUsers,
+  handlePromoteUser,
+  handleDemoteUser,
+  handleResetUserGenerations,
+} from "./routes/admin.js";
 
 export function createServer() {
   const app = express();
