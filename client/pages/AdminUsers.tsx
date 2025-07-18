@@ -311,8 +311,22 @@ export default function AdminUsers() {
                     >
                       <td className="p-4">
                         <div className="flex flex-col">
-                          <div className="font-medium text-foreground">
-                            {user.name || "Unknown"}
+                          <div className="flex items-center gap-2">
+                            <div className="font-medium text-foreground">
+                              {user.name || "Unknown"}
+                            </div>
+                            {user.isMasterAdmin && (
+                              <div className="flex items-center gap-1 px-2 py-0.5 text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-black rounded-full font-bold">
+                                <Crown className="w-3 h-3" />
+                                MASTER
+                              </div>
+                            )}
+                            {user.isAdmin && !user.isMasterAdmin && (
+                              <div className="flex items-center gap-1 px-2 py-0.5 text-xs bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-bold">
+                                <Shield className="w-3 h-3" />
+                                ADMIN
+                              </div>
+                            )}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {user.email}
