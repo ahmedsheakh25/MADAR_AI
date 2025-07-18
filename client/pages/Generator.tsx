@@ -643,6 +643,16 @@ export default function Generator() {
                         <>
                           <div className="px-2 py-1.5 text-sm font-medium text-foreground border-b border-border">
                             {user.name || user.email}
+                            {user.isMasterAdmin && (
+                              <span className="ml-2 px-1.5 py-0.5 text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-black rounded-full font-bold">
+                                MASTER
+                              </span>
+                            )}
+                            {user.isAdmin && !user.isMasterAdmin && (
+                              <span className="ml-2 px-1.5 py-0.5 text-xs bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-bold">
+                                ADMIN
+                              </span>
+                            )}
                           </div>
                           <div className="px-2 py-1 text-xs text-muted-foreground">
                             {user.email}
@@ -655,6 +665,31 @@ export default function Generator() {
                               </>
                             )}
                           </div>
+                          {user.isAdmin && (
+                            <>
+                              <div className="border-t border-border my-1"></div>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  navigateToPath({ path: "/admin/users" })
+                                }
+                              >
+                                <svg
+                                  className="w-4 h-4 mr-2"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                                  />
+                                </svg>
+                                Manage Users
+                              </DropdownMenuItem>
+                            </>
+                          )}
                           <DropdownMenuItem onClick={signOut}>
                             <LogOut className="w-4 h-4 mr-2" />
                             {t("common.buttons.signOut")}
