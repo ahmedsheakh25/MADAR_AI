@@ -383,31 +383,72 @@ export default function Login() {
                   </motion.button>
                 </motion.div>
 
-                {/* Privacy Policy Link */}
+                {/* Privacy Policy and Terms Links */}
                 <motion.div
-                  className="mt-8 text-center"
+                  className="mt-8 text-center space-y-2"
                   variants={itemVariants}
                 >
-                  <motion.button
-                    onClick={() => navigateToPath({ path: "/privacy" })}
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors hover:underline"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                  <div className="flex items-center justify-center gap-4">
+                    <motion.button
+                      onClick={() => navigateToPath({ path: "/privacy" })}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors hover:underline"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Text
+                        as="span"
+                        size="xs"
+                        style={{
+                          fontFamily:
+                            language === "ar"
+                              ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                              : "var(--font-body-en)",
+                          direction: language === "ar" ? "rtl" : "ltr",
+                        }}
+                      >
+                        {language === "ar"
+                          ? "سياسة الخصوصية"
+                          : "Privacy Policy"}
+                      </Text>
+                    </motion.button>
+
                     <Text
                       as="span"
                       size="xs"
+                      color="muted"
                       style={{
                         fontFamily:
                           language === "ar"
                             ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
                             : "var(--font-body-en)",
-                        direction: language === "ar" ? "rtl" : "ltr",
                       }}
                     >
-                      {language === "ar" ? "سياسة الخصوصية" : "Privacy Policy"}
+                      •
                     </Text>
-                  </motion.button>
+
+                    <motion.button
+                      onClick={() => navigateToPath({ path: "/terms" })}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors hover:underline"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Text
+                        as="span"
+                        size="xs"
+                        style={{
+                          fontFamily:
+                            language === "ar"
+                              ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                              : "var(--font-body-en)",
+                          direction: language === "ar" ? "rtl" : "ltr",
+                        }}
+                      >
+                        {language === "ar"
+                          ? "شروط الخ��مة"
+                          : "Terms of Service"}
+                      </Text>
+                    </motion.button>
+                  </div>
                 </motion.div>
               </motion.div>
             </motion.div>
