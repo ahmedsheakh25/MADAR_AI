@@ -638,14 +638,30 @@ export default function Generator() {
                         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                       </motion.button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {user && (
-                        <DropdownMenuItem onClick={signOut}>
-                          <LogOut className="w-4 h-4 mr-2" />
-                          {t("common.buttons.signOut")}
-                        </DropdownMenuItem>
+                    <DropdownMenuContent align="end" className="min-w-[200px]">
+                      {user && isAuthenticated && (
+                        <>
+                          <div className="px-2 py-1.5 text-sm font-medium text-foreground border-b border-border">
+                            {user.name || user.email}
+                          </div>
+                          <div className="px-2 py-1 text-xs text-muted-foreground">
+                            {user.email}
+                          </div>
+                          <div className="px-2 py-1 text-xs text-muted-foreground mb-1">
+                            {userStats && (
+                              <>
+                                {userStats.remainingGenerations}/
+                                {userStats.maxGenerations} generations left
+                              </>
+                            )}
+                          </div>
+                          <DropdownMenuItem onClick={signOut}>
+                            <LogOut className="w-4 h-4 mr-2" />
+                            {t("common.buttons.signOut")}
+                          </DropdownMenuItem>
+                        </>
                       )}
-                      {!user && (
+                      {(!user || !isAuthenticated) && (
                         <DropdownMenuItem
                           onClick={() => navigateToPath({ path: "/login" })}
                         >
