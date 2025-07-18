@@ -7,6 +7,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    middlewareMode: false,
+    fs: {
+      deny: ["api/**"], // Prevent Vite from serving api folder as static files
+    },
   },
   build: {
     outDir: "dist",
@@ -14,7 +18,26 @@ export default defineConfig(({ mode }) => ({
   define: {
     global: "globalThis",
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: "express-dev-server",
+      configureServer: async (server) => {
+        // Load environment variables
+        const { config } = await import("dotenv");
+        config();
+
+        // Import and setup Express server for API routes
+        const { createServer } = await import("./server/index.js");
+        const app = createServer();
+
+        // Use the Express app to handle /api routes
+        server.middlewares.use("/api", (req, res, next) => {
+          app(req, res, next);
+        });
+      },
+    },
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),

@@ -19,7 +19,7 @@ import { TooltipProvider } from "@/components/design-system";
 import { LanguageRoute } from "./components/routing/LanguageRoute";
 import { LoadingBoundary } from "./components/LoadingBoundary";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { AppDebug } from "./components/AppDebug";
+
 import { suppressResizeObserverErrors } from "./lib/resize-observer-fix";
 import { AuthManager } from "./lib/auth-manager";
 
@@ -166,7 +166,6 @@ const App = () => {
           <TooltipProvider>
             <LoadingBoundary>
               <AppWithLanguage />
-              {import.meta.env.DEV && <AppDebug />}
             </LoadingBoundary>
           </TooltipProvider>
         </QueryClientProvider>
