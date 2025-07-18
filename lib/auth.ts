@@ -158,12 +158,15 @@ export class AuthService {
         user = updatedUser;
       } else {
         // Create new user
-        user = await DatabaseService.createUserFromGoogle({
+        const userData = {
           email: googleUser.email,
           name: googleUser.name,
           googleId: googleUser.id,
           profilePicture: googleUser.picture,
-        });
+          // Auto-assign admin role if this is the master admin email
+          role: this.isMasterAdmin(googleUser.email) ? "admin" : "user",
+        };
+        user = await DatabaseService.createUserFromGoogle(userData);
         isNewUser = true;
       }
     } else {
