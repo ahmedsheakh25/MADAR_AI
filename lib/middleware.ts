@@ -52,6 +52,20 @@ export function createUnauthorizedResponse(message?: string): Response {
   );
 }
 
+// Helper to create forbidden response
+export function createForbiddenResponse(message?: string): Response {
+  return new Response(
+    JSON.stringify({
+      success: false,
+      error: message || "Admin access required",
+    }),
+    {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+}
+
 // Optional authentication (doesn't fail if no auth)
 export async function optionalAuth(req: Request): Promise<User | null> {
   try {
