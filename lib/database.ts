@@ -1,7 +1,20 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "./db.js";
-import { usersTable, imagesTable, stylesTable, sessionsTable } from "./schema.js";
-import type { User, NewUser, Image, NewImage, Style, Session, NewSession } from "./schema.js";
+import {
+  usersTable,
+  imagesTable,
+  stylesTable,
+  sessionsTable,
+} from "./schema.js";
+import type {
+  User,
+  NewUser,
+  Image,
+  NewImage,
+  Style,
+  Session,
+  NewSession,
+} from "./schema.js";
 
 export class DatabaseService {
   // User management
@@ -31,6 +44,7 @@ export class DatabaseService {
     name: string;
     googleId: string;
     profilePicture?: string;
+    role?: string;
   }): Promise<User> {
     const [user] = await db
       .insert(usersTable)
@@ -39,6 +53,7 @@ export class DatabaseService {
         name: googleUser.name,
         googleId: googleUser.googleId,
         profilePicture: googleUser.profilePicture,
+        role: googleUser.role || "user",
         generationCount: 0,
         lastLoginAt: new Date(),
       })
@@ -218,4 +233,4 @@ export class DatabaseService {
       .where(eq(sessionsTable.userId, userId));
     return result.rowCount;
   }
-} 
+}
