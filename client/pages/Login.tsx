@@ -21,6 +21,25 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
 
+  // Debug font loading
+  React.useEffect(() => {
+    if (language === "ar") {
+      document.fonts.ready.then(() => {
+        console.log("Fonts loaded, checking Arabic fonts...");
+        if (document.fonts.check('1em "IBM Plex Sans Arabic"')) {
+          console.log("✅ IBM Plex Sans Arabic is available");
+        } else {
+          console.log("❌ IBM Plex Sans Arabic is NOT available");
+        }
+        if (document.fonts.check('1em "Noto Sans Arabic"')) {
+          console.log("✅ Noto Sans Arabic is available");
+        } else {
+          console.log("❌ Noto Sans Arabic is NOT available");
+        }
+      });
+    }
+  }, [language]);
+
   const handleGoogleAuth = () => {
     setIsLoading(true);
     // Google OAuth logic would go here
@@ -81,7 +100,7 @@ export default function Login() {
       animate="visible"
       style={{
         fontFamily:
-          language === "ar" ? "var(--font-arabic)" : "var(--font-body-en)",
+          language === "ar" ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif" : "var(--font-body-en)",
       }}
     >
       {/* Transparent Navigation */}
@@ -140,7 +159,7 @@ export default function Login() {
                     style={{
                       fontFamily:
                         language === "ar"
-                          ? "var(--font-arabic)"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
                           : "var(--font-body-en)",
                     }}
                   >
@@ -149,7 +168,7 @@ export default function Login() {
                       style={{
                         fontFamily:
                           language === "ar"
-                            ? "var(--font-arabic)"
+                            ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
                             : "var(--font-body-en)",
                         direction: language === "ar" ? "rtl" : "ltr",
                       }}
@@ -189,7 +208,7 @@ export default function Login() {
                       style={{
                         fontFamily:
                           language === "ar"
-                            ? "var(--font-arabic)"
+                            ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
                             : "var(--font-heading-en)",
                         direction: language === "ar" ? "rtl" : "ltr",
                         fontSize: language === "ar" ? "28px" : "30px",
@@ -256,7 +275,7 @@ export default function Login() {
                         style={{
                           fontFamily:
                             language === "ar"
-                              ? "var(--font-arabic)"
+                              ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
                               : "var(--font-body-en)",
                           direction: language === "ar" ? "rtl" : "ltr",
                           fontSize: "14px",

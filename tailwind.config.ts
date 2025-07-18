@@ -57,7 +57,7 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "IBM Plex Sans Arabic", "sans-serif"],
-        arabic: ["IBM Plex Sans Arabic", "sans-serif"],
+        arabic: ["IBM Plex Sans Arabic", "Noto Sans Arabic", "Arial", "sans-serif"],
         heading: ["Funnel Display", "sans-serif"],
         body: ["Inter", "sans-serif"],
       },

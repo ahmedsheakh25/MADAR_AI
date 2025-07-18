@@ -6,6 +6,9 @@
 /* Arabic Font */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap");
 
+/* Fallback Arabic fonts for better compatibility */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap");
+
 /* Once UI Styles */
 @import "@once-ui-system/core/css/styles.css";
 @import "@once-ui-system/core/css/tokens.css";
@@ -23,7 +26,7 @@
     --font-heading-en: "Funnel Display", sans-serif;
     --font-body-en: "Inter", sans-serif;
     --font-caveat: "Caveat", cursive;
-    --font-arabic: "IBM Plex Sans Arabic", sans-serif;
+    --font-arabic: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Arial", sans-serif;
     --background: 0 0% 2%;
     --foreground: 210 40% 98%;
 
@@ -147,7 +150,7 @@
   /* Enhanced Arabic font application */
   html[lang="ar"] body,
   html[lang="ar"] * {
-    font-family: "IBM Plex Sans Arabic", sans-serif;
+    font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Arial", sans-serif;
   }
 
   /* Specific Arabic font enforcement for components */
@@ -155,7 +158,33 @@
   [lang="ar"] .font-arabic *,
   [dir="rtl"] .font-arabic,
   [dir="rtl"] .font-arabic * {
-    font-family: "IBM Plex Sans Arabic", sans-serif !important;
+    font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Arial", sans-serif !important;
+  }
+
+  /* Force Arabic font for all elements when language is Arabic */
+  [lang="ar"] *,
+  [dir="rtl"] * {
+    font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Arial", sans-serif !important;
+  }
+
+  /* Specific enforcement for text elements */
+  [lang="ar"] span,
+  [lang="ar"] p,
+  [lang="ar"] h1,
+  [lang="ar"] h2,
+  [lang="ar"] h3,
+  [lang="ar"] h4,
+  [lang="ar"] h5,
+  [lang="ar"] h6,
+  [dir="rtl"] span,
+  [dir="rtl"] p,
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4,
+  [dir="rtl"] h5,
+  [dir="rtl"] h6 {
+    font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Arial", sans-serif !important;
   }
 
   /* Heading styles for English */
