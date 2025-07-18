@@ -43,7 +43,7 @@ import type { Style } from "@shared/api";
 export default function Generator() {
   const { theme } = useOnceUITheme();
   const { t } = useTranslation();
-  const { user, signOut, isDevMode } = useAuth();
+  const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
   const { navigateToPath } = useNavigation();
 
   // Style selection data for generative styles
