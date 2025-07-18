@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
-import { db } from "./db";
-import { usersTable, imagesTable, stylesTable } from "./schema";
-import type { User, NewUser, Image, NewImage, Style } from "./schema";
+import { db } from "./db.js";
+import { usersTable, imagesTable, stylesTable } from "./schema.js";
+import type { User, NewUser, Image, NewImage, Style } from "./schema.js";
 
 export class DatabaseService {
   // User management

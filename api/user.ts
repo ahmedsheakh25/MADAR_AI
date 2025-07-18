@@ -1,5 +1,5 @@
-import { DatabaseService } from '../lib/database';
-import type { UserStatsResponse } from '../shared/api';
+import { DatabaseService } from '../lib/database.js';
+import type { UserStatsResponse } from '../shared/api.js';
 
 export const runtime = 'edge';
 
