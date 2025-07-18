@@ -243,7 +243,7 @@ export default function Generator() {
     };
 
     initializeData();
-  }, [getUserStats, getStyles]);
+  }, [isAuthenticated, authLoading, getUserStats, getStyles]);
 
   // Confetti celebration effect
   const triggerCelebration = () => {
