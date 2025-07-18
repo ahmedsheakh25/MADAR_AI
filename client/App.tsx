@@ -101,6 +101,14 @@ function AppWithLanguage() {
             </LanguageRoute>
           }
         />
+        <Route
+          path="/:lang/terms"
+          element={
+            <LanguageRoute>
+              <Terms />
+            </LanguageRoute>
+          }
+        />
 
         {/* Legacy routes without language prefix - redirect to language version */}
         <Route
