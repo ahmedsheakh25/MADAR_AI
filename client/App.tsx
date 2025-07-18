@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Generator from "./pages/Generator";
 import Login from "./pages/Login";
 import Gallery from "./pages/Gallery";
+import AdminUsers from "./pages/AdminUsers";
+import AdminStyles from "./pages/AdminStyles";
 import NotFound from "./pages/NotFound";
 import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
@@ -63,6 +65,22 @@ function AppWithLanguage() {
             </LanguageRoute>
           }
         />
+        <Route
+          path="/:lang/admin/users"
+          element={
+            <LanguageRoute>
+              <AdminUsers />
+            </LanguageRoute>
+          }
+        />
+        <Route
+          path="/:lang/admin/styles"
+          element={
+            <LanguageRoute>
+              <AdminStyles />
+            </LanguageRoute>
+          }
+        />
 
         {/* Legacy routes without language prefix - redirect to language version */}
         <Route
@@ -76,6 +94,14 @@ function AppWithLanguage() {
         <Route
           path="/gallery"
           element={<Navigate to={`/${language}/gallery`} replace />}
+        />
+        <Route
+          path="/admin/users"
+          element={<Navigate to={`/${language}/admin/users`} replace />}
+        />
+        <Route
+          path="/admin/styles"
+          element={<Navigate to={`/${language}/admin/styles`} replace />}
         />
 
         {/* 404 for unmatched routes */}

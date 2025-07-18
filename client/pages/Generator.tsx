@@ -32,6 +32,13 @@ import { useNavigation } from "../components/navigation/hooks/useNavigation";
 import { useOnceUITheme } from "../hooks/use-once-ui-theme";
 import { useTranslation } from "../hooks/use-translation";
 import { useAuth } from "../hooks/use-auth";
+import {
+  useGenerateImage,
+  useSaveImage,
+  useUserStats,
+  useStyles,
+} from "../hooks/use-api";
+import type { Style } from "@shared/api";
 
 export default function Generator() {
   const { theme } = useOnceUITheme();
@@ -141,6 +148,23 @@ export default function Generator() {
   const [imageProcessed, setImageProcessed] = useState<boolean>(false);
   const [processedImageData, setProcessedImageData] = useState(null);
 
+  // API hooks
+  const {
+    generateImage,
+    isGenerating: isGeneratingAPI,
+    error: generateError,
+  } = useGenerateImage();
+  const { saveImage, isSaving, error: saveError } = useSaveImage();
+  const { getUserStats } = useUserStats();
+  const { getStyles } = useStyles();
+
+  // User stats
+  const [userStats, setUserStats] = useState<{
+    remainingGenerations: number;
+    maxGenerations: number;
+  } | null>(null);
+  const [availableStyles, setAvailableStyles] = useState<Style[]>([]);
+
   // Enhanced upload states
   const [uploadingFiles, setUploadingFiles] = useState<Map<string, number>>(
     new Map(),
@@ -148,10 +172,65 @@ export default function Generator() {
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(new Set());
   const [failedFiles, setFailedFiles] = useState<Set<string>>(new Set());
 
-  // Initialize Voxel 3D style as default
+  // Initialize component and load data
   useEffect(() => {
-    handleStyleSelection("voxel-3d");
-  }, []);
+    const initializeData = async () => {
+      try {
+        console.log("Starting data initialization...");
+
+        // Load user stats with fallback
+        try {
+          const stats = await getUserStats();
+          setUserStats({
+            remainingGenerations: stats.remainingGenerations,
+            maxGenerations: stats.maxGenerations,
+          });
+          console.log("User stats loaded successfully");
+        } catch (userError) {
+          console.warn("Failed to load user stats, using defaults:", userError);
+          // Set default values if API fails
+          setUserStats({
+            remainingGenerations: 30,
+            maxGenerations: 30,
+          });
+        }
+
+        // Load available styles with fallback
+        try {
+          const stylesData = await getStyles();
+          setAvailableStyles(stylesData.styles);
+          console.log("Styles loaded successfully");
+
+          // Set default style to first available or voxel-3d
+          const defaultStyle =
+            stylesData.styles.find((s) => s.name === "Voxel 3D") ||
+            stylesData.styles[0];
+          if (defaultStyle) {
+            handleStyleSelection(defaultStyle.id);
+          }
+        } catch (stylesError) {
+          console.warn(
+            "Failed to load styles, using hardcoded data:",
+            stylesError,
+          );
+          // Fallback to existing hardcoded data
+          setAvailableStyles([]);
+          handleStyleSelection("voxel-3d");
+        }
+      } catch (error) {
+        console.error("Failed to initialize data:", error);
+        // Ultimate fallback to existing hardcoded data
+        setUserStats({
+          remainingGenerations: 30,
+          maxGenerations: 30,
+        });
+        setAvailableStyles([]);
+        handleStyleSelection("voxel-3d");
+      }
+    };
+
+    initializeData();
+  }, [getUserStats, getStyles]);
 
   // Confetti celebration effect
   const triggerCelebration = () => {
@@ -190,9 +269,39 @@ export default function Generator() {
   };
 
   // Action button handlers
-  const handleSaveToLibrary = () => {
-    console.log("Saving to library...");
-    // Implementation for saving to user's library
+  const handleSaveToLibrary = async () => {
+    if (!generatedResultImage) return;
+
+    try {
+      const selectedStyle =
+        availableStyles.find((style) => style.id === selectedStyleId) ||
+        STYLE_DATA.find((style) => style.id === selectedStyleId);
+
+      const result = await saveImage({
+        imageUrl: generatedResultImage,
+        prompt: promptText,
+        styleName:
+          "name" in (selectedStyle || {})
+            ? (selectedStyle as Style).name
+            : "title" in (selectedStyle || {})
+              ? (selectedStyle as (typeof STYLE_DATA)[0]).title
+              : "Unknown Style",
+        colors: customColors.map((c) => c.hex),
+      });
+
+      if (result.success) {
+        alert("Image saved to your library!");
+      } else {
+        throw new Error(result.error || "Save failed");
+      }
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to save image. Please try again.",
+      );
+    }
   };
 
   const handleRemoveBackground = () => {
@@ -319,35 +428,75 @@ export default function Generator() {
   };
 
   const handleGenerate = async () => {
-    if (promptText.trim().length === 0 || isGenerating) return;
+    if (promptText.trim().length === 0 || isGenerating || isGeneratingAPI)
+      return;
+
+    // Check user quota
+    if (userStats && userStats.remainingGenerations <= 0) {
+      alert(
+        "You have reached your monthly generation limit. Please wait until next month.",
+      );
+      return;
+    }
 
     setIsGenerating(true);
-    setShowActionButtons(false); // Reset action buttons
-    setGeneratedResultImage(null); // Reset previous result
-    // Simulate generation
-    setTimeout(() => {
-      setIsGenerating(false);
-      setImageProcessed(true); // Switch to processed view after generation
+    setShowActionButtons(false);
+    setGeneratedResultImage(null);
 
-      // If Voxel 3D style is selected, show the result image
-      const selectedStyle = STYLE_DATA.find(
-        (style) => style.id === selectedStyleId,
-      );
-      if (selectedStyle?.resultImage) {
-        setGeneratedResultImage(selectedStyle.resultImage);
+    try {
+      // Find the selected style
+      const selectedStyle =
+        availableStyles.find((style) => style.id === selectedStyleId) ||
+        STYLE_DATA.find((style) => style.id === selectedStyleId);
 
-        // Trigger celebration effect after image loads
+      if (!selectedStyle) {
+        throw new Error("Selected style not found");
+      }
+
+      const result = await generateImage({
+        prompt: promptText,
+        styleId: selectedStyleId,
+        colors: customColors.map((c) => c.hex),
+        uploadedImageUrl:
+          uploadedFiles.length > 0 ? "uploaded-image-url" : undefined,
+      });
+
+      if (result.success && result.imageUrl) {
+        setGeneratedResultImage(result.imageUrl);
+        setImageProcessed(true);
+
+        // Update user stats
+        if (result.remainingGenerations !== undefined) {
+          setUserStats((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  remainingGenerations: result.remainingGenerations!,
+                }
+              : null,
+          );
+        }
+
+        // Trigger celebration effect
         setTimeout(() => {
           triggerCelebration();
-          // Show action buttons after confetti starts
           setTimeout(() => {
             setShowActionButtons(true);
           }, 800);
         }, 500);
+      } else {
+        throw new Error(result.error || "Generation failed");
       }
-
-      console.log("Generating 3D object:", promptText);
-    }, 3000);
+    } catch (error) {
+      console.error("Generation failed:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Generation failed. Please try again.",
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -473,7 +622,7 @@ export default function Generator() {
 
               {/* Project Details */}
               <div className="flex flex-col items-start self-stretch">
-                <div className="flex items-center self-stretch rounded-md">
+                <div className="flex items-center justify-between self-stretch rounded-md">
                   <div className="flex px-1.5 items-center">
                     <div
                       className="text-xs font-normal leading-4 tracking-[-0.1px] max-w-[174px] overflow-hidden text-ellipsis text-foreground"
@@ -492,6 +641,32 @@ export default function Generator() {
                       </span>
                     </div>
                   </div>
+
+                  {/* User Quota Display */}
+                  {userStats && (
+                    <div className="flex items-center gap-2 px-2">
+                      <div className="text-[10px] font-medium text-muted-foreground">
+                        {userStats.remainingGenerations}/
+                        {userStats.maxGenerations}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-8 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              userStats.remainingGenerations > 5
+                                ? "bg-green-500"
+                                : userStats.remainingGenerations > 2
+                                  ? "bg-yellow-500"
+                                  : "bg-red-500"
+                            }`}
+                            style={{
+                              width: `${(userStats.remainingGenerations / userStats.maxGenerations) * 100}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1134,7 +1309,7 @@ export default function Generator() {
                   </motion.div>
                 )}
 
-                {isGenerating && (
+                {(isGenerating || isGeneratingAPI) && (
                   <motion.div
                     className="flex items-center gap-2 px-2 py-1 rounded-md"
                     style={{ backgroundColor: "rgba(144, 19, 254, 0.1)" }}
@@ -1182,10 +1357,15 @@ export default function Generator() {
                   y: promptText.trim().length > 0 ? -1 : 0,
                 }}
                 whileTap={{ scale: 0.95 }}
-                disabled={promptText.trim().length === 0 || isGenerating}
+                disabled={
+                  promptText.trim().length === 0 ||
+                  isGenerating ||
+                  isGeneratingAPI ||
+                  (userStats?.remainingGenerations || 0) <= 0
+                }
                 onClick={handleGenerate}
               >
-                {isGenerating ? (
+                {isGenerating || isGeneratingAPI ? (
                   <motion.div
                     className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                     animate={{ rotate: 360 }}
@@ -1220,10 +1400,13 @@ export default function Generator() {
           ) : (
             <div className="processed-image-container w-full h-full flex flex-col items-center justify-center gap-4 p-8">
               {generatedResultImage ? (
-                <div className="flex flex-col items-center gap-4 w-full max-w-md">
+                <div
+                  className="flex flex-col items-center gap-4 w-full max-w-md"
+                  style={{ alignSelf: "center" }}
+                >
                   {/* Preview Image with Fade-in Animation */}
                   <motion.div
-                    className="w-64 h-64 rounded-2xl overflow-hidden border border-border bg-card shadow-lg"
+                    className="w-[600px] h-[600px] rounded-2xl overflow-hidden border border-border bg-card shadow-lg"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3 }}
