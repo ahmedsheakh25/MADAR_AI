@@ -13,6 +13,7 @@
 @import "@once-ui-system/core/css/styles.css";
 @import "@once-ui-system/core/css/tokens.css";
 
+/* Tailwind CSS Directives - These are processed by PostCSS with the Tailwind plugin */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
