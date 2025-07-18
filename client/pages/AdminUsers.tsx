@@ -66,7 +66,11 @@ const MOCK_ADMIN_USERS: AdminUser[] = [
 export default function AdminUsers() {
   const { t } = useTranslation();
   const { navigateToPath } = useNavigation();
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const {
+    user: currentUser,
+    isAuthenticated,
+    isLoading: authLoading,
+  } = useAuth();
 
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
