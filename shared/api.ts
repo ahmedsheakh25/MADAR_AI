@@ -20,8 +20,30 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  profilePicture?: string;
   generationCount: number;
   resetDate: string;
+}
+
+// Authentication types
+export interface AuthResponse {
+  success: boolean;
+  user?: User;
+  token?: string;
+  isNewUser?: boolean;
+  error?: string;
+}
+
+export interface GoogleAuthUrlResponse {
+  success: boolean;
+  authUrl?: string;
+  error?: string;
+}
+
+export interface LogoutResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
 }
 
 export interface UserStatsResponse {

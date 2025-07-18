@@ -1,28 +1,22 @@
 import { DatabaseService } from '../lib/database.js';
+import { requireAuth, createUnauthorizedResponse } from '../lib/middleware.js';
 import type { GalleryResponse } from '../shared/api.js';
 
 export const runtime = 'edge';
 
 export async function GET(req: Request) {
-
   try {
+    // Require authentication
+    const authResult = await requireAuth(req);
+    if (!authResult.success || !authResult.user) {
+      return createUnauthorizedResponse(authResult.error);
+    }
+
     const url = new URL(req.url);
     const limit = parseInt(url.searchParams.get('limit') || '50', 10);
     const offset = parseInt(url.searchParams.get('offset') || '0', 10);
 
-    // Get user from request (for now, using dev user)
-    const userEmail = 'dev@example.com';
-    const user = await DatabaseService.findUserByEmail(userEmail);
-
-    if (!user) {
-      const responseData: GalleryResponse = {
-        images: [],
-        total: 0,
-      };
-      return new Response(JSON.stringify(responseData), {
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+    const user = authResult.user;
 
     // Get user's images
     const images = await DatabaseService.getUserImages(user.id, limit, offset);

@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "./db.js";
-import { usersTable, imagesTable, stylesTable } from "./schema.js";
-import type { User, NewUser, Image, NewImage, Style } from "./schema.js";
+import { usersTable, imagesTable, stylesTable, sessionsTable } from "./schema.js";
+import type { User, NewUser, Image, NewImage, Style, Session, NewSession } from "./schema.js";
 
 export class DatabaseService {
   // User management
@@ -16,6 +16,43 @@ export class DatabaseService {
       .from(usersTable)
       .where(eq(usersTable.email, email));
     return user || null;
+  }
+
+  static async findUserByGoogleId(googleId: string): Promise<User | null> {
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.googleId, googleId));
+    return user || null;
+  }
+
+  static async createUserFromGoogle(googleUser: {
+    email: string;
+    name: string;
+    googleId: string;
+    profilePicture?: string;
+  }): Promise<User> {
+    const [user] = await db
+      .insert(usersTable)
+      .values({
+        email: googleUser.email,
+        name: googleUser.name,
+        googleId: googleUser.googleId,
+        profilePicture: googleUser.profilePicture,
+        generationCount: 0,
+        lastLoginAt: new Date(),
+      })
+      .returning();
+    return user;
+  }
+
+  static async updateLastLogin(userId: string): Promise<User> {
+    const [user] = await db
+      .update(usersTable)
+      .set({ lastLoginAt: new Date() })
+      .where(eq(usersTable.id, userId))
+      .returning();
+    return user;
   }
 
   static async getUserById(id: string): Promise<User | null> {
@@ -142,5 +179,43 @@ export class DatabaseService {
       .select({ count: sql<number>`count(*)` })
       .from(usersTable);
     return result.count;
+  }
+
+  // Session management
+  static async createSession(sessionData: NewSession): Promise<Session> {
+    const [session] = await db
+      .insert(sessionsTable)
+      .values(sessionData)
+      .returning();
+    return session;
+  }
+
+  static async findSessionByToken(token: string): Promise<Session | null> {
+    const [session] = await db
+      .select()
+      .from(sessionsTable)
+      .where(eq(sessionsTable.token, token));
+    return session || null;
+  }
+
+  static async deleteSession(token: string): Promise<boolean> {
+    const result = await db
+      .delete(sessionsTable)
+      .where(eq(sessionsTable.token, token));
+    return result.rowCount > 0;
+  }
+
+  static async deleteExpiredSessions(): Promise<number> {
+    const result = await db
+      .delete(sessionsTable)
+      .where(sql`${sessionsTable.expiresAt} < ${new Date()}`);
+    return result.rowCount;
+  }
+
+  static async deleteUserSessions(userId: string): Promise<number> {
+    const result = await db
+      .delete(sessionsTable)
+      .where(eq(sessionsTable.userId, userId));
+    return result.rowCount;
   }
 } 

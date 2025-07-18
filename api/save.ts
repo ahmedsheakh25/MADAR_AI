@@ -1,11 +1,17 @@
 import { DatabaseService } from '../lib/database.js';
+import { requireAuth, createUnauthorizedResponse } from '../lib/middleware.js';
 import type { SaveImageRequest, SaveImageResponse } from '../shared/api.js';
 
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
-
   try {
+    // Require authentication
+    const authResult = await requireAuth(req);
+    if (!authResult.success || !authResult.user) {
+      return createUnauthorizedResponse(authResult.error);
+    }
+
     const body: SaveImageRequest = await req.json();
     const { imageUrl, prompt, styleName, colors } = body;
 
@@ -20,19 +26,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Get user from request (for now, using dev user)
-    const userEmail = 'dev@example.com';
-    const user = await DatabaseService.findUserByEmail(userEmail);
-
-    if (!user) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'User not found. Please sign in.',
-        }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    const user = authResult.user;
 
     // Save image to database
     const savedImage = await DatabaseService.saveImage({

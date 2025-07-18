@@ -1,4 +1,5 @@
 import { DatabaseService } from '../lib/database.js';
+import { requireAuth, createUnauthorizedResponse } from '../lib/middleware.js';
 import type { UserStatsResponse } from '../shared/api.js';
 
 export const runtime = 'edge';
@@ -6,20 +7,14 @@ export const runtime = 'edge';
 const MAX_GENERATIONS_PER_MONTH = 30;
 
 export async function GET(req: Request) {
-
   try {
-    // Get user from request (for now, using dev user)
-    const userEmail = 'dev@example.com';
-    let user = await DatabaseService.findUserByEmail(userEmail);
-
-    if (!user) {
-      // Create new user if doesn't exist
-      user = await DatabaseService.createUser({
-        email: userEmail,
-        name: 'Dev User',
-        generationCount: 0,
-      });
+    // Require authentication
+    const authResult = await requireAuth(req);
+    if (!authResult.success || !authResult.user) {
+      return createUnauthorizedResponse(authResult.error);
     }
+
+    let user = authResult.user;
 
     // Check if we need to reset the count for new month
     const currentDate = new Date();
