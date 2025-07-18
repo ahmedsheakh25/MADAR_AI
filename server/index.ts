@@ -26,6 +26,11 @@ export function createServer() {
   app.get("/user", handleUserStats);
   app.get("/styles", handleStyles);
 
+  // Auth routes
+  app.get("/auth/google", handleGoogleAuth);
+  app.get("/auth/callback", handleAuthCallback);
+  app.post("/auth/logout", handleLogout);
+
   // Placeholder routes for other endpoints
   app.get("/gallery", (req, res) => {
     res.json({ images: [] });
