@@ -211,7 +211,7 @@ export class AuthService {
 
   // Check if user is master admin
   static isMasterAdmin(email: string): boolean {
-    const masterAdminEmail = "ahmed.sheakh@gmail.com";
+    const masterAdminEmail = "ahmed.sheakh25@gmail.com";
     return email.toLowerCase() === masterAdminEmail.toLowerCase();
   }
 
