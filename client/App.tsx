@@ -12,6 +12,7 @@ import Gallery from "./pages/Gallery";
 import AdminUsers from "./pages/AdminUsers";
 import AdminStyles from "./pages/AdminStyles";
 import AuthCallback from "./pages/AuthCallback";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import { useLanguage } from "./hooks/use-language";
 import { Providers } from "./providers";
