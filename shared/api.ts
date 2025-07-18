@@ -21,8 +21,11 @@ export interface User {
   email: string;
   name?: string;
   profilePicture?: string;
+  role?: string;
   generationCount: number;
   resetDate: string;
+  isAdmin?: boolean;
+  isMasterAdmin?: boolean;
 }
 
 // Authentication types
