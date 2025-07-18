@@ -14,6 +14,8 @@ import { TooltipProvider } from "@/components/design-system";
 import DockNavigation from "./components/navigation/DockNavigation";
 import { LanguageRoute } from "./components/routing/LanguageRoute";
 import { suppressResizeObserverErrors } from "./lib/resize-observer-fix";
+import { ResponsiveLayout } from "./components/ResponsiveLayout";
+import { ResponsiveValidator } from "./components/ResponsiveValidator";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -22,95 +24,98 @@ function AppWithLanguage() {
   const { language } = useLanguage();
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Root redirect to default language */}
-        <Route path="/" element={<Navigate to={`/${language}`} replace />} />
+    <ResponsiveLayout>
+      <BrowserRouter>
+        <Routes>
+          {/* Root redirect to default language */}
+          <Route path="/" element={<Navigate to={`/${language}`} replace />} />
 
-        {/* Language-prefixed routes */}
-        <Route
-          path="/:lang"
-          element={
-            <LanguageRoute>
-              <Index />
-            </LanguageRoute>
-          }
-        />
-        <Route
-          path="/:lang/login"
-          element={
-            <LanguageRoute>
-              <Login />
-            </LanguageRoute>
-          }
-        />
-        <Route
-          path="/:lang/gallery"
-          element={
-            <LanguageRoute>
-              <Gallery />
-            </LanguageRoute>
-          }
-        />
-        <Route
-          path="/:lang/my-images"
-          element={
-            <LanguageRoute>
-              <Gallery />
-            </LanguageRoute>
-          }
-        />
-        <Route
-          path="/:lang/signup"
-          element={
-            <LanguageRoute>
-              <Login />
-            </LanguageRoute>
-          }
-        />
-        <Route
-          path="/:lang/forgot-password"
-          element={
-            <LanguageRoute>
-              <Login />
-            </LanguageRoute>
-          }
-        />
+          {/* Language-prefixed routes */}
+          <Route
+            path="/:lang"
+            element={
+              <LanguageRoute>
+                <Index />
+              </LanguageRoute>
+            }
+          />
+          <Route
+            path="/:lang/login"
+            element={
+              <LanguageRoute>
+                <Login />
+              </LanguageRoute>
+            }
+          />
+          <Route
+            path="/:lang/gallery"
+            element={
+              <LanguageRoute>
+                <Gallery />
+              </LanguageRoute>
+            }
+          />
+          <Route
+            path="/:lang/my-images"
+            element={
+              <LanguageRoute>
+                <Gallery />
+              </LanguageRoute>
+            }
+          />
+          <Route
+            path="/:lang/signup"
+            element={
+              <LanguageRoute>
+                <Login />
+              </LanguageRoute>
+            }
+          />
+          <Route
+            path="/:lang/forgot-password"
+            element={
+              <LanguageRoute>
+                <Login />
+              </LanguageRoute>
+            }
+          />
 
-        {/* Legacy routes without language prefix - redirect to language version */}
-        <Route
-          path="/login"
-          element={<Navigate to={`/${language}/login`} replace />}
-        />
-        <Route
-          path="/gallery"
-          element={<Navigate to={`/${language}/gallery`} replace />}
-        />
-        <Route
-          path="/my-images"
-          element={<Navigate to={`/${language}/my-images`} replace />}
-        />
-        <Route
-          path="/signup"
-          element={<Navigate to={`/${language}/signup`} replace />}
-        />
-        <Route
-          path="/forgot-password"
-          element={<Navigate to={`/${language}/forgot-password`} replace />}
-        />
+          {/* Legacy routes without language prefix - redirect to language version */}
+          <Route
+            path="/login"
+            element={<Navigate to={`/${language}/login`} replace />}
+          />
+          <Route
+            path="/gallery"
+            element={<Navigate to={`/${language}/gallery`} replace />}
+          />
+          <Route
+            path="/my-images"
+            element={<Navigate to={`/${language}/my-images`} replace />}
+          />
+          <Route
+            path="/signup"
+            element={<Navigate to={`/${language}/signup`} replace />}
+          />
+          <Route
+            path="/forgot-password"
+            element={<Navigate to={`/${language}/forgot-password`} replace />}
+          />
 
-        {/* 404 for unmatched routes */}
-        <Route
-          path="*"
-          element={
-            <LanguageRoute>
-              <NotFound />
-            </LanguageRoute>
-          }
-        />
-      </Routes>
-      <DockNavigation />
-    </BrowserRouter>
+          {/* 404 for unmatched routes */}
+          <Route
+            path="*"
+            element={
+              <LanguageRoute>
+                <NotFound />
+              </LanguageRoute>
+            }
+          />
+        </Routes>
+        <DockNavigation />
+        <ResponsiveValidator />
+      </BrowserRouter>
+    </ResponsiveLayout>
   );
 }
 
@@ -134,6 +139,18 @@ const App = () => {
 
     // Suppress ResizeObserver errors
     suppressResizeObserverErrors();
+
+    // Load responsive audit in development
+    if (process.env.NODE_ENV === 'development') {
+      import('./utils/responsiveAudit').then(({ auditResponsive }) => {
+        setTimeout(() => {
+          console.log('🔍 Running Responsive Tests...');
+          auditResponsive();
+        }, 2000);
+      }).catch(() => {
+        console.log('Responsive audit not available');
+      });
+    }
   }, []);
 
   return (

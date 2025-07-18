@@ -10,6 +10,9 @@
 @import "@once-ui-system/core/css/styles.css";
 @import "@once-ui-system/core/css/tokens.css";
 
+/* Responsive System */
+@import "./styles/responsive-system.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -133,15 +136,10 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Responsive layout will override these styles */
     background: rgb(0, 0, 0);
     margin: 0;
     padding: 0;
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
-    max-height: 100vh;
-    max-height: 100dvh;
-    overflow: hidden;
-    padding-bottom: 80px; /* Reduced space for dock navigation */
     /* Smooth background transitions */
     transition: background var(--theme-transition-duration)
       var(--theme-transition-easing);
@@ -156,15 +154,9 @@
     );
   }
 
-  /* Root container for full-screen layout */
+  /* Root container - managed by ResponsiveLayout */
   #root {
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
-    max-height: 100vh;
-    max-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    /* Responsive layout will override these styles */
   }
 
   /* RTL Support */
