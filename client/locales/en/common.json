@@ -202,6 +202,16 @@
       "close": "Close"
     }
   },
+  "auth": {
+    "callback": {
+      "authenticating": "Authenticating...",
+      "pleaseWait": "Please wait while we sign you in",
+      "success": "Authentication Successful!",
+      "error": "Authentication Failed",
+      "redirecting": "Redirecting to your dashboard...",
+      "redirectingToLogin": "Redirecting to login page..."
+    }
+  },
   "login": {
     "title": "Welcome Back",
     "freeText": "✨ Free For Arabic designers Community"
