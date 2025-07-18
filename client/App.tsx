@@ -135,6 +135,10 @@ function AppWithLanguage() {
           path="/privacy"
           element={<Navigate to={`/${language}/privacy`} replace />}
         />
+        <Route
+          path="/terms"
+          element={<Navigate to={`/${language}/terms`} replace />}
+        />
 
         {/* 404 for unmatched routes */}
         <Route
