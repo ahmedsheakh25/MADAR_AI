@@ -44,4 +44,4 @@ export type Image = typeof imagesTable.$inferSelect;
 export type NewImage = typeof imagesTable.$inferInsert;
 
 export type Style = typeof stylesTable.$inferSelect;
-export type NewStyle = typeof stylesTable.$inferInsert;
+export type NewStyle = typeof stylesTable.$inferInsert; 

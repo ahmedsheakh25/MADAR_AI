@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
-import { db } from "../db";
-import { usersTable, imagesTable, stylesTable } from "../db/schema";
-import type { User, NewUser, Image, NewImage, Style } from "../db/schema";
+import { db } from "./db";
+import { usersTable, imagesTable, stylesTable } from "./schema";
+import type { User, NewUser, Image, NewImage, Style } from "./schema";
 
 export class DatabaseService {
   // User management
@@ -143,4 +143,4 @@ export class DatabaseService {
       .from(usersTable);
     return result.count;
   }
-}
+} 

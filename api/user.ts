@@ -1,0 +1,75 @@
+import { DatabaseService } from '../lib/database';
+import type { UserStatsResponse } from '../shared/api';
+
+export const runtime = 'edge';
+
+const MAX_GENERATIONS_PER_MONTH = 30;
+
+export default async function handler(req: Request) {
+  if (req.method !== 'GET') {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Method not allowed' }),
+      { status: 405, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  try {
+    // Get user from request (for now, using dev user)
+    const userEmail = 'dev@example.com';
+    let user = await DatabaseService.findUserByEmail(userEmail);
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = await DatabaseService.createUser({
+        email: userEmail,
+        name: 'Dev User',
+        generationCount: 0,
+      });
+    }
+
+    // Check if we need to reset the count for new month
+    const currentDate = new Date();
+    const resetDate = user.resetDate ? new Date(user.resetDate) : new Date();
+    const monthsDiff =
+      (currentDate.getFullYear() - resetDate.getFullYear()) * 12 +
+      currentDate.getMonth() -
+      resetDate.getMonth();
+
+    if (monthsDiff >= 1) {
+      user = await DatabaseService.resetUserGenerationCount(user.id);
+    }
+
+    const userGenerationCount = user.generationCount || 0;
+    const remainingGenerations = Math.max(0, MAX_GENERATIONS_PER_MONTH - userGenerationCount);
+
+    const responseData: UserStatsResponse = {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name || '',
+        generationCount: userGenerationCount,
+        resetDate: user.resetDate?.toISOString() || new Date().toISOString(),
+      },
+      remainingGenerations,
+      maxGenerations: MAX_GENERATIONS_PER_MONTH,
+    };
+
+    return new Response(JSON.stringify(responseData), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    console.error('User stats endpoint error:', error);
+    
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Failed to get user stats',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+} 

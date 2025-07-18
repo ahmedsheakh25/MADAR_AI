@@ -4,7 +4,7 @@ import { defineConfig } from "drizzle-kit";
 config({ path: ".env" });
 
 export default defineConfig({
-  schema: "./server/db/schema.ts",
+  schema: "./lib/schema.ts",
   out: "./migrations",
   dialect: "postgresql", // Neon uses Postgres dialect
   dbCredentials: {
