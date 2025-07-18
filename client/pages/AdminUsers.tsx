@@ -21,6 +21,7 @@ import {
 } from "../components/design-system";
 import { useNavigation } from "../components/navigation/hooks/useNavigation";
 import { useTranslation } from "../hooks/use-translation";
+import { useAuth } from "../hooks/use-auth";
 import type { AdminUser } from "@shared/api";
 
 // Mock admin data - this would come from API in production
