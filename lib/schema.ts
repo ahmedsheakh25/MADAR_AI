@@ -5,6 +5,7 @@ import {
   integer,
   timestamp,
   jsonb,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 // Users table
@@ -23,7 +24,9 @@ export const usersTable = pgTable("users", {
 // Sessions table for managing user sessions
 export const sessionsTable = pgTable("sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").references(() => usersTable.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").references(() => usersTable.id, {
+    onDelete: "cascade",
+  }),
   token: text("token").notNull().unique(),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
@@ -60,4 +63,4 @@ export type Image = typeof imagesTable.$inferSelect;
 export type NewImage = typeof imagesTable.$inferInsert;
 
 export type Style = typeof stylesTable.$inferSelect;
-export type NewStyle = typeof stylesTable.$inferInsert; 
+export type NewStyle = typeof stylesTable.$inferInsert;
