@@ -66,7 +66,15 @@ const Hero211 = () => {
     border: 1px solid hsl(var(--border));
   }
   
-  @media (min-width: 640px) {
+    @media (min-width: 768px) {
+    .swiper {
+      width: 280px;
+      height: 310px;
+      border-radius: 25px;
+    }
+  }
+
+  @media (min-width: 1440px) {
     .swiper {
       width: 300px;
       height: 330px;

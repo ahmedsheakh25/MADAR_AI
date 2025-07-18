@@ -3,7 +3,6 @@ import { ChevronUp, Plus, ArrowUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { StyleCard, ColorPicker, Slider } from "../components/design-system";
 import { Hero211 } from "../components/hero/Hero211";
-import { useResponsive } from "../hooks/useResponsive";
 
 // Style selection data for generative styles
 const STYLE_DATA = [
@@ -34,7 +33,6 @@ const STYLE_DATA = [
 ];
 
 export default function Index() {
-  const { isMobile, isTablet, width, height } = useResponsive();
   const [isStyleSelectionExpanded, setIsStyleSelectionExpanded] =
     useState(true);
   const [isCustomColorsExpanded, setIsCustomColorsExpanded] = useState(true);
@@ -67,17 +65,15 @@ export default function Index() {
 
   return (
     <div
-      className="responsive-container overflow-hidden-all"
+      className="min-h-screen flex items-center justify-center bg-white font-inter"
       style={{
         background: "var(--Shade-2-100, #F8F7F7)",
-        height: '100%',
-        maxHeight: '100%'
       }}
     >
-      <div className={`${isMobile ? 'layout-vertical' : 'layout-horizontal'} gap-4 h-full`}>
+      <div className="w-full max-w-[1440px] h-[1024px] flex items-center gap-8 p-8">
         {/* Left Sidebar */}
         <div
-          className={`layout-sidebar flex flex-col justify-between items-center rounded-[20px] border border-[var(--Stroke-01)] bg-[var(--Surface-01)] overflow-y-auto-safe ${isMobile ? 'order-2 max-h-[40vh]' : ''}`}
+          className="w-[442px] flex flex-col justify-between items-center h-full rounded-[20px] border border-[var(--Stroke-01)] bg-[var(--Surface-01)]"
           style={{
             borderColor: "var(--Stroke-01, #ECECEC)",
             backgroundColor: "var(--Surface-01, #FCFCFC)",
@@ -930,7 +926,7 @@ export default function Index() {
 
         {/* Right Sidebar - Canvas/Preview Area */}
         <div
-          className={`layout-main flex flex-col items-center justify-center rounded-[20px] border overflow-hidden ${isMobile ? 'order-1 min-h-[60vh]' : ''}`}
+          className="flex flex-col items-center justify-center flex-1 self-stretch rounded-[20px] border"
           style={{
             borderColor: "var(--Stroke-01, #ECECEC)",
             backgroundColor: "var(--Surface-01, #FCFCFC)",
