@@ -66,11 +66,77 @@ const MOCK_ADMIN_USERS: AdminUser[] = [
 export default function AdminUsers() {
   const { t } = useTranslation();
   const { navigateToPath } = useNavigation();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
-  const [users, setUsers] = useState<AdminUser[]>(MOCK_ADMIN_USERS);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Check admin access
+  useEffect(() => {
+    if (!authLoading && (!isAuthenticated || !user?.isAdmin)) {
+      navigateToPath({ path: "/generator" });
+      return;
+    }
+  }, [authLoading, isAuthenticated, user, navigateToPath]);
+
+  // Fetch users data
+  useEffect(() => {
+    if (!user?.isAdmin || authLoading) return;
+
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const token = localStorage.getItem("madar_auth_token");
+        if (!token) throw new Error("No auth token");
+
+        const response = await fetch("/api/admin/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setUsers(data.users || []);
+        } else {
+          throw new Error(data.error || "Failed to fetch users");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load users");
+        console.error("Failed to fetch users:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [user?.isAdmin, authLoading]);
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 mx-auto border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <h2 className="text-xl font-semibold text-foreground">
+            Checking permissions...
+          </h2>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not admin (will redirect)
+  if (!user?.isAdmin) {
+    return null;
+  }
 
   // Filter users based on search query
   const filteredUsers = users.filter(
