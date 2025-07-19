@@ -103,39 +103,58 @@ export async function POST(req: Request) {
     }
 
     console.log("🎨 Starting image generation with AI SDK v5...");
+    console.log("Enhanced prompt:", enhancedPrompt);
+    console.log("Upload image URL:", uploadedImageUrl);
 
-    // Generate image using AI SDK v5 with FAL provider
+    // Generate image using AI SDK v5 with FAL provider (simplified for debugging)
     const result = await generateImage({
       model: fal.image("fal-ai/fast-sdxl"),
       prompt: enhancedPrompt,
-      aspectRatio: "1:1", // Square HD equivalent
-      n: 1,
+      aspectRatio: "1:1",
+      // Start with basic options only
       providerOptions: {
         fal: {
-          num_inference_steps: uploadedImageUrl ? 20 : 25,
+          num_inference_steps: 25,
           guidance_scale: 7.5,
           enable_safety_checker: true,
-          scheduler: "DPM++ 2M Karras",
-          safety_tolerance: 2,
+          // Remove advanced options that might be causing issues
+          // scheduler: "DPM++ 2M Karras",
+          // safety_tolerance: 2,
           ...(uploadedImageUrl && {
             image_url: uploadedImageUrl,
-            strength: 0.8,
+            // strength: 0.8,
           }),
         },
       },
-      headers: {
-        "User-Agent": "MADAR-AI/1.0",
-      },
+    });
+
+    console.log("✅ AI SDK result received:", {
+      hasImage: !!result.image,
+      hasBase64: !!result.image?.base64,
+      hasUint8Array: !!result.image?.uint8Array,
     });
 
     // Extract image URL from AI SDK v5 response
     let imageUrl: string;
     
+    console.log("🔍 Debugging image response structure:", {
+      resultKeys: Object.keys(result),
+      imageKeys: result.image ? Object.keys(result.image) : null,
+      resultType: typeof result,
+      imageType: typeof result.image
+    });
+    
     // AI SDK v5 returns image with base64 or uint8Array data
-    if (result.image.base64) {
-      // Convert base64 to a data URL if needed, or handle as required by your app
+    if (result.image?.base64) {
+      console.log("✅ Using base64 data");
       imageUrl = `data:image/png;base64,${result.image.base64}`;
+    } else if (result.image?.uint8Array) {
+      console.log("✅ Converting uint8Array to base64");
+      // Convert uint8Array to base64
+      const base64 = Buffer.from(result.image.uint8Array).toString('base64');
+      imageUrl = `data:image/png;base64,${base64}`;
     } else {
+      console.error("❌ No image data found in result:", result);
       throw new Error("No image data received from AI service");
     }
 
@@ -172,19 +191,28 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Image generation failed:", error);
+    console.error("Error details:", {
+      name: error?.name,
+      message: error?.message,
+      stack: error?.stack,
+      cause: error?.cause
+    });
 
-    // AI SDK v5 standard error handling
+    // AI SDK v5 standard error handling with detailed logging
     let userFriendlyMessage = "Image generation failed. Please try again.";
     let httpStatus = 500;
 
     // Handle AI SDK v5 standard errors
     if (error && typeof error === 'object' && 'name' in error) {
+      console.log("AI SDK Error type:", error.name);
+      
       switch (error.name) {
         case 'AI_NoImageGeneratedError':
           userFriendlyMessage = "Unable to generate image. Please try a different prompt.";
           httpStatus = 400;
           break;
         case 'AI_APICallError':
+          console.log("API Call Error details:", error.message);
           if (error.message?.toLowerCase().includes('content policy')) {
             userFriendlyMessage = "Your prompt contains content that violates our content policy. Please try a different prompt.";
             httpStatus = 400;
@@ -197,8 +225,15 @@ export async function POST(req: Request) {
           }
           break;
         default:
+          console.log("Unknown AI SDK error:", error.name, error.message);
           // Keep default message
           break;
+      }
+    } else if (error instanceof Error) {
+      console.log("Standard Error:", error.message);
+      if (error.message.includes('FAL_KEY') || error.message.includes('API key')) {
+        userFriendlyMessage = "Service configuration error. Please try again later.";
+        httpStatus = 503;
       }
     }
 
