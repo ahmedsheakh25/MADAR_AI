@@ -1,15 +1,29 @@
-import { DatabaseService } from '../lib/database.js';
-import { requireAuth, createUnauthorizedResponse } from '../lib/middleware.js';
-import type { UserStatsResponse } from '../shared/api.js';
+import { DatabaseService } from "../lib/database.js";
+import { requireAuth, createUnauthorizedResponse } from "../lib/middleware.js";
+import type { UserStatsResponse } from "../shared/api.js";
 
-export const runtime = 'edge';
+export const runtime = "edge";
 
 const MAX_GENERATIONS_PER_MONTH = 30;
 
 export async function GET(req: Request) {
   try {
+    console.log("User stats request:", {
+      hasAuthHeader: !!req.headers.get("Authorization"),
+      authHeaderPrefix:
+        req.headers.get("Authorization")?.substring(0, 15) + "...",
+      timestamp: new Date().toISOString(),
+    });
+
     // Require authentication
     const authResult = await requireAuth(req);
+    console.log("Auth result:", {
+      success: authResult.success,
+      hasUser: !!authResult.user,
+      error: authResult.error,
+      userId: authResult.user?.id?.substring(0, 8) + "..." || "None",
+    });
+
     if (!authResult.success || !authResult.user) {
       return createUnauthorizedResponse(authResult.error);
     }
@@ -29,13 +43,16 @@ export async function GET(req: Request) {
     }
 
     const userGenerationCount = user.generationCount || 0;
-    const remainingGenerations = Math.max(0, MAX_GENERATIONS_PER_MONTH - userGenerationCount);
+    const remainingGenerations = Math.max(
+      0,
+      MAX_GENERATIONS_PER_MONTH - userGenerationCount,
+    );
 
     const responseData: UserStatsResponse = {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name || '',
+        name: user.name || "",
         generationCount: userGenerationCount,
         resetDate: user.resetDate?.toISOString() || new Date().toISOString(),
       },
@@ -44,21 +61,20 @@ export async function GET(req: Request) {
     };
 
     return new Response(JSON.stringify(responseData), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error) {
-    console.error('User stats endpoint error:', error);
-    
+    console.error("User stats endpoint error:", error);
+
     return new Response(
       JSON.stringify({
         success: false,
-        error: 'Failed to get user stats',
+        error: "Failed to get user stats",
       }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
   }
-} 
+}

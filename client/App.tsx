@@ -121,6 +121,15 @@ function AppWithLanguage() {
 
         {/* Legacy routes without language prefix - redirect to language version */}
         <Route
+          path="/auth/callback"
+          element={
+            <Navigate
+              to={`/${language}/auth/callback${window.location.search}`}
+              replace
+            />
+          }
+        />
+        <Route
           path="/login"
           element={<Navigate to={`/${language}/login`} replace />}
         />

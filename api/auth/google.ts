@@ -31,8 +31,8 @@ export async function GET(req: Request) {
       );
     }
 
-    // Generate Google OAuth URL for production
-    const authUrl = AuthService.getGoogleAuthUrl();
+    // Generate Google OAuth URL for production with dynamic redirect URI
+    const authUrl = AuthService.getGoogleAuthUrl(req.url);
 
     return new Response(
       JSON.stringify({

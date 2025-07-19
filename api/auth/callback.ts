@@ -33,13 +33,14 @@ export async function GET(req: Request) {
           isNewUser: isNewUser,
         });
 
-        // Redirect to the generator page with the token
-        const redirectUrl = new URL("/generator", url.origin);
+        // Redirect to the auth callback page for proper handling
+        const redirectUrl = new URL("/ar/auth/callback", url.origin);
         redirectUrl.searchParams.set("token", token);
+        redirectUrl.searchParams.set("user", JSON.stringify(user));
         redirectUrl.searchParams.set("success", "true");
         redirectUrl.searchParams.set("dev_mode", "true");
         if (isNewUser) {
-          redirectUrl.searchParams.set("new_user", "true");
+          redirectUrl.searchParams.set("isNewUser", "true");
         }
 
         return new Response(null, {
@@ -72,7 +73,7 @@ export async function GET(req: Request) {
       console.error("OAuth error received:", error);
 
       // Redirect to login with error message instead of JSON response
-      const redirectUrl = new URL("/login", url.origin);
+      const redirectUrl = new URL("/ar/login", url.origin);
       redirectUrl.searchParams.set("error", `OAuth error: ${error}`);
 
       return new Response(null, {
@@ -87,7 +88,7 @@ export async function GET(req: Request) {
       console.error("No authorization code provided");
 
       // Redirect to login with error message
-      const redirectUrl = new URL("/login", url.origin);
+      const redirectUrl = new URL("/ar/login", url.origin);
       redirectUrl.searchParams.set("error", "Authorization code not provided");
 
       return new Response(null, {
@@ -100,12 +101,12 @@ export async function GET(req: Request) {
 
     // Exchange code for user info
     console.log("Callback: Attempting to exchange code with Google...");
-    const googleUser = await AuthService.exchangeGoogleCode(code);
+    const googleUser = await AuthService.exchangeGoogleCode(code, req.url);
     if (!googleUser) {
       console.error("Callback: Google code exchange failed");
 
       // Redirect to login with error message
-      const redirectUrl = new URL("/login", url.origin);
+      const redirectUrl = new URL("/ar/login", url.origin);
       redirectUrl.searchParams.set(
         "error",
         "Failed to authenticate with Google",
@@ -133,12 +134,13 @@ export async function GET(req: Request) {
       isNewUser: isNewUser,
     });
 
-    // Redirect to the generator page with the token
-    const redirectUrl = new URL("/generator", url.origin);
+    // Redirect to the auth callback page for proper handling
+    const redirectUrl = new URL("/ar/auth/callback", url.origin);
     redirectUrl.searchParams.set("token", token);
+    redirectUrl.searchParams.set("user", JSON.stringify(user));
     redirectUrl.searchParams.set("success", "true");
     if (isNewUser) {
-      redirectUrl.searchParams.set("new_user", "true");
+      redirectUrl.searchParams.set("isNewUser", "true");
     }
 
     return new Response(null, {
@@ -153,7 +155,7 @@ export async function GET(req: Request) {
 
     // Redirect to login with error message
     const url = new URL(req.url);
-    const redirectUrl = new URL("/login", url.origin);
+    const redirectUrl = new URL("/ar/login", url.origin);
     redirectUrl.searchParams.set("error", "Authentication failed");
 
     return new Response(null, {

@@ -40,6 +40,43 @@ export class AuthService {
     );
   }
 
+  // Get consistent redirect URI across the application
+  static getRedirectUri(requestUrl?: string): string {
+    // Always prefer environment variable if set and valid
+    const envRedirectUri = process.env.GOOGLE_REDIRECT_URI;
+
+    if (
+      envRedirectUri &&
+      !envRedirectUri.includes("localhost") &&
+      envRedirectUri.startsWith("http")
+    ) {
+      return envRedirectUri;
+    }
+
+    // Development fallback
+    if (this.isDevMode()) {
+      return "http://localhost:8080/api/auth/callback";
+    }
+
+    // Dynamic production detection from request URL
+    if (requestUrl) {
+      const url = new URL(requestUrl);
+      const origin = url.origin;
+
+      // Common production domains
+      if (origin.includes("ofspace.studio")) {
+        return `${origin}/api/auth/callback`;
+      }
+
+      if (origin.includes("vercel.app") || origin.includes("netlify.app")) {
+        return `${origin}/api/auth/callback`;
+      }
+    }
+
+    // Final fallback
+    return envRedirectUri || "https://ofspace.studio/api/auth/callback";
+  }
+
   // Create a test/dev user for development mode
   static async createDevUser(): Promise<{
     user: User;
@@ -131,6 +168,7 @@ export class AuthService {
   // Google OAuth: Exchange authorization code for user info
   static async exchangeGoogleCode(
     code: string,
+    requestUrl?: string,
   ): Promise<GoogleUserInfo | null> {
     try {
       console.log("Starting Google OAuth code exchange...");
@@ -143,18 +181,8 @@ export class AuthService {
         redirectUri: process.env.GOOGLE_REDIRECT_URI,
       });
 
-      // Determine the correct redirect URI based on environment
-      let redirectUri = process.env.GOOGLE_REDIRECT_URI || "";
-
-      // Server-side redirect URI determination
-      if (!redirectUri || redirectUri.includes("localhost")) {
-        if (process.env.FLY_APP_NAME || process.env.NODE_ENV === "production") {
-          redirectUri =
-            "https://fd74908a35154ad5afc7c401121ae97f-95c6c5cfd1dc4d0696d3cffd0.fly.dev/api/auth/callback";
-        } else {
-          redirectUri = "http://localhost:8080/api/auth/callback";
-        }
-      }
+      // Use consistent redirect URI with dynamic detection
+      const redirectUri = this.getRedirectUri(requestUrl);
 
       console.log("Using redirect URI:", redirectUri);
 
@@ -287,7 +315,7 @@ export class AuthService {
   }
 
   // Generate Google OAuth URL
-  static getGoogleAuthUrl(): string {
+  static getGoogleAuthUrl(requestUrl?: string): string {
     // In development mode, return a special dev URL
     if (this.isDevMode()) {
       console.log("🔧 Development mode: Generating dev auth URL");
@@ -303,18 +331,8 @@ export class AuthService {
       throw new Error("Google OAuth configuration error: Missing client ID");
     }
 
-    // Determine the correct redirect URI based on environment
-    let redirectUri = process.env.GOOGLE_REDIRECT_URI || "";
-
-    // If no explicit redirect URI is set, auto-detect based on environment
-    if (!redirectUri || redirectUri.includes("localhost")) {
-      // Check if we're in production
-      if (process.env.FLY_APP_NAME || process.env.NODE_ENV === "production") {
-        redirectUri = "https://www.madar.ofspace.studio/api/auth/callback";
-      } else {
-        redirectUri = "http://localhost:8080/api/auth/callback";
-      }
-    }
+    // Get redirect URI with dynamic detection
+    const redirectUri = this.getRedirectUri(requestUrl);
 
     const params = new URLSearchParams({
       client_id: clientId,
