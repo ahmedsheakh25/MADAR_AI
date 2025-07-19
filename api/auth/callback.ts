@@ -7,32 +7,44 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const code = url.searchParams.get("code");
     const error = url.searchParams.get("error");
+    const state = url.searchParams.get("state");
+
+    console.log("OAuth Callback received:", {
+      hasCode: !!code,
+      error: error,
+      state: state,
+      url: req.url,
+    });
 
     // Handle OAuth errors
     if (error) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: `OAuth error: ${error}`,
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
+      console.error("OAuth error received:", error);
+
+      // Redirect to login with error message instead of JSON response
+      const redirectUrl = new URL("/login", url.origin);
+      redirectUrl.searchParams.set("error", `OAuth error: ${error}`);
+
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
         },
-      );
+      });
     }
 
     if (!code) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Authorization code not provided",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
+      console.error("No authorization code provided");
+
+      // Redirect to login with error message
+      const redirectUrl = new URL("/login", url.origin);
+      redirectUrl.searchParams.set("error", "Authorization code not provided");
+
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
         },
-      );
+      });
     }
 
     // Exchange code for user info
@@ -40,18 +52,20 @@ export async function GET(req: Request) {
     const googleUser = await AuthService.exchangeGoogleCode(code);
     if (!googleUser) {
       console.error("Callback: Google code exchange failed");
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error:
-            "Failed to authenticate with Google - check server logs for details",
-          details: "Google OAuth code exchange returned null",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        },
+
+      // Redirect to login with error message
+      const redirectUrl = new URL("/login", url.origin);
+      redirectUrl.searchParams.set(
+        "error",
+        "Failed to authenticate with Google",
       );
+
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+        },
+      });
     }
 
     console.log(
@@ -62,37 +76,40 @@ export async function GET(req: Request) {
     const { user, token, isNewUser } =
       await AuthService.authenticateWithGoogle(googleUser);
 
-    // Return success response with token
-    return new Response(
-      JSON.stringify({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          profilePicture: user.profilePicture,
-          generationCount: user.generationCount,
-          resetDate: user.resetDate?.toISOString(),
-        },
-        token,
-        isNewUser,
-      }),
-      {
-        headers: { "Content-Type": "application/json" },
+    console.log("Callback: User authenticated successfully:", {
+      userId: user.id,
+      email: user.email,
+      isNewUser: isNewUser,
+    });
+
+    // Redirect to the generator page with the token
+    const redirectUrl = new URL("/generator", url.origin);
+    redirectUrl.searchParams.set("token", token);
+    redirectUrl.searchParams.set("success", "true");
+    if (isNewUser) {
+      redirectUrl.searchParams.set("new_user", "true");
+    }
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: redirectUrl.toString(),
+        "Set-Cookie": `auth_token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`, // 7 days
       },
-    );
+    });
   } catch (error) {
     console.error("Google OAuth callback error:", error);
 
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: "Authentication failed",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
+    // Redirect to login with error message
+    const url = new URL(req.url);
+    const redirectUrl = new URL("/login", url.origin);
+    redirectUrl.searchParams.set("error", "Authentication failed");
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: redirectUrl.toString(),
       },
-    );
+    });
   }
 }
