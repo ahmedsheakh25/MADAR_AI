@@ -1,12 +1,12 @@
-import { AuthService } from '../../lib/auth.js';
+import { AuthService } from "../../lib/auth.js";
 
-export const runtime = 'edge';
+export const runtime = "edge";
 
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const code = url.searchParams.get('code');
-    const error = url.searchParams.get('error');
+    const code = url.searchParams.get("code");
+    const error = url.searchParams.get("error");
 
     // Handle OAuth errors
     if (error) {
@@ -17,8 +17,8 @@ export async function GET(req: Request) {
         }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -26,32 +26,41 @@ export async function GET(req: Request) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Authorization code not provided',
+          error: "Authorization code not provided",
         }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
     // Exchange code for user info
+    console.log("Callback: Attempting to exchange code with Google...");
     const googleUser = await AuthService.exchangeGoogleCode(code);
     if (!googleUser) {
+      console.error("Callback: Google code exchange failed");
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Failed to authenticate with Google',
+          error:
+            "Failed to authenticate with Google - check server logs for details",
+          details: "Google OAuth code exchange returned null",
         }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
+    console.log(
+      "Callback: Google authentication successful, proceeding with user creation/login...",
+    );
+
     // Authenticate or create user
-    const { user, token, isNewUser } = await AuthService.authenticateWithGoogle(googleUser);
+    const { user, token, isNewUser } =
+      await AuthService.authenticateWithGoogle(googleUser);
 
     // Return success response with token
     return new Response(
@@ -69,21 +78,21 @@ export async function GET(req: Request) {
         isNewUser,
       }),
       {
-        headers: { 'Content-Type': 'application/json' },
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
   } catch (error) {
-    console.error('Google OAuth callback error:', error);
-    
+    console.error("Google OAuth callback error:", error);
+
     return new Response(
       JSON.stringify({
         success: false,
-        error: 'Authentication failed',
+        error: "Authentication failed",
       }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
   }
-} 
+}
