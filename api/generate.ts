@@ -183,17 +183,23 @@ export async function POST(req: Request) {
 
     console.log("✅ Image generation successful");
 
-    // Record successful generation usage
-    await DatabaseService.recordGenerationUsage({
-      userId: user.id,
-      styleUsed: styleId,
-      promptUsed: enhancedPrompt,
-      uploadedImageUsed: uploadedImageUrl || null,
-      colorsUsed: colors || [],
-      generatedImageUrl: imageUrl,
-      success: true,
-      errorMessage: null,
-    });
+    // Record successful generation usage (with error handling)
+    try {
+      await DatabaseService.recordGenerationUsage({
+        userId: user.id,
+        styleUsed: styleId,
+        promptUsed: enhancedPrompt,
+        uploadedImageUsed: uploadedImageUrl || null,
+        colorsUsed: colors || [],
+        generatedImageUrl: imageUrl,
+        success: true,
+        errorMessage: null,
+      });
+      console.log("✅ Generation usage recorded successfully");
+    } catch (dbError) {
+      console.warn("⚠️ Failed to record generation usage (non-critical):", dbError);
+      // Continue execution - don't fail image generation due to logging issues
+    }
 
     // Calculate remaining generations
     const updatedGenerationCount = user.generationCount || 0;
@@ -269,8 +275,10 @@ export async function POST(req: Request) {
           success: false,
           errorMessage: error instanceof Error ? error.message : "Unknown error",
         });
+        console.log("✅ Failed generation usage recorded");
       } catch (trackingError) {
-        console.error("Failed to record generation usage:", trackingError);
+        console.warn("⚠️ Failed to record generation usage (non-critical):", trackingError);
+        // Don't fail the entire request due to logging issues
       }
 
       // Release the reserved slot
