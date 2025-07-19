@@ -31,6 +31,7 @@ import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { useNavigation } from "../components/navigation/hooks/useNavigation";
 import { useOnceUITheme } from "../hooks/use-once-ui-theme";
 import { useTranslation } from "../hooks/use-translation";
+import { useLanguage } from "../hooks/use-language";
 import { useAuth } from "../hooks/use-auth";
 
 export default function Home() {
