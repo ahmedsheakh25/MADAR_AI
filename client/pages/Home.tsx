@@ -37,6 +37,7 @@ import { useAuth } from "../hooks/use-auth";
 export default function Home() {
   const { theme } = useOnceUITheme();
   const { t } = useTranslation();
+  const { language, isRTL } = useLanguage();
   const { navigateToPath } = useNavigation();
   const { user, signOut, isDevMode } = useAuth();
 
