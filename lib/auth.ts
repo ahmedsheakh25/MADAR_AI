@@ -105,11 +105,40 @@ export class AuthService {
 
       // Determine the correct redirect URI based on environment
       let redirectUri = process.env.GOOGLE_REDIRECT_URI || "";
-      if (!redirectUri || redirectUri.includes("localhost")) {
-        if (process.env.FLY_APP_NAME || process.env.NODE_ENV === "production") {
-          redirectUri = "https://www.madar.ofspace.studio/api/auth/callback";
+
+      // Get the current hostname to detect the actual deployment
+      const isProduction =
+        process.env.NODE_ENV === "production" ||
+        process.env.FLY_APP_NAME ||
+        (typeof window !== "undefined" &&
+          !window.location.hostname.includes("localhost"));
+
+      if (!redirectUri || redirectUri.includes("localhost") || isProduction) {
+        // Check current hostname for dynamic redirect URI
+        if (typeof window !== "undefined") {
+          const hostname = window.location.hostname;
+          const protocol = window.location.protocol;
+          const port = window.location.port;
+
+          if (
+            hostname.includes("fly.dev") ||
+            hostname.includes("ofspace.studio")
+          ) {
+            redirectUri = `${protocol}//${hostname}${port && port !== "80" && port !== "443" ? `:${port}` : ""}/api/auth/callback`;
+          } else if (hostname === "localhost") {
+            redirectUri = `${protocol}//${hostname}:8080/api/auth/callback`;
+          }
         } else {
-          redirectUri = "http://localhost:8080/api/auth/callback";
+          // Server-side fallback
+          if (
+            process.env.FLY_APP_NAME ||
+            process.env.NODE_ENV === "production"
+          ) {
+            redirectUri =
+              "https://fd74908a35154ad5afc7c401121ae97f-95c6c5cfd1dc4d0696d3cffd0.fly.dev/api/auth/callback";
+          } else {
+            redirectUri = "http://localhost:8080/api/auth/callback";
+          }
         }
       }
 
