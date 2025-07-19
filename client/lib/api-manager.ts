@@ -93,11 +93,10 @@ export class APIManager {
 
         // Handle other HTTP errors
         if (!response.ok) {
-          // Clone response to avoid "body stream already read" error
-          const errorResponse = response.clone();
           let errorText = "";
           try {
-            errorText = await errorResponse.text();
+            // Read error text from the original response
+            errorText = await response.text();
           } catch (e) {
             errorText = response.statusText;
           }
