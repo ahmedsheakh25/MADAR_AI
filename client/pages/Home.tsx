@@ -150,26 +150,17 @@ export default function Home() {
 
       {/* Enhanced Footer Section - Required for Google Verification */}
       <motion.footer
-        className="fixed bottom-0 left-0 right-0 bg-card/95 border-t border-border backdrop-blur-lg z-20"
+        className="fixed bottom-0 left-0 right-0 bg-card/95 border-t border-border backdrop-blur-lg z-20 max-h-32 md:max-h-24 overflow-y-auto"
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <div className="container mx-auto px-6 py-6">
-          {/* Main Footer Content */}
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            {/* Left Section - Logo and Description */}
-            <motion.div
-              className="flex flex-col lg:flex-row items-center gap-4 lg:gap-6"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              {/* Logo */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              >
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 md:py-6">
+          {/* Simplified Mobile Layout */}
+          <div className="block md:hidden">
+            <div className="flex flex-col items-center gap-3">
+              {/* Logo and Title */}
+              <div className="flex items-center gap-3">
                 <img
                   src={
                     theme === "dark"
@@ -177,31 +168,14 @@ export default function Home() {
                       : "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc39b14bbc4d54ee390a9493467c086d1?format=webp&width=800"
                   }
                   alt="Madar Logo"
-                  className="h-12 w-auto object-contain"
+                  className="h-8 w-auto object-contain"
                 />
-              </motion.div>
-
-              {/* Project Description */}
-              <div className="text-center lg:text-left max-w-md">
-                <h3 className="text-sm font-semibold text-foreground mb-1">
-                  Madar (مدار) - Free Creative AI Playground
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  AI-powered 3D image generation for designers. Upload, choose a
-                  style, get beautiful PNGs.
-                  <strong className="text-primary"> 100% free</strong> with
-                  Google sign-in.
-                </p>
+                <span className="text-sm font-semibold text-foreground">
+                  Madar (مدار)
+                </span>
               </div>
-            </motion.div>
 
-            {/* Center Section - Quick Links */}
-            <motion.div
-              className="flex items-center gap-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
+              {/* Quick Links */}
               <div className="flex items-center gap-4 text-xs">
                 <motion.button
                   onClick={() => navigateToPath({ path: "/privacy" })}
@@ -228,55 +202,108 @@ export default function Home() {
                   Contact
                 </a>
               </div>
-            </motion.div>
 
-            {/* Right Section - Company Info */}
-            <motion.div
-              className="text-center lg:text-right"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-foreground">
-                  OfSpace Studio
-                </p>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Hosted on:</span>
-                  <a
-                    href="https://www.madar.ofspace.studio"
-                    className="text-primary hover:underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    madar.ofspace.studio
-                  </a>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Made for Arabic designers</span>
-                  <span className="text-primary">✨</span>
-                </div>
+              {/* Copyright */}
+              <div className="text-center">
+                <span className="text-xs text-muted-foreground">
+                  © 2024 OfSpace Studio
+                </span>
               </div>
-            </motion.div>
+            </div>
           </div>
 
-          {/* Bottom Bar */}
-          <motion.div
-            className="mt-4 pt-4 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <span>© 2024 OfSpace Studio. All rights reserved.</span>
-            <div className="flex items-center gap-3">
-              <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                30 Free Images/Month
-              </span>
-              <span className="px-2 py-1 bg-green-500/10 text-green-500 rounded-full text-xs font-medium">
-                Google OAuth Verified
-              </span>
+          {/* Desktop Layout */}
+          <div className="hidden md:block">
+            <div className="flex items-center justify-between gap-6">
+              {/* Left Section - Logo and Description */}
+              <motion.div
+                className="flex items-center gap-6"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                {/* Logo */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <img
+                    src={
+                      theme === "dark"
+                        ? "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fefbd0a6b9abd446c96eb7f1fea4c67bf?format=webp&width=800"
+                        : "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc39b14bbc4d54ee390a9493467c086d1?format=webp&width=800"
+                    }
+                    alt="Madar Logo"
+                    className="h-10 lg:h-12 w-auto object-contain"
+                  />
+                </motion.div>
+
+                {/* Project Description */}
+                <div className="max-w-md">
+                  <h3 className="text-sm font-semibold text-foreground mb-1">
+                    Madar (مدار) - Free Creative AI Playground
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    AI-powered 3D image generation for designers.
+                    <strong className="text-primary"> 100% free</strong> with
+                    Google sign-in.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Center Section - Quick Links */}
+              <motion.div
+                className="flex items-center gap-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="flex items-center gap-4 text-xs">
+                  <motion.button
+                    onClick={() => navigateToPath({ path: "/privacy" })}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Privacy
+                  </motion.button>
+                  <span className="text-border">•</span>
+                  <motion.button
+                    onClick={() => navigateToPath({ path: "/terms" })}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Terms
+                  </motion.button>
+                  <span className="text-border">•</span>
+                  <a
+                    href="mailto:ahmed.sheakh25@gmail.com"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Contact
+                  </a>
+                </div>
+              </motion.div>
+
+              {/* Right Section - Company Info */}
+              <motion.div
+                className="text-right"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-foreground">
+                    OfSpace Studio
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>© 2024 • madar.ofspace.studio ✨</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </motion.footer>
     </div>
