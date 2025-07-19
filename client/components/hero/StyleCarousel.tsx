@@ -49,6 +49,12 @@ export default function StyleCarousel({
 
   return (
     <div className={cn("mx-auto w-full relative z-50", className)}>
+      {/* Left fade overlay */}
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 md:w-32 bg-gradient-to-r from-background via-background/80 to-transparent z-40 pointer-events-none" />
+
+      {/* Right fade overlay */}
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 md:w-32 bg-gradient-to-l from-background via-background/80 to-transparent z-40 pointer-events-none" />
+
       <Carousel
         setApi={setApi}
         className="w-full relative z-50"
