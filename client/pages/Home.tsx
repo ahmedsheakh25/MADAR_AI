@@ -40,47 +40,11 @@ export default function Home() {
   const { user, signOut, isDevMode } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background font-inter">
+    <div className="min-h-screen flex items-center justify-center bg-background font-inter">
       {/* Background gradient for dark/light mode */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20 -z-10" />
 
-      {/* Project Description Header - Required for Google Verification */}
-      <motion.div
-        className="w-full bg-card/50 border-b border-border backdrop-blur-sm"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center space-y-3">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Madar (مدار) - Your Free Creative AI Playground
-            </h1>
-            <p className="text-sm md:text-base text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              <strong>Madar (مدار)</strong> is a creative tool that lets you
-              generate AI-powered 3D image assets to use in your designs. Upload
-              an image, choose a 3D style, and get beautiful cutout PNGs for{" "}
-              <strong>100% free</strong>. Madar is made for designers and
-              creators who want to experiment with visual ideas quickly. All
-              your results are saved to your private gallery after signing in
-              with your Google account.
-            </p>
-            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-              <span>Hosted on:</span>
-              <a
-                href="https://www.madar.ofspace.studio"
-                className="text-primary hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                www.madar.ofspace.studio
-              </a>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      <div className="w-full max-w-[1440px] h-[1024px] flex items-center justify-center p-8 mx-auto">
+      <div className="w-full max-w-[1440px] h-[1024px] flex items-center justify-center p-8">
         {/* Main Content Area - Hero Section */}
         <div className="flex flex-col items-center justify-center flex-1 self-stretch rounded-[20px] border border-border bg-card shadow-lg relative">
           {/* Header with Navigation */}
