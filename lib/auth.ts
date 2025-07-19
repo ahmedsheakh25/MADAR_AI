@@ -93,38 +93,101 @@ export class AuthService {
     code: string,
   ): Promise<GoogleUserInfo | null> {
     try {
+      console.log("Starting Google OAuth code exchange...");
+      console.log("Code received:", code ? "✅ Present" : "❌ Missing");
+      console.log("Environment variables:", {
+        hasClientId: !!process.env.GOOGLE_CLIENT_ID,
+        hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+        hasRedirectUri: !!process.env.GOOGLE_REDIRECT_URI,
+        clientIdPrefix: process.env.GOOGLE_CLIENT_ID?.substring(0, 10) + "...",
+        redirectUri: process.env.GOOGLE_REDIRECT_URI,
+      });
+
+      // Determine the correct redirect URI based on environment
+      let redirectUri = process.env.GOOGLE_REDIRECT_URI || "";
+      if (!redirectUri || redirectUri.includes("localhost")) {
+        if (process.env.FLY_APP_NAME || process.env.NODE_ENV === "production") {
+          redirectUri = "https://www.madar.ofspace.studio/api/auth/callback";
+        } else {
+          redirectUri = "http://localhost:8080/api/auth/callback";
+        }
+      }
+
+      console.log("Using redirect URI:", redirectUri);
+
       // Exchange code for access token
+      const tokenParams = new URLSearchParams({
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID || "",
+        client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
+        redirect_uri: redirectUri,
+        grant_type: "authorization_code",
+      });
+
+      console.log("Making token exchange request to Google...");
       const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({
-          code,
-          client_id: process.env.GOOGLE_CLIENT_ID || "",
-          client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
-          redirect_uri: process.env.GOOGLE_REDIRECT_URI || "",
-          grant_type: "authorization_code",
-        }),
+        body: tokenParams,
       });
 
+      console.log("Token response status:", tokenResponse.status);
+
       if (!tokenResponse.ok) {
-        throw new Error("Failed to exchange code for token");
+        const errorText = await tokenResponse.text();
+        console.error("Token exchange failed:", {
+          status: tokenResponse.status,
+          statusText: tokenResponse.statusText,
+          error: errorText,
+        });
+        throw new Error(
+          `Failed to exchange code for token: ${tokenResponse.status} ${errorText}`,
+        );
       }
 
       const tokenData = await tokenResponse.json();
+      console.log(
+        "Token exchange successful, access token received:",
+        !!tokenData.access_token,
+      );
+
+      if (!tokenData.access_token) {
+        console.error("No access token in response:", tokenData);
+        throw new Error("No access token received from Google");
+      }
+
       const accessToken = tokenData.access_token;
 
       // Get user info from Google
+      console.log("Fetching user info from Google...");
       const userResponse = await fetch(
         `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`,
       );
 
+      console.log("User info response status:", userResponse.status);
+
       if (!userResponse.ok) {
-        throw new Error("Failed to get user info from Google");
+        const errorText = await userResponse.text();
+        console.error("User info fetch failed:", {
+          status: userResponse.status,
+          statusText: userResponse.statusText,
+          error: errorText,
+        });
+        throw new Error(
+          `Failed to get user info from Google: ${userResponse.status} ${errorText}`,
+        );
       }
 
       const userData: GoogleUserInfo = await userResponse.json();
+      console.log("User info received:", {
+        hasId: !!userData.id,
+        hasEmail: !!userData.email,
+        hasName: !!userData.name,
+        email: userData.email,
+      });
+
       return userData;
     } catch (error) {
       console.error("Google OAuth error:", error);
