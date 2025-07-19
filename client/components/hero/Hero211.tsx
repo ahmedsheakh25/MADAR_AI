@@ -59,35 +59,55 @@ const Hero211 = () => {
   ];
 
   return (
-    <section className="relative w-full overflow-hidden py-16 sm:py-24 md:py-32 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center justify-center gap-4">
-          <h1 className="text-center font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground break-words">
+    <section className="relative w-full h-full flex flex-col items-center justify-center py-8 sm:py-12 md:py-16 bg-transparent overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
+        {/* Title Section */}
+        <motion.div
+          className="relative z-30 mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 mb-8 sm:mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <h1 className="text-center font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-foreground break-words leading-tight">
             {t("pages.homepage.hero.title")}
           </h1>
-          <p className="px-4 sm:px-10 text-center text-sm sm:text-base lg:text-lg text-muted-foreground max-w-xl">
+          <p className="px-4 sm:px-8 text-center text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl leading-relaxed">
             {t("pages.homepage.hero.subtitle")}
           </p>
-        </div>
+        </motion.div>
 
-        <div className="relative mt-12 sm:mt-16 flex h-full items-center justify-center">
-          <StyleCarousel images={images} className="w-full max-w-2xl" />
-        </div>
+        {/* Carousel Section with proper z-index */}
+        <motion.div
+          className="relative z-40 flex-1 flex items-center justify-center mb-8 sm:mb-12"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+        >
+          <StyleCarousel images={images} className="w-full max-w-4xl" />
+        </motion.div>
 
-        <div className="relative z-10 mx-auto mt-8 sm:mt-10 flex w-fit justify-center">
+        {/* Button Section */}
+        <motion.div
+          className="relative z-30 mx-auto flex w-fit justify-center items-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
           <Button
-            className="rounded-full px-6 py-3 active:scale-105"
+            className="rounded-full px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
             onClick={handleGetStartedClick}
           >
             {t("pages.homepage.hero.getStarted")}
           </Button>
+
+          {/* Free text with arrow - positioned better for responsive */}
           <motion.div
             initial={{ opacity: 0, translateY: 20 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={{ duration: 0.3, delay: 1 }}
-            className="absolute -top-[18px] left-[150px] h-1 hidden sm:block"
+            transition={{ duration: 0.6, delay: 1 }}
+            className="absolute -top-[20px] left-[120px] sm:left-[150px] hidden sm:block z-10"
           >
-            <p className="font-caveat text-xl tracking-tight text-muted-foreground">
+            <p className="font-caveat text-lg sm:text-xl tracking-tight text-muted-foreground whitespace-nowrap">
               {t("pages.homepage.hero.freeText")}
             </p>
             <svg
@@ -101,7 +121,7 @@ const Hero211 = () => {
               <motion.path
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 1, delay: 1.2 }}
+                transition={{ duration: 1, delay: 1.4 }}
                 d="M80.2759 1.95576C67.8687 20.6075 49.1102 55.0246 21.9767 39.1283C15.3299 35.2342 12.7124 29.0489 9.38472 22.4634C9.24096 22.1789 6.96955 15.0574 7.91833 15.4904C10.4589 16.65 25.535 23.253 15.8013 18.8782C14.7716 18.4154 8.31018 14.0924 7.25323 14.6265C4.37354 16.0816 2.6512 30.2469 1.58546 33.4898"
                 stroke="currentColor"
                 strokeWidth="2.40332"
@@ -109,9 +129,10 @@ const Hero211 = () => {
               />
             </svg>
           </motion.div>
-        </div>
+        </motion.div>
 
-        <div className="absolute right-0 bottom-0 left-0 overflow-hidden">
+        {/* Background Marquee with lower z-index */}
+        <div className="absolute right-0 bottom-0 left-0 z-0 opacity-30">
           <SkiperUiMarquee />
         </div>
       </div>
