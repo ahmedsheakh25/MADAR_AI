@@ -153,6 +153,7 @@ export default function Home() {
       {/* Enhanced Footer Section - Required for Google Verification */}
       <motion.footer
         className="fixed bottom-0 left-0 right-0 bg-card/95 border-t border-border backdrop-blur-lg z-20 max-h-32 md:max-h-24 overflow-y-auto"
+        dir={isRTL ? "rtl" : "ltr"}
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -162,18 +163,28 @@ export default function Home() {
           <div className="block md:hidden">
             <div className="flex flex-col items-center gap-3">
               {/* Logo and Title */}
-              <div className="flex items-center gap-3">
+              <div
+                className={`flex items-center gap-3 ${isRTL ? "flex-row-reverse" : ""}`}
+              >
                 <img
                   src={
                     theme === "dark"
                       ? "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fefbd0a6b9abd446c96eb7f1fea4c67bf?format=webp&width=800"
                       : "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc39b14bbc4d54ee390a9493467c086d1?format=webp&width=800"
                   }
-                  alt="Madar Logo"
+                  alt={t("brand.name") || "Madar Logo"}
                   className="h-8 w-auto object-contain"
                 />
-                <span className="text-sm font-semibold text-foreground">
-                  Madar (مدار)
+                <span
+                  className="text-sm font-semibold text-foreground"
+                  style={{
+                    fontFamily:
+                      language === "ar"
+                        ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                        : "var(--font-body-en)",
+                  }}
+                >
+                  {t("common.footer.projectName")}
                 </span>
               </div>
 
@@ -184,8 +195,14 @@ export default function Home() {
                   className="text-muted-foreground hover:text-primary transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  style={{
+                    fontFamily:
+                      language === "ar"
+                        ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                        : "var(--font-body-en)",
+                  }}
                 >
-                  Privacy
+                  {t("common.footer.privacy")}
                 </motion.button>
                 <span className="text-border">•</span>
                 <motion.button
@@ -193,22 +210,42 @@ export default function Home() {
                   className="text-muted-foreground hover:text-primary transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  style={{
+                    fontFamily:
+                      language === "ar"
+                        ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                        : "var(--font-body-en)",
+                  }}
                 >
-                  Terms
+                  {t("common.footer.terms")}
                 </motion.button>
                 <span className="text-border">•</span>
                 <a
                   href="mailto:ahmed.sheakh25@gmail.com"
                   className="text-muted-foreground hover:text-primary transition-colors"
+                  style={{
+                    fontFamily:
+                      language === "ar"
+                        ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                        : "var(--font-body-en)",
+                  }}
                 >
-                  Contact
+                  {t("common.footer.contact")}
                 </a>
               </div>
 
               {/* Copyright */}
               <div className="text-center">
-                <span className="text-xs text-muted-foreground">
-                  © 2024 OfSpace Studio
+                <span
+                  className="text-xs text-muted-foreground"
+                  style={{
+                    fontFamily:
+                      language === "ar"
+                        ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                        : "var(--font-body-en)",
+                  }}
+                >
+                  {t("common.footer.copyright")}
                 </span>
               </div>
             </div>
@@ -216,11 +253,13 @@ export default function Home() {
 
           {/* Desktop Layout */}
           <div className="hidden md:block">
-            <div className="flex items-center justify-between gap-6">
+            <div
+              className={`flex items-center justify-between gap-6 ${isRTL ? "flex-row-reverse" : ""}`}
+            >
               {/* Left Section - Logo and Description */}
               <motion.div
-                className="flex items-center gap-6"
-                initial={{ opacity: 0, x: -20 }}
+                className={`flex items-center gap-6 ${isRTL ? "flex-row-reverse" : ""}`}
+                initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
@@ -235,20 +274,41 @@ export default function Home() {
                         ? "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fefbd0a6b9abd446c96eb7f1fea4c67bf?format=webp&width=800"
                         : "https://cdn.builder.io/api/v1/image/assets%2F3f900ffbafd84b58a77a4df01e4d869c%2Fc39b14bbc4d54ee390a9493467c086d1?format=webp&width=800"
                     }
-                    alt="Madar Logo"
+                    alt={t("brand.name") || "Madar Logo"}
                     className="h-10 lg:h-12 w-auto object-contain"
                   />
                 </motion.div>
 
                 {/* Project Description */}
-                <div className="max-w-md">
-                  <h3 className="text-sm font-semibold text-foreground mb-1">
-                    Madar (مدار) - Free Creative AI Playground
+                <div
+                  className={`max-w-md ${isRTL ? "text-right" : "text-left"}`}
+                >
+                  <h3
+                    className="text-sm font-semibold text-foreground mb-1"
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                          : "var(--font-body-en)",
+                    }}
+                  >
+                    {t("common.footer.projectName")} -{" "}
+                    {t("common.footer.projectSubtitle")}
                   </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    AI-powered 3D image generation for designers.
-                    <strong className="text-primary"> 100% free</strong> with
-                    Google sign-in.
+                  <p
+                    className="text-xs text-muted-foreground leading-relaxed"
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                          : "var(--font-body-en)",
+                    }}
+                  >
+                    {t("common.footer.descriptionFull")}.
+                    <strong className="text-primary">
+                      {" "}
+                      {t("common.footer.freeWithGoogle")}
+                    </strong>
                   </p>
                 </div>
               </motion.div>
@@ -266,8 +326,14 @@ export default function Home() {
                     className="text-muted-foreground hover:text-primary transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                          : "var(--font-body-en)",
+                    }}
                   >
-                    Privacy
+                    {t("common.footer.privacy")}
                   </motion.button>
                   <span className="text-border">•</span>
                   <motion.button
@@ -275,32 +341,69 @@ export default function Home() {
                     className="text-muted-foreground hover:text-primary transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                          : "var(--font-body-en)",
+                    }}
                   >
-                    Terms
+                    {t("common.footer.terms")}
                   </motion.button>
                   <span className="text-border">•</span>
                   <a
                     href="mailto:ahmed.sheakh25@gmail.com"
                     className="text-muted-foreground hover:text-primary transition-colors"
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                          : "var(--font-body-en)",
+                    }}
                   >
-                    Contact
+                    {t("common.footer.contact")}
                   </a>
                 </div>
               </motion.div>
 
               {/* Right Section - Company Info */}
               <motion.div
-                className="text-right"
-                initial={{ opacity: 0, x: 20 }}
+                className={`${isRTL ? "text-left" : "text-right"}`}
+                initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-foreground">
-                    OfSpace Studio
+                  <p
+                    className="text-xs font-medium text-foreground"
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                          : "var(--font-body-en)",
+                    }}
+                  >
+                    {t("common.footer.companyName")}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>© 2024 • madar.ofspace.studio ✨</span>
+                  <div
+                    className={`flex items-center gap-2 text-xs text-muted-foreground ${isRTL ? "flex-row-reverse" : ""}`}
+                    style={{
+                      fontFamily:
+                        language === "ar"
+                          ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                          : "var(--font-body-en)",
+                    }}
+                  >
+                    <span>{t("common.footer.copyright").split("•")[0]}•</span>
+                    <a
+                      href="https://www.madar.ofspace.studio"
+                      className="text-primary hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      madar.ofspace.studio
+                    </a>
+                    <span>✨</span>
                   </div>
                 </div>
               </motion.div>
