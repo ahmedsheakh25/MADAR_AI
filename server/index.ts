@@ -219,13 +219,40 @@ export function createServer() {
     }
   });
 
+  // Image generation route
+  app.post("/generate", async (req, res) => {
+    try {
+      // Check if API key is configured
+      if (
+        !process.env.FAL_AI_API_KEY ||
+        process.env.FAL_AI_API_KEY === "your_fal_ai_api_key_here"
+      ) {
+        return res.status(500).json({
+          success: false,
+          error:
+            "Fal AI API key is not configured. Please set FAL_AI_API_KEY environment variable.",
+        });
+      }
+
+      // For now, return a test response indicating the endpoint is working
+      // but API key needs to be configured
+      res.json({
+        success: false,
+        error:
+          "Image generation temporarily disabled - API key needs to be configured with a real Fal AI key",
+      });
+    } catch (error) {
+      console.error("Generate route error:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Generation failed",
+      });
+    }
+  });
+
   // Placeholder routes for other endpoints
   app.get("/gallery", (req, res) => {
     res.json({ images: [] });
-  });
-
-  app.post("/generate", (req, res) => {
-    res.status(501).json({ error: "Generate endpoint not implemented yet" });
   });
 
   app.post("/save", (req, res) => {

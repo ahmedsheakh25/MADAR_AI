@@ -1,6 +1,5 @@
 import { DatabaseService } from "../lib/database.js";
 import { requireAuth, createUnauthorizedResponse } from "../lib/middleware.js";
-import * as fal from "@fal-ai/serverless-client";
 import type {
   GenerateImageRequest,
   GenerateImageResponse,
@@ -94,12 +93,22 @@ export async function POST(req: Request) {
       .filter(Boolean)
       .join(", ");
 
-    // Configure Fal AI client
-    fal.config({
-      credentials: process.env.FAL_AI_API_KEY,
-    });
+    // Check if API key is configured
+    if (
+      !process.env.FAL_AI_API_KEY ||
+      process.env.FAL_AI_API_KEY === "your_fal_ai_api_key_here"
+    ) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Fal AI API key is not configured. Please set FAL_AI_API_KEY environment variable.",
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+    }
 
-    // Generate image using Fal AI SDK
+    // Generate image using Fal AI (using fetch for now to debug)
     const falInput = {
       prompt: enhancedPrompt,
       image_size: "square_hd",
@@ -117,20 +126,46 @@ export async function POST(req: Request) {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const result = await fal.subscribe("fal-ai/fast-sdxl", {
-          input: falInput,
-          logs: true,
-          onQueueUpdate: (update) => {
-            if (update.status === "IN_PROGRESS") {
-              console.log("Generation in progress...", update);
-            }
+        const response = await fetch("https://fal.run/fal-ai/fast-sdxl", {
+          method: "POST",
+          headers: {
+            Authorization: `Key ${process.env.FAL_AI_API_KEY}`,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify(falInput),
         });
 
-        const images = (result as any).images;
-        imageUrl = images?.[0]?.url;
+        if (!response.ok) {
+          const errorText = await response.text();
+          const error = new Error(
+            `Fal AI API error (${response.status}): ${response.statusText} - ${errorText}`,
+          );
 
-        if (!imageUrl || !images || images.length === 0) {
+          // Don't retry on client errors (400, 401, 403)
+          if (response.status >= 400 && response.status < 500) {
+            throw error;
+          }
+
+          lastError = error;
+
+          if (attempt < maxRetries) {
+            console.warn(
+              `Generation attempt ${attempt + 1} failed, retrying...`,
+              error.message,
+            );
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000 * (attempt + 1)),
+            ); // Exponential backoff
+            continue;
+          }
+
+          throw error;
+        }
+
+        const result = await response.json();
+        imageUrl = result.images?.[0]?.url;
+
+        if (!imageUrl || !result.images || result.images.length === 0) {
           const error = new Error(
             "No image generated - empty or invalid response from AI service",
           );
