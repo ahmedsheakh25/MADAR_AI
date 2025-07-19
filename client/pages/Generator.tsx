@@ -176,12 +176,21 @@ export default function Generator() {
   const [failedFiles, setFailedFiles] = useState<Set<string>>(new Set());
 
   // Check authentication and redirect if not logged in
+  // But don't redirect if we just generated an image and are showing results
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
+    console.log("🔍 Auth State Check:", { 
+      authLoading, 
+      isAuthenticated, 
+      hasGeneratedImage: !!generatedResultImage,
+      user: !!user
+    });
+    
+    if (!authLoading && !isAuthenticated && !generatedResultImage) {
+      console.log("🚨 Redirecting to login due to auth failure");
       navigateToPath({ path: "/login" });
       return;
     }
-  }, [authLoading, isAuthenticated, navigateToPath]);
+  }, [authLoading, isAuthenticated, navigateToPath, generatedResultImage, user]);
 
   // Initialize component and load data
   useEffect(() => {
@@ -591,8 +600,15 @@ export default function Generator() {
       });
 
       if (result.success && result.imageUrl) {
+        console.log("🎉 Generation successful! Setting result image:", result.imageUrl);
         setGeneratedResultImage(result.imageUrl);
         setImageProcessed(true);
+        
+        console.log("📊 Current auth state during success:", { 
+          isAuthenticated, 
+          user: !!user,
+          authLoading 
+        });
 
         // Update user stats
         if (result.remainingGenerations !== undefined) {
@@ -608,8 +624,10 @@ export default function Generator() {
 
         // Trigger celebration effect
         setTimeout(() => {
-          triggerCelebration();
+          console.log("🎊 Triggering celebration effect");
+          // triggerCelebration(); // Commenting out celebration to isolate issue
           setTimeout(() => {
+            console.log("✅ Showing action buttons");
             setShowActionButtons(true);
           }, 800);
         }, 500);
