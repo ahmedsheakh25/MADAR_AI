@@ -105,28 +105,47 @@ export async function POST(req: Request) {
     console.log("🎨 Starting image generation with AI SDK v5...");
     console.log("Enhanced prompt:", enhancedPrompt);
     console.log("Upload image URL:", uploadedImageUrl);
+    console.log("FAL_KEY present:", !!process.env.FAL_KEY);
 
-    // Generate image using AI SDK v5 with FAL provider (simplified for debugging)
-    const result = await generateImage({
-      model: fal.image("fal-ai/fast-sdxl"),
-      prompt: enhancedPrompt,
-      aspectRatio: "1:1",
-      // Start with basic options only
-      providerOptions: {
-        fal: {
-          num_inference_steps: 25,
-          guidance_scale: 7.5,
-          enable_safety_checker: true,
-          // Remove advanced options that might be causing issues
-          // scheduler: "DPM++ 2M Karras",
-          // safety_tolerance: 2,
-          ...(uploadedImageUrl && {
-            image_url: uploadedImageUrl,
-            // strength: 0.8,
-          }),
+    let result;
+    
+    try {
+      // Minimal AI SDK v5 test - no providerOptions first
+      console.log("🧪 Attempting minimal AI SDK v5 call...");
+      
+      result = await generateImage({
+        model: fal.image("fal-ai/fast-sdxl"),
+        prompt: enhancedPrompt,
+        aspectRatio: "1:1",
+      });
+
+      console.log("✅ Minimal call successful!");
+      
+    } catch (minimalError) {
+      console.error("❌ Minimal call failed:", minimalError);
+      console.error("Error details:", {
+        name: minimalError?.name,
+        message: minimalError?.message,
+        stack: minimalError?.stack?.split('\n').slice(0, 5) // First 5 lines of stack
+      });
+      
+      // Try with basic providerOptions
+      console.log("🧪 Trying with basic provider options...");
+      
+      result = await generateImage({
+        model: fal.image("fal-ai/fast-sdxl"),
+        prompt: enhancedPrompt,
+        aspectRatio: "1:1",
+        providerOptions: {
+          fal: {
+            num_inference_steps: 25,
+            guidance_scale: 7.5,
+          },
         },
-      },
-    });
+      });
+      
+      console.log("✅ Basic provider options call successful!");
+    }
 
     console.log("✅ AI SDK result received:", {
       hasImage: !!result.image,
