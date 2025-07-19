@@ -13,6 +13,7 @@ import {
   ZoomIn,
   Download,
   Home,
+  CheckCircle2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -39,6 +40,7 @@ import {
   useStyles,
 } from "../hooks/use-api";
 import { APIManager } from "../lib/api-manager";
+import { cn } from "../lib/utils";
 import type { Style } from "@shared/api";
 
 export default function Generator() {
@@ -46,6 +48,28 @@ export default function Generator() {
   const { t } = useTranslation();
   const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
   const { navigateToPath } = useNavigation();
+
+  // Model options for image generation
+  const GENERATION_MODELS = [
+    {
+      id: "fal-ai/fast-sdxl",
+      name: "Fal AI (Fast SDXL)",
+      description: "Fast, high-quality image generation",
+      provider: "Fal AI",
+    },
+    {
+      id: "dall-e-3",
+      name: "DALL-E 3",
+      description: "OpenAI's latest image generation model",
+      provider: "OpenAI",
+    },
+    {
+      id: "dall-e-2", 
+      name: "DALL-E 2",
+      description: "OpenAI's previous generation model",
+      provider: "OpenAI",
+    },
+  ];
 
   // Style selection data for generative styles
   const STYLE_DATA = [
@@ -131,6 +155,7 @@ export default function Generator() {
     useState(true);
   const [isCustomColorsExpanded, setIsCustomColorsExpanded] = useState(true);
   const [selectedStyleId, setSelectedStyleId] = useState<string>("voxel-3d");
+  const [selectedModel, setSelectedModel] = useState<string>("gpt-image-1");
   const [customColors, setCustomColors] = useState([
     { id: 1, hex: "#34C759", opacity: 100 },
   ]);
@@ -597,6 +622,7 @@ export default function Generator() {
           uploadedFiles.length > 0 && uploadedFileUrl
             ? uploadedFileUrl
             : undefined,
+        model: selectedModel,
       });
 
       if (result.success && result.imageUrl) {
@@ -1233,6 +1259,59 @@ export default function Generator() {
                 )}
               </div>
             </motion.div>
+
+            {/* Model Selection Section */}
+            <div className="flex flex-col items-start self-stretch">
+              <div className="flex h-12 py-3 px-4 justify-between items-center self-stretch border-t border-border">
+                <div
+                  className="text-xs font-semibold leading-4 tracking-[-0.12px] text-foreground"
+                  style={{
+                    fontFamily: "Inter",
+                  }}
+                >
+                  AI Model
+                </div>
+              </div>
+
+              <div className="flex p-4 content-start gap-2 self-stretch flex-col">
+                {GENERATION_MODELS.map((model) => (
+                  <motion.button
+                    key={model.id}
+                    onClick={() => setSelectedModel(model.id)}
+                    className={cn(
+                      "relative p-3 rounded-lg border-2 text-left transition-all hover:shadow-md",
+                      selectedModel === model.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-muted-foreground",
+                    )}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-medium text-foreground">{model.name}</h3>
+                        <span className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground">
+                          {model.provider}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {model.description}
+                      </p>
+                    </div>
+                    {selectedModel === model.id && (
+                      <motion.div
+                        className="absolute top-2 right-2"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-primary" />
+                      </motion.div>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
 
             {/* Style Selection Section */}
             <div className="flex flex-col items-start self-stretch">

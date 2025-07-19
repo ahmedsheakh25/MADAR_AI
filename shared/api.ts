@@ -63,6 +63,7 @@ export interface GenerateImageRequest {
   styleId: string;
   colors?: string[];
   uploadedImageUrl?: string;
+  model?: string; // Model selection: fal-ai/fast-sdxl, dall-e-3, dall-e-2
 }
 
 export interface GenerateImageResponse {

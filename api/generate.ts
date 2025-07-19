@@ -1,7 +1,12 @@
 import { DatabaseService } from "../lib/database.js";
 import { requireAuth, createUnauthorizedResponse } from "../lib/middleware.js";
-import { fal } from "@ai-sdk/fal";
 import { experimental_generateImage as generateImage } from "ai";
+import { 
+  validateModelProvider, 
+  createProviderInstance, 
+  getModelConfig,
+  getOptimalSize 
+} from "./ai-gateway-config.js";
 import type {
   GenerateImageRequest,
   GenerateImageResponse,
@@ -23,7 +28,7 @@ export async function POST(req: Request) {
     }
 
     body = await req.json();
-    const { prompt, styleId, colors, uploadedImageUrl } = body;
+    const { prompt, styleId, colors, uploadedImageUrl, model = "fal-ai/fast-sdxl" } = body;
 
     // Validate input
     if (!prompt || !styleId) {
@@ -91,60 +96,133 @@ export async function POST(req: Request) {
       .filter((part) => part.length > 0)
       .join(", ");
 
-    // Check API key configuration - using Vercel's automatic FAL integration
-    if (!process.env.FAL_KEY) {
+    // Validate model and provider configuration using AI Gateway config
+    const validation = validateModelProvider(model);
+    
+    if (!validation.isValid) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: "Image generation service is not configured.",
+          error: validation.error || "Model configuration error",
         }),
         { status: 503, headers: { "Content-Type": "application/json" } },
       );
     }
 
     console.log("🎨 Starting image generation with AI SDK v5...");
+    console.log("Selected model:", model);
     console.log("Enhanced prompt:", enhancedPrompt);
     console.log("Upload image URL:", uploadedImageUrl);
-    console.log("FAL_KEY present:", !!process.env.FAL_KEY);
+    console.log("Provider:", validation.provider);
+    console.log("Model config:", validation.config);
+
+    // Get model configuration and optimal size
+    const modelConfig = getModelConfig(model);
+    const optimalSize = getOptimalSize(model, "1024x1024");
+    
+    console.log(`🔧 Using optimal size: ${optimalSize} for model: ${model}`);
 
     let result;
     
     try {
-      // Minimal AI SDK v5 test - no providerOptions first
-      console.log("🧪 Attempting minimal AI SDK v5 call...");
+      // Create provider instance using AI Gateway config
+      const provider = createProviderInstance(validation.provider);
       
-      result = await generateImage({
-        model: fal.image("fal-ai/fast-sdxl"),
-        prompt: enhancedPrompt,
-        aspectRatio: "1:1",
-      });
-
-      console.log("✅ Minimal call successful!");
-      
-    } catch (minimalError) {
-      console.error("❌ Minimal call failed:", minimalError);
-      console.error("Error details:", {
-        name: minimalError?.name,
-        message: minimalError?.message,
-        stack: minimalError?.stack?.split('\n').slice(0, 5) // First 5 lines of stack
-      });
-      
-      // Try with basic providerOptions
-      console.log("🧪 Trying with basic provider options...");
-      
-      result = await generateImage({
-        model: fal.image("fal-ai/fast-sdxl"),
-        prompt: enhancedPrompt,
-        aspectRatio: "1:1",
-        providerOptions: {
-          fal: {
-            num_inference_steps: 25,
-            guidance_scale: 7.5,
+      if (validation.provider === "vercel-gateway") {
+        // Vercel AI Gateway generation with gpt-image-1
+        console.log("🧪 Attempting Vercel AI Gateway generation...");
+        
+        result = await generateImage({
+          model: provider.image(model), // gpt-image-1
+          prompt: enhancedPrompt,
+          size: optimalSize as any,
+          providerOptions: {
+            openai: {
+              // Vercel gateway specific options
+              response_format: "url",
+            },
           },
-        },
-      });
-      
-      console.log("✅ Basic provider options call successful!");
+        });
+
+        console.log("✅ Vercel AI Gateway generation successful!");
+        
+        // Enhanced observability for Vercel gateway
+        if (result.response?.headers) {
+          const logId = result.response.headers.get('x-vercel-trace') || 
+                       result.response.headers.get('x-request-id') ||
+                       result.response.headers.get('cf-aig-log-id');
+          if (logId) {
+            console.log("📊 Vercel Gateway Log ID:", logId);
+          }
+        }
+        
+      } else if (validation.provider === "openai") {
+        // OpenAI DALL-E generation with AI Gateway support
+        console.log("🧪 Attempting OpenAI DALL-E generation...");
+        
+        result = await generateImage({
+          model: provider.image(model), // dall-e-3 or dall-e-2
+          prompt: enhancedPrompt,
+          size: optimalSize as any, // Type assertion for AI SDK
+          providerOptions: {
+            openai: {
+              quality: model === "dall-e-3" ? "standard" : undefined,
+              style: model === "dall-e-3" ? "natural" : undefined,
+            },
+          },
+        });
+
+        console.log("✅ OpenAI generation successful!");
+        
+        // Enhanced observability: Extract request logs if available
+        if (result.response?.headers) {
+          const logId = result.response.headers.get('cf-aig-log-id') || 
+                       result.response.headers.get('x-request-id');
+          if (logId) {
+            console.log("📊 Generation Log ID:", logId);
+          }
+        }
+        
+      } else if (validation.provider === "fal") {
+        // Fal AI generation with enhanced error handling
+        console.log("🧪 Attempting Fal AI generation...");
+        
+        try {
+          // Try minimal configuration first
+          result = await generateImage({
+            model: provider.image(model),
+            prompt: enhancedPrompt,
+            aspectRatio: "1:1",
+          });
+
+          console.log("✅ Fal AI generation successful!");
+          
+        } catch (minimalError) {
+          console.error("❌ Minimal Fal call failed:", minimalError);
+          
+          // Retry with provider options
+          console.log("🧪 Retrying with Fal AI provider options...");
+          
+          result = await generateImage({
+            model: provider.image(model),
+            prompt: enhancedPrompt,
+            aspectRatio: "1:1",
+            providerOptions: {
+              fal: {
+                num_inference_steps: 25,
+                guidance_scale: 7.5,
+              },
+            },
+          });
+          
+          console.log("✅ Fal AI retry successful!");
+        }
+      } else {
+        throw new Error(`Unsupported provider: ${validation.provider}`);
+      }
+    } catch (error) {
+      console.error("❌ Image generation failed:", error);
+      throw error; // Re-throw to be handled by outer catch
     }
 
     console.log("✅ AI SDK result received:", {
@@ -256,8 +334,11 @@ export async function POST(req: Request) {
       }
     } else if (error instanceof Error) {
       console.log("Standard Error:", error.message);
-      if (error.message.includes('FAL_KEY') || error.message.includes('API key')) {
+      if (error.message.includes('FAL_KEY') || error.message.includes('OPENAI_API_KEY') || error.message.includes('API key')) {
         userFriendlyMessage = "Service configuration error. Please try again later.";
+        httpStatus = 503;
+      } else if (error.message.includes('OpenAI')) {
+        userFriendlyMessage = "OpenAI service temporarily unavailable. Please try again.";
         httpStatus = 503;
       }
     }

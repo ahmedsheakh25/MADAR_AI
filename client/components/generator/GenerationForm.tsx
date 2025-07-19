@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
@@ -15,6 +15,19 @@ import { StyleCard } from "../design-system/StyleCard";
 import { ColorPicker } from "../design-system/ColorPicker";
 import { useTranslation } from "../../hooks/use-translation";
 import { cn } from "../../lib/utils";
+
+// Enhanced model interface with AI Gateway features
+interface EnhancedModel {
+  id: string;
+  name: string;
+  provider: string;
+  description: string;
+  estimatedTime?: string;
+  costPerImage?: number;
+  isAvailable?: boolean;
+  providerStatus?: string;
+  supportedSizes?: string[];
+}
 
 // Style definitions for AI generation
 const GENERATION_STYLES = [
@@ -75,6 +88,7 @@ export interface GenerationFormData {
   uploadedImage?: File;
   customColors: string[];
   aspectRatio: "1:1" | "16:9" | "9:16" | "4:3";
+  model: string;
 }
 
 export interface GenerationFormProps {
@@ -95,7 +109,63 @@ export function GenerationForm({
     textPrompt: "",
     customColors: [],
     aspectRatio: "1:1",
+    model: "gpt-image-1",
   });
+  
+  const [availableModels, setAvailableModels] = useState<EnhancedModel[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(true);
+
+  // Fetch available models on component mount
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        setModelsLoading(true);
+        const response = await fetch('/api/models');
+        const data = await response.json();
+        
+        if (data.success) {
+          setAvailableModels(data.models);
+          
+          // Set default model to first available if current model isn't available
+          if (data.models.length > 0 && !data.models.some((m: EnhancedModel) => m.id === formData.model)) {
+            setFormData(prev => ({ ...prev, model: data.models[0].id }));
+          }
+        } else {
+          console.error('Failed to fetch models:', data.error);
+          // Fallback to Vercel gateway model
+          setAvailableModels([
+            {
+              id: "gpt-image-1",
+              name: "GPT Image 1",
+              provider: "Vercel AI Gateway",
+              description: "Vercel AI Gateway optimized image generation model",
+              estimatedTime: "8-20 seconds",
+              costPerImage: 0.06,
+              isAvailable: true,
+            }
+          ]);
+        }
+      } catch (error) {
+        console.error('Error fetching models:', error);
+        // Fallback to Vercel gateway model
+        setAvailableModels([
+          {
+            id: "gpt-image-1",
+            name: "GPT Image 1",
+            provider: "Vercel AI Gateway", 
+            description: "Vercel AI Gateway optimized image generation model",
+            estimatedTime: "8-20 seconds",
+            costPerImage: 0.06,
+            isAvailable: true,
+          }
+        ]);
+      } finally {
+        setModelsLoading(false);
+      }
+    };
+
+    fetchModels();
+  }, []);
 
   const [dragOver, setDragOver] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -163,10 +233,86 @@ export function GenerationForm({
 
   return (
     <div className={cn("w-full max-w-4xl mx-auto space-y-8", className)}>
+      {/* Model Selection */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-4"
+      >
+        <h2 className="text-xl font-semibold text-foreground">
+          AI Model
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {modelsLoading ? (
+            <div className="col-span-3 text-center py-8">
+              <div className="inline-flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                Loading models...
+              </div>
+            </div>
+          ) : (
+            availableModels.map((model) => (
+                          <motion.button
+                key={model.id}
+                onClick={() =>
+                  setFormData((prev) => ({ ...prev, model: model.id }))
+                }
+                className={cn(
+                  "relative p-4 rounded-lg border-2 text-left transition-all hover:shadow-md",
+                  formData.model === model.id
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-muted-foreground",
+                  !model.isAvailable && "opacity-50 cursor-not-allowed"
+                )}
+                whileHover={{ scale: model.isAvailable ? 1.02 : 1 }}
+                whileTap={{ scale: model.isAvailable ? 0.98 : 1 }}
+                disabled={!model.isAvailable}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-medium text-foreground">{model.name}</h3>
+                    <span className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                      {model.provider}
+                    </span>
+                    {!model.isAvailable && (
+                      <span className="text-xs px-2 py-1 bg-destructive/10 text-destructive rounded-full">
+                        Unavailable
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {model.description}
+                  </p>
+                  {model.estimatedTime && (
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span>⏱️ {model.estimatedTime}</span>
+                      {model.costPerImage && (
+                        <span>💰 ~${model.costPerImage.toFixed(3)}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {formData.model === model.id && (
+                  <motion.div
+                    className="absolute top-2 right-2"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  >
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                  </motion.div>
+                )}
+              </motion.button>
+            ))
+          )}
+        </div>
+      </motion.section>
+
       {/* Style Selection */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
         className="space-y-4"
       >
         <h2 className="text-xl font-semibold text-foreground">
@@ -190,7 +336,7 @@ export function GenerationForm({
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        transition={{ delay: 0.2 }}
         className="space-y-4"
       >
         <h2 className="text-xl font-semibold text-foreground">
@@ -368,7 +514,7 @@ export function GenerationForm({
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.3 }}
         className="space-y-4"
       >
         <h2 className="text-base text-gray-800 dark:text-gray-200 font-medium">
@@ -408,7 +554,7 @@ export function GenerationForm({
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.4 }}
         className="space-y-4"
       >
         <h2 className="text-xl font-semibold text-foreground">
@@ -447,7 +593,7 @@ export function GenerationForm({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.5 }}
         className="flex justify-center pt-4"
       >
         <Button
