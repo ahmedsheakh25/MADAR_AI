@@ -55,7 +55,7 @@ export const handleUserStats: RequestHandler = async (req, res) => {
         generationCount: userGenerationCount,
         resetDate: user.resetDate?.toISOString() || new Date().toISOString(),
         isAdmin: user.role === "admin",
-        isMasterAdmin: user.email.toLowerCase() === "ahmed.sheakh@gmail.com",
+        isMasterAdmin: user.email.toLowerCase() === "ahmed.sheakh25@gmail.com",
       },
       remainingGenerations,
       maxGenerations: MAX_GENERATIONS_PER_MONTH,
