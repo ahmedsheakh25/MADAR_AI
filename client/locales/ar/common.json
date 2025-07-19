@@ -63,6 +63,22 @@
     "loading": {
       "authenticating": "جارٍ المصادقة...",
       "loading": "جارٍ التحميل..."
+    },
+    "footer": {
+      "companyName": "استوديو أوف سبيس",
+      "projectName": "مدار (مدار)",
+      "projectSubtitle": "ملعب الذكاء الاصطناعي الإبداعي المجاني",
+      "description": "توليد صور ثلاثية الأبعاد بالذكاء الاصطناعي للمصممين",
+      "descriptionFull": "توليد صور ثلاثية الأبعاد بالذكاء الاصطناعي للمصممين. ارفع، اختر نمطاً، احصل على PNGs جميلة",
+      "freeWithGoogle": "مجاني 100% مع تسجيل الدخول بجوجل",
+      "privacy": "سياسة الخصوصية",
+      "terms": "شروط الخدمة",
+      "contact": "اتصل بنا",
+      "hostedOn": "مستضاف على:",
+      "copyright": "© 2024 استوديو أوف سبيس. جميع الحقوق محفوظة.",
+      "madeForDesigners": "صُنع للمصممين العرب",
+      "freeImagesPerMonth": "30 صورة مجانية شهرياً",
+      "googleVerified": "معتمد من جوجل"
     }
   },
   "brand": {
@@ -91,7 +107,7 @@
         "styles": {
           "3dPixelIsometric": "أيزومترك بكسل ثلاثي الأبعاد",
           "minimalIcon": "أيقونة بسيطة",
-          "toyFigurine": "دمية لعبة",
+          "toyFigurine": "د��ية لعبة",
           "glassMorphism": "تأثير زجاجي",
           "neonGlow": "توهج نيون"
         }
