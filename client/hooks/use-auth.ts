@@ -8,6 +8,8 @@ export interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   error: string | null;
+  devMode?: boolean;
+  devModeMessage?: string;
 }
 
 export function useAuth() {
@@ -16,12 +18,36 @@ export function useAuth() {
     isLoading: true,
     isAuthenticated: false,
     error: null,
+    devMode: false,
+    devModeMessage: null,
   });
 
   // Initialize authentication on mount
   useEffect(() => {
     initializeAuth();
+    checkDevMode();
   }, []);
+
+  const checkDevMode = async () => {
+    try {
+      const response = await fetch("/api/auth/dev-status");
+      const data = await response.json();
+
+      if (data.success) {
+        setState((prev) => ({
+          ...prev,
+          devMode: data.devMode,
+          devModeMessage: data.message,
+        }));
+
+        if (data.devMode) {
+          console.log("🔧 " + data.message);
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to check dev mode status:", error);
+    }
+  };
 
   const initializeAuth = async () => {
     try {
@@ -66,6 +92,13 @@ export function useAuth() {
         return;
       }
 
+      // Check if this is a dev token
+      if (token.startsWith("dev-token-")) {
+        console.log("🔧 Development mode: Using cached dev user");
+        // For dev mode, we don't need to fetch from API
+        return;
+      }
+
       // No cached data, fetch fresh user data
       const response = await APIManager.getUserStats();
       if (response.user) {
@@ -97,10 +130,46 @@ export function useAuth() {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      // Get Google OAuth URL
+      // Check if we're in dev mode
+      const isDev = import.meta.env.DEV;
+
+      if (isDev) {
+        console.log("🔧 Development mode: Creating dev user");
+
+        // Create a mock dev user
+        const devUser = {
+          id: "dev-user-123",
+          email: "dev@madar.ai",
+          name: "Development User",
+          profilePicture: "https://via.placeholder.com/150",
+          role: "user",
+          generationCount: 0,
+          resetDate: new Date().toISOString(),
+        };
+
+        // Create a mock token
+        const devToken = "dev-token-" + Date.now();
+
+        // Store the token and user
+        AuthManager.setToken(devToken);
+        UserCache.save(devUser);
+
+        setState({
+          user: devUser,
+          isLoading: false,
+          isAuthenticated: true,
+          error: null,
+          devMode: true,
+          devModeMessage: "Development mode active - using mock user",
+        });
+
+        console.log("✅ Dev user created:", devUser);
+        return;
+      }
+
+      // Production Google OAuth flow
       const response = await APIManager.getGoogleAuthUrl();
       if (response.success && response.authUrl) {
-        // Redirect to Google OAuth
         window.location.href = response.authUrl;
       } else {
         throw new Error(response.error || "Failed to get authentication URL");
@@ -199,6 +268,6 @@ export function useAuth() {
     signOut,
     refreshUser,
     // Backward compatibility
-    isDevMode: false, // Real authentication enabled
+    isDevMode: state.devMode || false, // Real authentication enabled, but show dev mode status
   };
 }

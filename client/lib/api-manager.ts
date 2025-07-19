@@ -1,7 +1,7 @@
-import { AuthManager, UserCache, GalleryCache } from './auth-manager';
-import type { 
-  User, 
-  GenerateImageRequest, 
+import { AuthManager, UserCache, GalleryCache } from "./auth-manager";
+import type {
+  User,
+  GenerateImageRequest,
   GenerateImageResponse,
   SaveImageRequest,
   SaveImageResponse,
@@ -10,8 +10,8 @@ import type {
   StylesResponse,
   AuthResponse,
   GoogleAuthUrlResponse,
-  LogoutResponse
-} from '@shared/api';
+  LogoutResponse,
+} from "@shared/api";
 
 export interface APIError {
   message: string;
@@ -27,7 +27,8 @@ export interface APIOptions {
 }
 
 export class APIManager {
-  private static readonly BASE_URL = typeof window !== 'undefined' ? window.location.origin : '';
+  private static readonly BASE_URL =
+    typeof window !== "undefined" ? window.location.origin : "";
   private static readonly DEFAULT_TIMEOUT = 30000; // 30 seconds
   private static readonly DEFAULT_RETRY_ATTEMPTS = 3;
   private static readonly RETRY_DELAY = 1000; // 1 second
@@ -37,7 +38,7 @@ export class APIManager {
    */
   private static async request<T>(
     endpoint: string,
-    options: RequestInit & APIOptions = {}
+    options: RequestInit & APIOptions = {},
   ): Promise<T> {
     const {
       useCache = false,
@@ -52,13 +53,18 @@ export class APIManager {
 
     // Prepare headers
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...fetchOptions.headers,
     };
 
     // Add auth header if token exists
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
+
+      // Add debug info for dev tokens
+      if (token.startsWith("dev-token-")) {
+        console.log("🔧 Using dev token for API request:", endpoint);
+      }
     }
 
     // Create abort controller for timeout
@@ -81,24 +87,52 @@ export class APIManager {
         // Handle authentication errors
         if (response.status === 401) {
           AuthManager.clearToken();
-          window.location.href = '/login';
-          throw new Error('Authentication required');
+          window.location.href = "/login";
+          throw new Error("Authentication required");
         }
 
         // Handle other HTTP errors
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          // Clone response to avoid "body stream already read" error
+          const errorResponse = response.clone();
+          let errorText = "";
+          try {
+            errorText = await errorResponse.text();
+          } catch (e) {
+            errorText = response.statusText;
+          }
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
         return data;
-
       } catch (error) {
         lastError = error as Error;
+        console.warn(
+          `API request failed (attempt ${attempt}/${retryAttempts}):`,
+          {
+            url,
+            error: error instanceof Error ? error.message : "Unknown error",
+            hasToken: !!token,
+            isDevToken: token?.startsWith("dev-token-"),
+          },
+        );
 
         // Don't retry on auth errors or client errors
         if (error instanceof Error) {
-          if (error.message.includes('401') || error.message.includes('Authentication')) {
+          if (
+            error.message.includes("401") ||
+            error.message.includes("Authentication")
+          ) {
+            throw error;
+          }
+
+          // Don't retry on network errors that are likely permanent
+          if (
+            error.name === "TypeError" &&
+            error.message.includes("Failed to fetch")
+          ) {
+            console.error("Network error detected, not retrying:", error);
             throw error;
           }
         }
@@ -125,20 +159,20 @@ export class APIManager {
       }
     }
 
-    throw lastError || new Error('Request failed');
+    throw lastError || new Error("Request failed");
   }
 
   /**
    * GET request with caching support
    */
   private static async get<T>(
-    endpoint: string, 
-    options: APIOptions = {}
+    endpoint: string,
+    options: APIOptions = {},
   ): Promise<T> {
-    return this.request<T>(endpoint, { 
-      method: 'GET', 
+    return this.request<T>(endpoint, {
+      method: "GET",
       useCache: true,
-      ...options 
+      ...options,
     });
   }
 
@@ -146,14 +180,14 @@ export class APIManager {
    * POST request
    */
   private static async post<T>(
-    endpoint: string, 
-    data?: any, 
-    options: APIOptions = {}
+    endpoint: string,
+    data?: any,
+    options: APIOptions = {},
   ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
-      ...options
+      ...options,
     });
   }
 
@@ -161,7 +195,7 @@ export class APIManager {
    * Utility function for delays
    */
   private static delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -169,7 +203,7 @@ export class APIManager {
    */
   private static getCachedData<T>(endpoint: string): T | null {
     try {
-      const cacheKey = `api_cache_${endpoint.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      const cacheKey = `api_cache_${endpoint.replace(/[^a-zA-Z0-9]/g, "_")}`;
       const cached = localStorage.getItem(cacheKey);
       if (!cached) return null;
 
@@ -191,14 +225,14 @@ export class APIManager {
    */
   private static setCachedData<T>(endpoint: string, data: T): void {
     try {
-      const cacheKey = `api_cache_${endpoint.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      const cacheKey = `api_cache_${endpoint.replace(/[^a-zA-Z0-9]/g, "_")}`;
       const cacheData = {
         value: data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
       localStorage.setItem(cacheKey, JSON.stringify(cacheData));
     } catch (error) {
-      console.warn('Failed to cache API data:', error);
+      console.warn("Failed to cache API data:", error);
     }
   }
 
@@ -210,14 +244,14 @@ export class APIManager {
    * Get Google OAuth URL
    */
   static async getGoogleAuthUrl(): Promise<GoogleAuthUrlResponse> {
-    return this.get<GoogleAuthUrlResponse>('/api/auth/google');
+    return this.get<GoogleAuthUrlResponse>("/api/auth/google");
   }
 
   /**
    * Logout user
    */
   static async logout(): Promise<LogoutResponse> {
-    const response = await this.post<LogoutResponse>('/api/auth/logout');
+    const response = await this.post<LogoutResponse>("/api/auth/logout");
     AuthManager.clearToken();
     return response;
   }
@@ -233,12 +267,12 @@ export class APIManager {
     try {
       // Try cached data first for instant UX
       const cachedUser = UserCache.load();
-      
+
       // If we have cached data and it's fresh, return it immediately
       if (cachedUser && !UserCache.isStale()) {
         // Still fetch fresh data in background
-        this.get<UserStatsResponse>('/api/user')
-          .then(response => {
+        this.get<UserStatsResponse>("/api/user")
+          .then((response) => {
             if (response.user) {
               UserCache.save(response.user);
             }
@@ -248,13 +282,13 @@ export class APIManager {
         return {
           user: cachedUser,
           remainingGenerations: 30 - (cachedUser.generationCount || 0),
-          maxGenerations: 30
+          maxGenerations: 30,
         };
       }
 
       // Fetch fresh data
-      const response = await this.get<UserStatsResponse>('/api/user');
-      
+      const response = await this.get<UserStatsResponse>("/api/user");
+
       // Cache the fresh data
       if (response.user) {
         UserCache.save(response.user);
@@ -269,10 +303,10 @@ export class APIManager {
           user: cachedUser,
           remainingGenerations: 30 - (cachedUser.generationCount || 0),
           maxGenerations: 30,
-          fromCache: true
+          fromCache: true,
         } as UserStatsResponse;
       }
-      
+
       throw error;
     }
   }
@@ -285,12 +319,16 @@ export class APIManager {
    * Generate image with progress tracking
    */
   static async generateImage(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
-    const response = await this.post<GenerateImageResponse>('/api/generate', request, {
-      timeout: 60000, // 60 seconds for image generation
-      retry: false // Don't retry image generation
-    });
+    const response = await this.post<GenerateImageResponse>(
+      "/api/generate",
+      request,
+      {
+        timeout: 60000, // 60 seconds for image generation
+        retry: false, // Don't retry image generation
+      },
+    );
 
     // Update user cache with new generation count
     if (response.success && response.remainingGenerations !== undefined) {
@@ -307,8 +345,10 @@ export class APIManager {
   /**
    * Save image to gallery
    */
-  static async saveImage(request: SaveImageRequest): Promise<SaveImageResponse> {
-    const response = await this.post<SaveImageResponse>('/api/save', request);
+  static async saveImage(
+    request: SaveImageRequest,
+  ): Promise<SaveImageResponse> {
+    const response = await this.post<SaveImageResponse>("/api/save", request);
 
     // Add to gallery cache optimistically
     if (response.success && response.imageId) {
@@ -318,7 +358,7 @@ export class APIManager {
         prompt: request.prompt,
         styleName: request.styleName,
         colors: request.colors,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
       GalleryCache.addImage(newImage);
     }
@@ -334,31 +374,33 @@ export class APIManager {
    * Get user gallery with smart caching
    */
   static async getGallery(
-    limit: number = 50, 
-    offset: number = 0
+    limit: number = 50,
+    offset: number = 0,
   ): Promise<GalleryResponse> {
     try {
       // Load cached gallery
       const { images: cachedImages, needsRefresh } = GalleryCache.load();
-      
+
       // If we have cached data and don't need refresh, return it
       if (cachedImages.length > 0 && !needsRefresh && offset === 0) {
         // Still fetch fresh data in background
-        this.get<GalleryResponse>(`/api/gallery?limit=${limit}&offset=${offset}`)
-          .then(response => {
+        this.get<GalleryResponse>(
+          `/api/gallery?limit=${limit}&offset=${offset}`,
+        )
+          .then((response) => {
             GalleryCache.save(response.images);
           })
           .catch(console.warn);
 
         return {
           images: cachedImages.slice(0, limit),
-          total: cachedImages.length
+          total: cachedImages.length,
         };
       }
 
       // Fetch fresh data
       const response = await this.get<GalleryResponse>(
-        `/api/gallery?limit=${limit}&offset=${offset}`
+        `/api/gallery?limit=${limit}&offset=${offset}`,
       );
 
       // Cache the fresh data (only for first page)
@@ -374,10 +416,10 @@ export class APIManager {
         return {
           images: cachedImages.slice(offset, offset + limit),
           total: cachedImages.length,
-          fromCache: true
+          fromCache: true,
         } as GalleryResponse;
       }
-      
+
       throw error;
     }
   }
@@ -390,7 +432,51 @@ export class APIManager {
    * Get available styles with caching
    */
   static async getStyles(): Promise<StylesResponse> {
-    return this.get<StylesResponse>('/api/styles');
+    return this.get<StylesResponse>("/api/styles");
+  }
+
+  // =============================================================================
+  // File Upload Methods
+  // =============================================================================
+
+  /**
+   * Upload a file and return the URL
+   */
+  static async uploadFile(file: File): Promise<{
+    success: boolean;
+    url?: string;
+    filename?: string;
+    size?: number;
+    type?: string;
+    error?: string;
+  }> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const token = AuthManager.getToken();
+    if (!token) {
+      throw new Error("Authentication required for file upload");
+    }
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("File upload error:", error);
+      throw error;
+    }
   }
 
   // =============================================================================
@@ -401,7 +487,7 @@ export class APIManager {
    * Check API health
    */
   static async ping(): Promise<{ message: string; timestamp: string }> {
-    return this.get('/api/ping');
+    return this.get("/api/ping");
   }
 
   /**
@@ -410,10 +496,12 @@ export class APIManager {
   static clearCache(): void {
     UserCache.clear();
     GalleryCache.clear();
-    
+
     // Clear API cache
-    const keys = Object.keys(localStorage).filter(key => key.startsWith('api_cache_'));
-    keys.forEach(key => localStorage.removeItem(key));
+    const keys = Object.keys(localStorage).filter((key) =>
+      key.startsWith("api_cache_"),
+    );
+    keys.forEach((key) => localStorage.removeItem(key));
   }
 
   /**
@@ -424,10 +512,10 @@ export class APIManager {
       await Promise.allSettled([
         this.getUserStats(),
         this.getStyles(),
-        this.getGallery(20, 0) // Load first 20 images
+        this.getGallery(20, 0), // Load first 20 images
       ]);
     } catch (error) {
-      console.warn('Failed to preload some data:', error);
+      console.warn("Failed to preload some data:", error);
     }
   }
-} 
+}

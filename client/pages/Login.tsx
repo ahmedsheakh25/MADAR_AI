@@ -24,6 +24,7 @@ export default function Login() {
   const { user, signIn, isDevMode } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [agreesToTerms, setAgreesToTerms] = useState(false);
 
   // Redirect to generator if user is already authenticated
   useEffect(() => {
@@ -63,6 +64,8 @@ export default function Login() {
 
   const toggleAuthMode = () => {
     setIsSignUp(!isSignUp);
+    // Reset terms agreement when switching modes
+    setAgreesToTerms(false);
   };
 
   // Animation variants
@@ -245,15 +248,80 @@ export default function Login() {
                 className="flex flex-col items-center gap-6 w-full max-w-[320px]"
                 variants={itemVariants}
               >
+                {/* Terms Agreement Checkbox for Sign Up */}
+                <AnimatePresence>
+                  {isSignUp && (
+                    <motion.div
+                      className="flex items-start gap-3 w-full max-w-[320px] mb-4"
+                      initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                      animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
+                      exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="terms-agreement"
+                          checked={agreesToTerms}
+                          onChange={(e) => setAgreesToTerms(e.target.checked)}
+                          className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary focus:ring-2 focus:ring-offset-0 accent-primary"
+                        />
+                      </div>
+                      <label
+                        htmlFor="terms-agreement"
+                        className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none"
+                        style={{
+                          fontFamily:
+                            language === "ar"
+                              ? "IBM Plex Sans Arabic, Noto Sans Arabic, Arial, sans-serif"
+                              : "var(--font-body-en)",
+                          direction: language === "ar" ? "rtl" : "ltr",
+                          lineHeight: "18px",
+                        }}
+                      >
+                        {t("pages.signup.termsAgreementParts.prefix")}
+                        <motion.button
+                          onClick={() => navigateToPath({ path: "/privacy" })}
+                          className="text-primary hover:underline font-medium"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          type="button"
+                        >
+                          {t("pages.signup.termsAgreementParts.privacyPolicy")}
+                        </motion.button>{" "}
+                        {t("pages.signup.termsAgreementParts.and")}{" "}
+                        <motion.button
+                          onClick={() => navigateToPath({ path: "/terms" })}
+                          className="text-primary hover:underline font-medium"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          type="button"
+                        >
+                          {t("pages.signup.termsAgreementParts.termsOfService")}
+                        </motion.button>
+                        {t("pages.signup.termsAgreementParts.suffix")}
+                      </label>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* Google Auth Button */}
                 <motion.button
                   onClick={handleGoogleAuth}
-                  disabled={isLoading}
-                  className="flex w-[320px] h-[44px] px-5 py-2 justify-center items-center gap-2 rounded-[10px] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed border border-border bg-card hover:bg-muted text-card-foreground"
+                  disabled={isLoading || (isSignUp && !agreesToTerms)}
+                  className={`flex w-[320px] h-[44px] px-5 py-2 justify-center items-center gap-2 rounded-[10px] transition-all duration-200 border border-border ${
+                    isLoading || (isSignUp && !agreesToTerms)
+                      ? "opacity-50 cursor-not-allowed bg-muted"
+                      : "bg-card hover:bg-muted cursor-pointer"
+                  } text-card-foreground`}
                   variants={buttonVariants}
                   initial="idle"
-                  whileHover="hover"
-                  whileTap="tap"
+                  whileHover={
+                    isLoading || (isSignUp && !agreesToTerms) ? "idle" : "hover"
+                  }
+                  whileTap={
+                    isLoading || (isSignUp && !agreesToTerms) ? "idle" : "tap"
+                  }
                 >
                   {isLoading ? (
                     <motion.div

@@ -50,7 +50,7 @@
       "orContinueWith": "أو تابع باستخدام",
       "generationTakes": "يستغرق التوليد 3-5 دقائق، لا تقم بتحديث الصفحة",
       "supportedFormats": "يدعم PNG، JPG، JPEG",
-      "clickToUpload": "اضغط لرفع الصورة أو اسحبها هنا"
+      "clickToUpload": "اضغ�� لرفع الصورة أو اسحبها هنا"
     },
     "languages": {
       "arabic": "العربية",
@@ -186,7 +186,7 @@
     "auth": {
       "callback": {
         "authenticating": "جارٍ المصادقة...",
-        "pleaseWait": "يرجى الانتظار بينما نقوم بتسجيل دخولك",
+        "pleaseWait": "يرج�� الانتظار بينما نقوم بتسجيل دخولك",
         "success": "تم تسجيل الدخول بنجاح!",
         "error": "فشل في تسجيل الدخول",
         "redirecting": "جارٍ التوجيه إلى لوحة التحكم...",
@@ -209,7 +209,15 @@
         "transparentBackground": "خلفيات شفافة جاهزة للاستخدام",
         "freeForDesigners": "مجاني بالكامل للمصممين"
       },
-      "activeUsers": "المستخد��ون النشطون"
+      "activeUsers": "المستخدمون النشطون",
+      "termsAgreement": "بإنشاء حساب، أنت توافق على سياسة الخصوصية و شروط الخدمة الخاصة بنا.",
+      "termsAgreementParts": {
+        "prefix": "بإنشاء حساب، أنت توافق على",
+        "privacyPolicy": "سياسة الخصوصية",
+        "and": "و",
+        "termsOfService": "شروط الخدمة",
+        "suffix": "الخاصة بنا."
+      }
     },
     "notFound": {
       "title": "404",

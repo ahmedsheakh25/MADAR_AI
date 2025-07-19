@@ -6,6 +6,7 @@ import {
   timestamp,
   jsonb,
   varchar,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 // Users table
@@ -53,6 +54,24 @@ export const stylesTable = pgTable("styles", {
   promptJson: jsonb("prompt_json"),
 });
 
+// Generation usage tracking table
+export const generationUsageTable = pgTable("generation_usage", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  styleUsed: text("style_used"),
+  promptUsed: text("prompt_used"),
+  uploadedImageUsed: text("uploaded_image_used"),
+  colorsUsed: text("colors_used").array(),
+  generatedImageUrl: text("generated_image_url"),
+  success: boolean("success").default(true),
+  errorMessage: text("error_message"),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
 // Export types
 export type User = typeof usersTable.$inferSelect;
 export type NewUser = typeof usersTable.$inferInsert;
@@ -65,3 +84,6 @@ export type NewImage = typeof imagesTable.$inferInsert;
 
 export type Style = typeof stylesTable.$inferSelect;
 export type NewStyle = typeof stylesTable.$inferInsert;
+
+export type GenerationUsage = typeof generationUsageTable.$inferSelect;
+export type NewGenerationUsage = typeof generationUsageTable.$inferInsert;

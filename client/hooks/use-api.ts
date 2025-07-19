@@ -19,7 +19,7 @@ export function useGenerateImage() {
   const generateImage = useCallback(
     async (params: GenerateImageRequest): Promise<GenerateImageResponse> => {
       const generationId = `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       setIsGenerating(true);
       setError(null);
       setProgress("Starting generation...");
@@ -29,11 +29,11 @@ export function useGenerateImage() {
         GenerationManager.saveProgress(generationId, {
           prompt: params.prompt,
           style: params.styleId,
-          status: 'starting'
+          status: "starting",
         });
 
         setProgress("Sending request to AI...");
-        
+
         const result = await APIManager.generateImage(params);
 
         if (!result.success) {
@@ -41,7 +41,7 @@ export function useGenerateImage() {
         }
 
         setProgress("Generation completed!");
-        
+
         // Clear generation progress on success
         GenerationManager.clearProgress(generationId);
 
@@ -50,15 +50,15 @@ export function useGenerateImage() {
         const errorMessage =
           err instanceof Error ? err.message : "Generation failed";
         setError(errorMessage);
-        
+
         // Save error state
         GenerationManager.saveProgress(generationId, {
           prompt: params.prompt,
           style: params.styleId,
-          status: 'error',
-          error: errorMessage
+          status: "error",
+          error: errorMessage,
         });
-        
+
         throw new Error(errorMessage);
       } finally {
         setIsGenerating(false);
@@ -72,7 +72,7 @@ export function useGenerateImage() {
   const restoreGenerations = useCallback(() => {
     const restoredGenerations = GenerationManager.restoreProgress();
     if (restoredGenerations.length > 0) {
-      console.log('Restored ongoing generations:', restoredGenerations);
+      console.log("Restored ongoing generations:", restoredGenerations);
       // You can set state here if needed for UI
     }
   }, []);
@@ -130,31 +130,19 @@ export function useUserStats() {
     setError(null);
 
     try {
-      const apiUrl = "/api/user";
-      console.log("Fetching user stats from:", apiUrl);
-      console.log("Current location:", window.location.href);
-      console.log("Current origin:", window.location.origin);
-
-      const response = await fetch(apiUrl);
-
-      console.log("User stats response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("User stats error response:", errorText);
-        throw new Error(
-          `Failed to get user stats: ${response.status} ${response.statusText}`,
-        );
-      }
-
-      const result: UserStatsResponse = await response.json();
+      console.log("Fetching user stats via APIManager...");
+      const result = await APIManager.getUserStats();
       console.log("User stats result:", result);
-
       return result;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to get user stats";
-      console.error("User stats fetch error:", err);
+      console.error("User stats fetch error:", {
+        error: err,
+        message: errorMessage,
+        hasToken: !!localStorage.getItem("madar_auth_token"),
+        currentUrl: window.location.href,
+      });
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -179,16 +167,9 @@ export function useGallery() {
       setError(null);
 
       try {
-        const response = await fetch(
-          `/api/gallery?limit=${limit}&offset=${offset}`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to get gallery");
-        }
-
-        const result: GalleryResponse = await response.json();
-
+        console.log("Fetching gallery via APIManager...");
+        const result = await APIManager.getGallery(limit, offset);
+        console.log("Gallery result:", result);
         return result;
       } catch (err) {
         const errorMessage =
@@ -218,31 +199,19 @@ export function useStyles() {
     setError(null);
 
     try {
-      const apiUrl = "/api/styles";
-      console.log("Fetching styles from:", apiUrl);
-      console.log("Current location:", window.location.href);
-      console.log("Current origin:", window.location.origin);
-
-      const response = await fetch(apiUrl);
-
-      console.log("Styles response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Styles error response:", errorText);
-        throw new Error(
-          `Failed to get styles: ${response.status} ${response.statusText}`,
-        );
-      }
-
-      const result: StylesResponse = await response.json();
+      console.log("Fetching styles via APIManager...");
+      const result = await APIManager.getStyles();
       console.log("Styles result:", result);
-
       return result;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to get styles";
-      console.error("Styles fetch error:", err);
+      console.error("Styles fetch error:", {
+        error: err,
+        message: errorMessage,
+        hasToken: !!localStorage.getItem("madar_auth_token"),
+        currentUrl: window.location.href,
+      });
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {

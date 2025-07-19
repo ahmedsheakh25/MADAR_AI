@@ -12,6 +12,7 @@ import Gallery from "./pages/Gallery";
 import AdminUsers from "./pages/AdminUsers";
 import AdminStyles from "./pages/AdminStyles";
 import AuthCallback from "./pages/AuthCallback";
+import DevStatus from "./pages/DevStatus";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
@@ -94,6 +95,14 @@ function AppWithLanguage() {
           }
         />
         <Route
+          path="/:lang/dev-status"
+          element={
+            <LanguageRoute>
+              <DevStatus />
+            </LanguageRoute>
+          }
+        />
+        <Route
           path="/:lang/privacy"
           element={
             <LanguageRoute>
@@ -130,6 +139,10 @@ function AppWithLanguage() {
         <Route
           path="/admin/styles"
           element={<Navigate to={`/${language}/admin/styles`} replace />}
+        />
+        <Route
+          path="/dev-status"
+          element={<Navigate to={`/${language}/dev-status`} replace />}
         />
         <Route
           path="/privacy"

@@ -32,6 +32,46 @@ export interface GoogleUserInfo {
 }
 
 export class AuthService {
+  // Check if we're in development mode
+  static isDevMode(): boolean {
+    return (
+      process.env.DEV_MODE_AUTH === "true" ||
+      process.env.NODE_ENV === "development"
+    );
+  }
+
+  // Create a test/dev user for development mode
+  static async createDevUser(): Promise<{
+    user: User;
+    token: string;
+    isNewUser: boolean;
+  }> {
+    const devUserData = {
+      email: "dev@madar.ai",
+      name: "Development User",
+      googleId: "dev-google-id-123",
+      profilePicture: "https://via.placeholder.com/150",
+      role: "user" as const,
+    };
+
+    // Check if dev user already exists
+    let user = await DatabaseService.findUserByEmail(devUserData.email);
+    let isNewUser = false;
+
+    if (!user) {
+      user = await DatabaseService.createUserFromGoogle(devUserData);
+      isNewUser = true;
+      console.log("✅ Created development user:", devUserData.email);
+    } else {
+      // Update last login
+      user = await DatabaseService.updateLastLogin(user.id);
+      console.log("✅ Using existing development user:", devUserData.email);
+    }
+
+    const token = await this.generateToken(user);
+    return { user, token, isNewUser };
+  }
+
   // Generate JWT token for authenticated user
   static async generateToken(user: User): Promise<string> {
     const jwt = await new SignJWT({
@@ -248,6 +288,12 @@ export class AuthService {
 
   // Generate Google OAuth URL
   static getGoogleAuthUrl(): string {
+    // In development mode, return a special dev URL
+    if (this.isDevMode()) {
+      console.log("🔧 Development mode: Generating dev auth URL");
+      return "/api/auth/callback?dev=true";
+    }
+
     const baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
 
     // Get and validate client ID

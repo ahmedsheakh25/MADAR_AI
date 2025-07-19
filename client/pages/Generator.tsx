@@ -38,6 +38,7 @@ import {
   useUserStats,
   useStyles,
 } from "../hooks/use-api";
+import { APIManager } from "../lib/api-manager";
 import type { Style } from "@shared/api";
 
 export default function Generator() {
@@ -133,6 +134,7 @@ export default function Generator() {
   const [customColors, setCustomColors] = useState([
     { id: 1, hex: "#34C759", opacity: 100 },
   ]);
+  const [userEditedColors, setUserEditedColors] = useState(false);
   const [editingColorId, setEditingColorId] = useState<number | null>(null);
   const [editingHex, setEditingHex] = useState<string>("");
   const [promptText, setPromptText] = useState<string>("");
@@ -145,6 +147,7 @@ export default function Generator() {
   >(null);
   const [showActionButtons, setShowActionButtons] = useState<boolean>(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [imageProcessed, setImageProcessed] = useState<boolean>(false);
   const [processedImageData, setProcessedImageData] = useState(null);
 
@@ -223,21 +226,72 @@ export default function Generator() {
           }
         } catch (stylesError) {
           console.warn(
-            "Failed to load styles, using hardcoded data:",
+            "Failed to load styles, using fallback data:",
             stylesError,
           );
-          // Fallback to existing hardcoded data
-          setAvailableStyles([]);
+          // Fallback to hardcoded styles data
+          const fallbackStyles = [
+            {
+              id: "voxel-3d",
+              name: "Voxel 3D",
+              description: "3D voxel style with blocky aesthetic",
+              thumbnail: "",
+              promptJson: {
+                basePrompt: "3D voxel style, isometric view, blocky aesthetic",
+                style: "voxel",
+                renderEngine: "blender",
+              },
+            },
+            {
+              id: "clay-3d",
+              name: "Clay 3D",
+              description: "Soft clay-like 3D rendering",
+              thumbnail: "",
+              promptJson: {
+                basePrompt: "3D clay style, soft rounded forms, matte finish",
+                style: "clay",
+                renderEngine: "blender",
+              },
+            },
+            {
+              id: "low-poly",
+              name: "Low Poly",
+              description: "Low polygon count 3D style",
+              thumbnail: "",
+              promptJson: {
+                basePrompt: "low poly 3D style, minimal polygons, geometric",
+                style: "lowpoly",
+                renderEngine: "blender",
+              },
+            },
+          ];
+
+          setAvailableStyles(fallbackStyles);
           handleStyleSelection("voxel-3d");
         }
       } catch (error) {
         console.error("Failed to initialize data:", error);
-        // Ultimate fallback to existing hardcoded data
+        // Ultimate fallback to hardcoded data
         setUserStats({
           remainingGenerations: 30,
           maxGenerations: 30,
         });
-        setAvailableStyles([]);
+
+        const fallbackStyles = [
+          {
+            id: "voxel-3d",
+            name: "Voxel 3D",
+            description: "3D voxel style with blocky aesthetic",
+            thumbnail: "",
+            promptJson: {
+              basePrompt: "3D voxel style, isometric view, blocky aesthetic",
+              style: "voxel",
+              renderEngine: "blender",
+            },
+          },
+        ];
+
+        setAvailableStyles(fallbackStyles);
         handleStyleSelection("voxel-3d");
       }
     };
@@ -349,32 +403,54 @@ export default function Generator() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
-  const simulateUpload = async (file: File) => {
+  const uploadFile = async (file: File) => {
     const fileId = `${file.name}-${Date.now()}`;
     setUploadingFiles((prev) => new Map(prev.set(fileId, 0)));
 
-    // Simulate upload progress
-    for (let progress = 0; progress <= 100; progress += 10) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      setUploadingFiles((prev) => new Map(prev.set(fileId, progress)));
-    }
+    try {
+      // Show upload progress (mock progress for now, real upload happens instantly)
+      for (let progress = 0; progress <= 80; progress += 20) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        setUploadingFiles((prev) => new Map(prev.set(fileId, progress)));
+      }
 
-    // Simulate random success/failure
-    const success = Math.random() > 0.3; // 70% success rate
+      // Perform actual upload
+      const uploadResult = await APIManager.uploadFile(file);
 
-    setUploadingFiles((prev) => {
-      const newMap = new Map(prev);
-      newMap.delete(fileId);
-      return newMap;
-    });
+      // Complete progress
+      setUploadingFiles((prev) => new Map(prev.set(fileId, 100)));
 
-    if (success) {
-      setCompletedFiles((prev) => new Set(prev.add(fileId)));
-    } else {
+      if (uploadResult.success && uploadResult.url) {
+        // Store the uploaded URL for later use
+        setUploadedFileUrl(uploadResult.url);
+
+        setUploadingFiles((prev) => {
+          const newMap = new Map(prev);
+          newMap.delete(fileId);
+          return newMap;
+        });
+
+        setCompletedFiles((prev) => new Set(prev.add(fileId)));
+        return { fileId, success: true, url: uploadResult.url };
+      } else {
+        throw new Error(uploadResult.error || "Upload failed");
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+
+      setUploadingFiles((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(fileId);
+        return newMap;
+      });
+
       setFailedFiles((prev) => new Set(prev.add(fileId)));
+      return {
+        fileId,
+        success: false,
+        error: error instanceof Error ? error.message : "Upload failed",
+      };
     }
-
-    return { fileId, success };
   };
 
   const handleFileUpload = async (files: File[]) => {
@@ -388,8 +464,8 @@ export default function Generator() {
     const singleFile = validFiles[0];
     setUploadedFiles([singleFile]);
 
-    // Simulate upload for the single file
-    simulateUpload(singleFile);
+    // Upload the single file
+    uploadFile(singleFile);
   };
 
   const retryUpload = async (file: File) => {
@@ -400,12 +476,13 @@ export default function Generator() {
       return newSet;
     });
 
-    await simulateUpload(file);
+    await uploadFile(file);
   };
 
   const removeFile = (file: File, index: number) => {
     const fileId = `${file.name}-${Date.now()}`;
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    setUploadedFileUrl(null); // Clear the uploaded URL
     setCompletedFiles((prev) => {
       const newSet = new Set(prev);
       newSet.delete(fileId);
@@ -420,18 +497,44 @@ export default function Generator() {
 
   const handleStyleSelection = (styleId: string) => {
     setSelectedStyleId(styleId);
-    const selectedStyle = STYLE_DATA.find((style) => style.id === styleId);
 
-    if (selectedStyle?.defaultPrompt) {
-      setPromptText(selectedStyle.defaultPrompt);
-      setCharCount(selectedStyle.defaultPrompt.length);
+    // First try to find the style in availableStyles (from DB), then fallback to STYLE_DATA
+    const selectedStyle =
+      availableStyles.find((style) => style.id === styleId) ||
+      STYLE_DATA.find((style) => style.id === styleId);
+
+    if (!selectedStyle) {
+      console.error(
+        `Style ${styleId} not found in both database and fallback data`,
+      );
+      return;
     }
 
-    if (selectedStyle?.defaultColors) {
-      // Convert hex colors to the format expected by customColors
-      const newColors = selectedStyle.defaultColors
+    // Handle both database style format and STYLE_DATA format
+    const stylePrompt =
+      "defaultPrompt" in selectedStyle
+        ? selectedStyle.defaultPrompt
+        : "promptJson" in selectedStyle && selectedStyle.promptJson
+          ? (selectedStyle.promptJson as any)?.prompt || ""
+          : "";
+
+    const styleColors =
+      "defaultColors" in selectedStyle
+        ? selectedStyle.defaultColors
+        : "promptJson" in selectedStyle && selectedStyle.promptJson
+          ? (selectedStyle.promptJson as any)?.defaultColors || []
+          : [];
+
+    if (stylePrompt) {
+      setPromptText(stylePrompt);
+      setCharCount(stylePrompt.length);
+    }
+
+    if (styleColors && styleColors.length > 0 && !userEditedColors) {
+      // Only update colors if user hasn't manually edited them
+      const newColors = styleColors
         .slice(0, 2)
-        .map((hex, index) => ({
+        .map((hex: string, index: number) => ({
           id: index + 1,
           hex: hex,
           opacity: 100,
@@ -464,13 +567,17 @@ export default function Generator() {
     setGeneratedResultImage(null);
 
     try {
-      // Find the selected style
+      // Find the selected style with comprehensive validation
       const selectedStyle =
         availableStyles.find((style) => style.id === selectedStyleId) ||
         STYLE_DATA.find((style) => style.id === selectedStyleId);
 
       if (!selectedStyle) {
-        throw new Error("Selected style not found");
+        console.error(
+          `Critical: Style '${selectedStyleId}' not found in available styles or fallback data`,
+        );
+        alert(`Style configuration error. Please refresh and try again.`);
+        return;
       }
 
       const result = await generateImage({
@@ -478,7 +585,9 @@ export default function Generator() {
         styleId: selectedStyleId,
         colors: customColors.map((c) => c.hex),
         uploadedImageUrl:
-          uploadedFiles.length > 0 ? "uploaded-image-url" : undefined,
+          uploadedFiles.length > 0 && uploadedFileUrl
+            ? uploadedFileUrl
+            : undefined,
       });
 
       if (result.success && result.imageUrl) {
@@ -509,11 +618,41 @@ export default function Generator() {
       }
     } catch (error) {
       console.error("Generation failed:", error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Generation failed. Please try again.",
-      );
+
+      // Enhanced error handling with specific messaging
+      let errorMessage = "Generation failed. Please try again.";
+
+      if (error instanceof Error) {
+        if (
+          error.message.includes("quota") ||
+          error.message.includes("limit")
+        ) {
+          errorMessage =
+            "You've reached your monthly generation limit. Please wait until next month or contact support.";
+        } else if (
+          error.message.includes("API error") ||
+          error.message.includes("Fal AI")
+        ) {
+          errorMessage =
+            "Our AI service is temporarily unavailable. Please try again in a few moments.";
+        } else if (
+          error.message.includes("network") ||
+          error.message.includes("fetch")
+        ) {
+          errorMessage =
+            "Network error. Please check your connection and try again.";
+        } else if (error.message.includes("auth")) {
+          errorMessage = "Authentication error. Please sign in again.";
+          // Redirect to login if auth error
+          setTimeout(() => {
+            navigateToPath({ path: "/login" });
+          }, 2000);
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      alert(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -594,16 +733,6 @@ export default function Generator() {
                 <div className="flex items-center gap-2">
                   {/* Page Navigation Buttons */}
                   <motion.button
-                    onClick={() => navigateToPath({ path: "/" })}
-                    className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    title={t("common.navigation.home")}
-                  >
-                    <Home className="w-4 h-4 text-muted-foreground" />
-                  </motion.button>
-
-                  <motion.button
                     onClick={() => navigateToPath({ path: "/generator" })}
                     className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                     whileHover={{ scale: 1.05 }}
@@ -622,10 +751,6 @@ export default function Generator() {
                   >
                     <Image className="w-4 h-4 text-muted-foreground" />
                   </motion.button>
-
-                  {/* Language and Theme Toggles */}
-                  <LanguageSwitcher />
-                  <ThemeToggle />
 
                   {/* Three Dots Menu */}
                   <DropdownMenu>
@@ -665,6 +790,23 @@ export default function Generator() {
                               </>
                             )}
                           </div>
+                          <div className="border-t border-border my-1"></div>
+
+                          {/* Language and Theme Controls */}
+                          <div className="px-2 py-1.5">
+                            <div className="text-xs font-medium text-muted-foreground mb-2">
+                              Preferences
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-sm">Language</span>
+                              <LanguageSwitcher />
+                            </div>
+                            <div className="flex items-center justify-between gap-2 mt-2">
+                              <span className="text-sm">Theme</span>
+                              <ThemeToggle />
+                            </div>
+                          </div>
+
                           {user.isAdmin && (
                             <>
                               <div className="border-t border-border my-1"></div>
@@ -690,6 +832,8 @@ export default function Generator() {
                               </DropdownMenuItem>
                             </>
                           )}
+
+                          <div className="border-t border-border my-1"></div>
                           <DropdownMenuItem onClick={signOut}>
                             <LogOut className="w-4 h-4 mr-2" />
                             {t("common.buttons.signOut")}
@@ -1165,6 +1309,7 @@ export default function Generator() {
                         opacity: 100,
                       };
                       setCustomColors([...customColors, newColor]);
+                      setUserEditedColors(true);
                     }
                   }}
                   title={
@@ -1197,6 +1342,7 @@ export default function Generator() {
                                 c.id === color.id ? { ...c, hex: newHex } : c,
                               ),
                             );
+                            setUserEditedColors(true);
                           }}
                         >
                           <div
@@ -1224,6 +1370,7 @@ export default function Generator() {
                                       : c,
                                   ),
                                 );
+                                setUserEditedColors(true);
                               } else {
                                 setEditingHex(color.hex.toUpperCase());
                               }
@@ -1260,11 +1407,12 @@ export default function Generator() {
                       </div>
                       <div className="flex py-0 px-3 justify-center items-center gap-2">
                         <button
-                          onClick={() =>
+                          onClick={() => {
                             setCustomColors(
                               customColors.filter((c) => c.id !== color.id),
-                            )
-                          }
+                            );
+                            setUserEditedColors(true);
+                          }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700"
                         >
                           <Trash2 className="w-4 h-4" />

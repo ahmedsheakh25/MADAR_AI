@@ -14,8 +14,32 @@ export interface AuthResult {
 // Middleware to require authentication
 export async function requireAuth(req: Request): Promise<AuthResult> {
   try {
-    // Real authentication is now enabled - no dev mode
+    // Check for dev mode first
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer dev-token-")) {
+      console.log("🔧 Dev mode: Using mock user for authentication");
 
+      // Return mock dev user for development
+      const devUser: User = {
+        id: "dev-user-123",
+        email: "dev@madar.ai",
+        name: "Development User",
+        profilePicture: "https://via.placeholder.com/150",
+        role: "user",
+        generationCount: 0,
+        resetDate: new Date(),
+        googleId: "dev-google-id-123",
+        createdAt: new Date(),
+        lastLoginAt: new Date(),
+      };
+
+      return {
+        success: true,
+        user: devUser,
+      };
+    }
+
+    // Real authentication for production
     const user = await AuthService.getUserFromRequest(req);
 
     if (!user) {
@@ -69,8 +93,29 @@ export function createForbiddenResponse(message?: string): Response {
 // Optional authentication (doesn't fail if no auth)
 export async function optionalAuth(req: Request): Promise<User | null> {
   try {
-    // Real authentication is now enabled - no dev mode
+    // Check for dev mode first
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer dev-token-")) {
+      console.log("🔧 Dev mode: Using mock user for optional auth");
 
+      // Return mock dev user for development
+      const devUser: User = {
+        id: "dev-user-123",
+        email: "dev@madar.ai",
+        name: "Development User",
+        profilePicture: "https://via.placeholder.com/150",
+        role: "user",
+        generationCount: 0,
+        resetDate: new Date(),
+        googleId: "dev-google-id-123",
+        createdAt: new Date(),
+        lastLoginAt: new Date(),
+      };
+
+      return devUser;
+    }
+
+    // Real authentication for production
     return await AuthService.getUserFromRequest(req);
   } catch (error) {
     console.error("Optional auth error:", error);

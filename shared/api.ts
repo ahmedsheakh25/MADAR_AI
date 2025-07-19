@@ -41,6 +41,8 @@ export interface GoogleAuthUrlResponse {
   success: boolean;
   authUrl?: string;
   error?: string;
+  devMode?: boolean;
+  message?: string;
 }
 
 export interface LogoutResponse {

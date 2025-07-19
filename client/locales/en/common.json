@@ -244,7 +244,15 @@
       "transparentBackground": "Transparent backgrounds ready to use",
       "freeForDesigners": "Completely free for designers"
     },
-    "activeUsers": "Active Users"
+    "activeUsers": "Active Users",
+    "termsAgreement": "By creating an account, you agree to our Privacy Policy and Terms of Service.",
+    "termsAgreementParts": {
+      "prefix": "By creating an account, you agree to our",
+      "privacyPolicy": "Privacy Policy",
+      "and": "and",
+      "termsOfService": "Terms of Service",
+      "suffix": "."
+    }
   },
   "generation": {
     "status": {

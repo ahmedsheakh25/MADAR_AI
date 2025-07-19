@@ -10,15 +10,35 @@ export async function GET(req: Request) {
       hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
       hasRedirectUri: !!process.env.GOOGLE_REDIRECT_URI,
       nodeEnv: process.env.NODE_ENV,
+      devMode: process.env.DEV_MODE_AUTH === "true",
     });
 
-    // Generate Google OAuth URL
+    // Check if we're in development mode
+    if (AuthService.isDevMode()) {
+      console.log("🔧 Development mode activated for Google Auth");
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          authUrl: "/api/auth/callback?dev=true",
+          devMode: true,
+          message:
+            "Development mode: Will bypass Google OAuth and create test user",
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Generate Google OAuth URL for production
     const authUrl = AuthService.getGoogleAuthUrl();
 
     return new Response(
       JSON.stringify({
         success: true,
         authUrl,
+        devMode: false,
       }),
       {
         headers: { "Content-Type": "application/json" },
