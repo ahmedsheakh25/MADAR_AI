@@ -1,6 +1,7 @@
 import { DatabaseService } from "../lib/database.js";
 import { requireAuth, createUnauthorizedResponse } from "../lib/middleware.js";
-import * as fal from "@fal-ai/serverless-client";
+import { fal } from "@ai-sdk/fal";
+import { experimental_generateImage as generateImage } from "ai";
 import type {
   GenerateImageRequest,
   GenerateImageResponse,
@@ -49,220 +50,100 @@ export async function POST(req: Request) {
       user = await DatabaseService.resetUserGenerationCount(user.id);
     }
 
-    const userGenerationCount = user.generationCount || 0;
-    if (userGenerationCount >= MAX_GENERATIONS_PER_MONTH) {
+    if (user.generationCount >= MAX_GENERATIONS_PER_MONTH) {
       return new Response(
         JSON.stringify({
           success: false,
-          error:
-            "Monthly generation limit exceeded. Please wait until next month.",
-          remainingGenerations: 0,
+          error: `You've reached your generation limit of ${MAX_GENERATIONS_PER_MONTH} images per month. Your quota will reset next month.`,
         }),
         { status: 429, headers: { "Content-Type": "application/json" } },
       );
     }
 
-    // Get style information
-    const style = await DatabaseService.getStyleById(styleId);
-    if (!style) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Style not found",
-        }),
-        { status: 404, headers: { "Content-Type": "application/json" } },
-      );
+    // Reserve generation slot
+    await DatabaseService.reserveGeneration(user.id);
+
+    // Enhance prompt based on style and colors
+    let enhancedPrompt = prompt;
+    if (colors && colors.length > 0) {
+      const colorDescription = colors
+        .map((color) => `${color}`)
+        .join(", ");
+      enhancedPrompt = `${prompt}, using colors: ${colorDescription}`;
     }
 
-    // Build enhanced prompt with optimal structure for AI generation
-    const styleData = style.promptJson as any;
-    const stylePrompt = styleData?.prompt || "";
-
-    // Build color modifiers from user color selection
-    const colorModifiers =
-      colors && colors.length > 0
-        ? `with primary colors ${colors.slice(0, 2).join(" and ")}`
-        : "";
-
-    // Assemble prompt in optimal order: user description + style prompt + color modifiers + quality enhancers
-    const enhancedPrompt = [
-      prompt.trim(), // User's creative input first
-      stylePrompt, // Style-specific instructions
-      colorModifiers, // Color preferences
-      "high quality, detailed, professional", // Quality enhancers
-    ]
-      .filter(Boolean)
-      .join(", ");
-
-    // Check if API key is configured
-    if (
-      !process.env.FAL_AI_API_KEY ||
-      process.env.FAL_AI_API_KEY === "your_fal_ai_api_key_here"
-    ) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error:
-            "Fal AI API key is not configured. Please set FAL_AI_API_KEY environment variable.",
-        }),
-        { status: 500, headers: { "Content-Type": "application/json" } },
-      );
-    }
-
-    // Configure FAL client with optimized settings
-    fal.config({
-      credentials: process.env.FAL_AI_API_KEY,
-    });
-
-    // Determine the best model based on requirements
-    const modelId = uploadedImageUrl ? "fal-ai/fast-sdxl" : "fal-ai/fast-sdxl"; // Could be expanded for different models
-    
-    // Prepare optimized FAL input parameters
-    const falInput = {
-      prompt: enhancedPrompt,
-      image_size: "square_hd", // 1024x1024 for high quality
-      num_inference_steps: uploadedImageUrl ? 20 : 25, // Fewer steps for img2img
-      guidance_scale: 7.5,
-      num_images: 1,
-      enable_safety_checker: true,
-      scheduler: "DPM++ 2M Karras", // High quality scheduler
-      safety_tolerance: 2,
-      ...(uploadedImageUrl && { 
-        image_url: uploadedImageUrl,
-        strength: 0.8, // For image-to-image generation
-      }),
+    // Add style-specific enhancements based on styleId
+    const styleEnhancements = {
+      minimal: "clean, minimalist, simple, elegant",
+      vibrant: "colorful, energetic, bold, dynamic",
+      professional: "polished, sophisticated, high-quality",
+      artistic: "creative, expressive, artistic, unique",
     };
 
-    // Generate image using FAL client with retry logic
-    let imageUrl: string | null = null;
-    let lastError: Error | null = null;
-    const maxRetries = 2;
+    const stylePrompt = styleEnhancements[styleId as keyof typeof styleEnhancements] || "";
+    if (stylePrompt) {
+      enhancedPrompt = `${enhancedPrompt}, ${stylePrompt}`;
+    }
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        console.log(`Generation attempt ${attempt + 1}/${maxRetries + 1}...`);
-        
-        const result = await fal.subscribe(modelId, {
-          input: falInput,
-          logs: false,
-        });
+    enhancedPrompt = enhancedPrompt
+      .split(",")
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0)
+      .join(", ");
 
-        // Extract image URL from FAL response
-        const typedResult = result as { images?: Array<{ url?: string }> };
-        imageUrl = typedResult.images?.[0]?.url || null;
+    // Check API key configuration  
+    if (!process.env.FAL_API_KEY && !process.env.FAL_KEY) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Image generation service is not configured.",
+        }),
+        { status: 503, headers: { "Content-Type": "application/json" } },
+      );
+    }
 
-        if (!imageUrl) {
-          const error = new Error(
-            "No image URL generated - empty or invalid response from AI service",
-          );
-          lastError = error;
+    console.log("🎨 Starting image generation with AI SDK v5...");
 
-          if (attempt < maxRetries) {
-            console.warn(
-              `Generation attempt ${attempt + 1} failed, retrying...`,
-              error.message,
-            );
-            await new Promise((resolve) =>
-              setTimeout(resolve, 1000 * (attempt + 1)),
-            );
-            continue;
-          }
+    // Generate image using AI SDK v5 with FAL provider
+    const result = await generateImage({
+      model: fal.image("fal-ai/fast-sdxl"),
+      prompt: enhancedPrompt,
+      aspectRatio: "1:1", // Square HD equivalent
+      n: 1,
+      providerOptions: {
+        fal: {
+          num_inference_steps: uploadedImageUrl ? 20 : 25,
+          guidance_scale: 7.5,
+          enable_safety_checker: true,
+          scheduler: "DPM++ 2M Karras",
+          safety_tolerance: 2,
+          ...(uploadedImageUrl && {
+            image_url: uploadedImageUrl,
+            strength: 0.8,
+          }),
+        },
+      },
+      headers: {
+        "User-Agent": "MADAR-AI/1.0",
+      },
+    });
 
-          throw error;
-        }
-
-        // Validate image URL
-        if (!imageUrl.startsWith("http")) {
-          const error = new Error("Invalid image URL received from AI service");
-          lastError = error;
-
-          if (attempt < maxRetries) {
-            console.warn(
-              `Generation attempt ${attempt + 1} failed, retrying...`,
-              error.message,
-            );
-            await new Promise((resolve) =>
-              setTimeout(resolve, 1000 * (attempt + 1)),
-            );
-            continue;
-          }
-
-          throw error;
-        }
-
-        // Success - break out of retry loop
-        console.log("✅ Image generation successful:", imageUrl);
-        break;
-      } catch (error) {
-        lastError = error as Error;
-        const errorMessage = (error as Error).message;
-        console.warn(
-          `Generation attempt ${attempt + 1} failed:`,
-          errorMessage,
-        );
-
-        // Enhanced error categorization for better handling
-        const isNetworkError = 
-          errorMessage.toLowerCase().includes("network") ||
-          errorMessage.toLowerCase().includes("fetch") ||
-          errorMessage.toLowerCase().includes("connection") ||
-          errorMessage.toLowerCase().includes("timeout");
-
-        const isServerError = 
-          errorMessage.includes("500") ||
-          errorMessage.includes("502") ||
-          errorMessage.includes("503") ||
-          errorMessage.includes("504") ||
-          errorMessage.toLowerCase().includes("internal server error");
-
-        const isRateLimitError = 
-          errorMessage.includes("429") ||
-          errorMessage.toLowerCase().includes("rate limit") ||
-          errorMessage.toLowerCase().includes("quota exceeded");
-
-        const isContentPolicyError = 
-          errorMessage.toLowerCase().includes("content policy") ||
-          errorMessage.toLowerCase().includes("safety") ||
-          errorMessage.toLowerCase().includes("inappropriate");
-
-        const isAuthError = 
-          errorMessage.includes("401") ||
-          errorMessage.includes("403") ||
-          errorMessage.toLowerCase().includes("unauthorized") ||
-          errorMessage.toLowerCase().includes("invalid api key");
-
-        // Only retry on certain errors
-        if (attempt < maxRetries) {
-          const isRetryable = isNetworkError || isServerError || isRateLimitError;
-          
-          if (isRetryable) {
-            const retryDelay = isRateLimitError ? 5000 : 1000 * (attempt + 1);
-            console.warn(`Retryable error detected, retrying in ${retryDelay}ms...`);
-            await new Promise((resolve) => setTimeout(resolve, retryDelay));
-            continue;
-          }
-        }
-
-        // Add specific error context for non-retryable errors
-        if (isContentPolicyError) {
-          lastError = new Error("Your prompt contains content that violates our content policy. Please try a different prompt.");
-        } else if (isAuthError) {
-          lastError = new Error("Authentication failed. Please check your API configuration.");
-        } else if (errorMessage.toLowerCase().includes("insufficient credits")) {
-          lastError = new Error("Insufficient API credits. Please check your FAL AI account balance.");
-        }
-
-        // Don't retry on client errors or after max attempts
-        throw lastError;
-      }
+    // Extract image URL from AI SDK v5 response
+    let imageUrl: string;
+    
+    // AI SDK v5 returns image with base64 or uint8Array data
+    if (result.image.base64) {
+      // Convert base64 to a data URL if needed, or handle as required by your app
+      imageUrl = `data:image/png;base64,${result.image.base64}`;
+    } else {
+      throw new Error("No image data received from AI service");
     }
 
     if (!imageUrl) {
-      throw (
-        lastError ||
-        new Error("Failed to generate image after multiple attempts")
-      );
+      throw new Error("No image generated");
     }
+
+    console.log("✅ Image generation successful");
 
     // Record successful generation usage
     await DatabaseService.recordGenerationUsage({
@@ -276,10 +157,9 @@ export async function POST(req: Request) {
       errorMessage: null,
     });
 
-    // Generation was already reserved, so just calculate remaining count
+    // Calculate remaining generations
     const updatedGenerationCount = user.generationCount || 0;
-    const remainingGenerations =
-      MAX_GENERATIONS_PER_MONTH - updatedGenerationCount;
+    const remainingGenerations = MAX_GENERATIONS_PER_MONTH - updatedGenerationCount;
 
     const responseData: GenerateImageResponse = {
       success: true,
@@ -293,44 +173,47 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Image generation failed:", error);
 
-    // Categorize error for better user experience
+    // AI SDK v5 standard error handling
     let userFriendlyMessage = "Image generation failed. Please try again.";
     let httpStatus = 500;
 
-    if (error instanceof Error) {
-      const errorMessage = error.message.toLowerCase();
-      
-      if (errorMessage.includes("content policy") || errorMessage.includes("inappropriate")) {
-        userFriendlyMessage = "Your prompt contains content that violates our content policy. Please try a different prompt.";
-        httpStatus = 400;
-      } else if (errorMessage.includes("quota") || errorMessage.includes("limit")) {
-        userFriendlyMessage = "You have reached your generation limit for this month. Please try again next month.";
-        httpStatus = 429;
-      } else if (errorMessage.includes("unauthorized") || errorMessage.includes("api key")) {
-        userFriendlyMessage = "Service temporarily unavailable. Please try again in a few minutes.";
-        httpStatus = 503;
-      } else if (errorMessage.includes("network") || errorMessage.includes("timeout")) {
-        userFriendlyMessage = "Network error occurred. Please check your connection and try again.";
-        httpStatus = 503;
-      } else if (errorMessage.includes("insufficient credits")) {
-        userFriendlyMessage = "Service temporarily unavailable due to capacity limits. Please try again later.";
-        httpStatus = 503;
+    // Handle AI SDK v5 standard errors
+    if (error && typeof error === 'object' && 'name' in error) {
+      switch (error.name) {
+        case 'AI_NoImageGeneratedError':
+          userFriendlyMessage = "Unable to generate image. Please try a different prompt.";
+          httpStatus = 400;
+          break;
+        case 'AI_APICallError':
+          if (error.message?.toLowerCase().includes('content policy')) {
+            userFriendlyMessage = "Your prompt contains content that violates our content policy. Please try a different prompt.";
+            httpStatus = 400;
+          } else if (error.message?.toLowerCase().includes('rate limit')) {
+            userFriendlyMessage = "Service is currently busy. Please try again in a moment.";
+            httpStatus = 429;
+          } else {
+            userFriendlyMessage = "Service temporarily unavailable. Please try again.";
+            httpStatus = 503;
+          }
+          break;
+        default:
+          // Keep default message
+          break;
       }
     }
 
     // Record failed generation usage
-    if (authResult.user) {
+    if (authResult?.user) {
       try {
         await DatabaseService.recordGenerationUsage({
           userId: authResult.user.id,
-          styleUsed: body.styleId,
-          promptUsed: body.prompt,
-          uploadedImageUsed: body.uploadedImageUrl || null,
-          colorsUsed: body.colors || [],
+          styleUsed: body?.styleId || "",
+          promptUsed: body?.prompt || "",
+          uploadedImageUsed: body?.uploadedImageUrl || null,
+          colorsUsed: body?.colors || [],
           generatedImageUrl: null,
           success: false,
-          errorMessage:
-            error instanceof Error ? error.message : "Unknown error",
+          errorMessage: error instanceof Error ? error.message : "Unknown error",
         });
       } catch (trackingError) {
         console.error("Failed to record generation usage:", trackingError);
