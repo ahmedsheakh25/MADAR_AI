@@ -40,83 +40,110 @@ export default function Home() {
   const { user, signOut, isDevMode } = useAuth();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background font-inter">
+    <div className="min-h-screen bg-background font-inter relative overflow-x-hidden">
       {/* Background gradient for dark/light mode */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20 -z-10" />
 
-      <div className="w-full max-w-[1440px] h-[1024px] flex items-center justify-center p-8">
-        {/* Main Content Area - Hero Section */}
-        <div className="flex flex-col items-center justify-center flex-1 self-stretch rounded-[20px] border border-border bg-card shadow-lg relative">
-          {/* Header with Navigation */}
-          <div className="absolute top-8 right-8 flex items-center gap-4 z-10">
-            {/* Page Navigation Buttons */}
-            <motion.button
-              onClick={() => navigateToPath({ path: "/" })}
-              className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title={t("common.navigation.home")}
-            >
-              <HomeIcon className="w-4 h-4" />
-            </motion.button>
+      {/* Main Container with proper spacing for footer */}
+      <div className="min-h-screen pb-32 md:pb-24 flex flex-col">
+        {/* Header Navigation - Fixed at top */}
+        <motion.div
+          className="fixed top-4 right-4 md:top-8 md:right-8 flex items-center gap-2 md:gap-4 z-50 bg-card/90 backdrop-blur-sm rounded-lg p-2 border border-border/50 shadow-lg"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Page Navigation Buttons */}
+          <motion.button
+            onClick={() => navigateToPath({ path: "/" })}
+            className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            title={t("common.navigation.home")}
+          >
+            <HomeIcon className="w-3 h-3 md:w-4 md:h-4" />
+          </motion.button>
 
-            <motion.button
-              onClick={() => navigateToPath({ path: "/generator" })}
-              className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title={t("common.navigation.generator")}
-            >
-              <Grid className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
+          <motion.button
+            onClick={() => navigateToPath({ path: "/generator" })}
+            className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            title={t("common.navigation.generator")}
+          >
+            <Grid className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
+          </motion.button>
 
-            <motion.button
-              onClick={() => navigateToPath({ path: "/gallery" })}
-              className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title={t("common.navigation.gallery")}
-            >
-              <Image className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
+          <motion.button
+            onClick={() => navigateToPath({ path: "/gallery" })}
+            className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            title={t("common.navigation.gallery")}
+          >
+            <Image className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
+          </motion.button>
 
-            {/* Language and Theme Toggles */}
+          {/* Language and Theme Toggles */}
+          <div className="hidden sm:flex items-center gap-2">
             <LanguageSwitcher />
             <ThemeToggle />
-
-            {/* Three Dots Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <motion.button
-                  className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-                </motion.button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {user && (
-                  <DropdownMenuItem onClick={signOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    {t("common.buttons.signOut")}
-                  </DropdownMenuItem>
-                )}
-                {!user && (
-                  <DropdownMenuItem
-                    onClick={() => navigateToPath({ path: "/login" })}
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    {t("common.buttons.signIn")}
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
-          {/* Hero Section */}
-          <div className="hero-wrapper w-full h-full">
-            <Hero211 />
+          {/* Three Dots Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <motion.button
+                className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
+              </motion.button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-48">
+              {/* Mobile-only theme and language controls */}
+              <div className="sm:hidden">
+                <div className="px-2 py-2 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
+                    <ThemeToggle />
+                  </div>
+                </div>
+              </div>
+
+              {user && (
+                <DropdownMenuItem onClick={signOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  {t("common.buttons.signOut")}
+                </DropdownMenuItem>
+              )}
+              {!user && (
+                <DropdownMenuItem
+                  onClick={() => navigateToPath({ path: "/login" })}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  {t("common.buttons.signIn")}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </motion.div>
+
+        {/* Main Content Area - Hero Section */}
+        <div className="flex-1 flex items-center justify-center p-4 md:p-8">
+          <div className="w-full max-w-7xl mx-auto">
+            <motion.div
+              className="w-full h-[calc(100vh-8rem)] md:h-[calc(100vh-12rem)] flex flex-col items-center justify-center rounded-2xl md:rounded-[20px] border border-border bg-card/50 backdrop-blur-sm shadow-xl relative overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              {/* Hero Section with proper z-index */}
+              <div className="hero-wrapper w-full h-full relative z-10">
+                <Hero211 />
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
