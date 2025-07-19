@@ -1,5 +1,6 @@
 import { DatabaseService } from "../lib/database.js";
 import { requireAuth, createUnauthorizedResponse } from "../lib/middleware.js";
+import * as fal from "@fal-ai/serverless-client";
 import type {
   GenerateImageRequest,
   GenerateImageResponse,
@@ -108,66 +109,51 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate image using Fal AI (using fetch for now to debug)
+    // Configure FAL client with optimized settings
+    fal.config({
+      credentials: process.env.FAL_AI_API_KEY,
+    });
+
+    // Determine the best model based on requirements
+    const modelId = uploadedImageUrl ? "fal-ai/fast-sdxl" : "fal-ai/fast-sdxl"; // Could be expanded for different models
+    
+    // Prepare optimized FAL input parameters
     const falInput = {
       prompt: enhancedPrompt,
-      image_size: "square_hd",
-      num_inference_steps: 25,
+      image_size: "square_hd", // 1024x1024 for high quality
+      num_inference_steps: uploadedImageUrl ? 20 : 25, // Fewer steps for img2img
       guidance_scale: 7.5,
       num_images: 1,
       enable_safety_checker: true,
-      ...(uploadedImageUrl && { image_url: uploadedImageUrl }),
+      scheduler: "DPM++ 2M Karras", // High quality scheduler
+      safety_tolerance: 2,
+      ...(uploadedImageUrl && { 
+        image_url: uploadedImageUrl,
+        strength: 0.8, // For image-to-image generation
+      }),
     };
 
-    // Implement retry logic for FAL AI requests
+    // Generate image using FAL client with retry logic
     let imageUrl: string | null = null;
     let lastError: Error | null = null;
     const maxRetries = 2;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const response = await fetch("https://fal.run/fal-ai/fast-sdxl", {
-          method: "POST",
-          headers: {
-            Authorization: `Key ${process.env.FAL_AI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(falInput),
+        console.log(`Generation attempt ${attempt + 1}/${maxRetries + 1}...`);
+        
+        const result = await fal.subscribe(modelId, {
+          input: falInput,
+          logs: false,
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
+        // Extract image URL from FAL response
+        const typedResult = result as { images?: Array<{ url?: string }> };
+        imageUrl = typedResult.images?.[0]?.url || null;
+
+        if (!imageUrl) {
           const error = new Error(
-            `Fal AI API error (${response.status}): ${response.statusText} - ${errorText}`,
-          );
-
-          // Don't retry on client errors (400, 401, 403)
-          if (response.status >= 400 && response.status < 500) {
-            throw error;
-          }
-
-          lastError = error;
-
-          if (attempt < maxRetries) {
-            console.warn(
-              `Generation attempt ${attempt + 1} failed, retrying...`,
-              error.message,
-            );
-            await new Promise((resolve) =>
-              setTimeout(resolve, 1000 * (attempt + 1)),
-            ); // Exponential backoff
-            continue;
-          }
-
-          throw error;
-        }
-
-        const result = await response.json();
-        imageUrl = result.images?.[0]?.url;
-
-        if (!imageUrl || !result.images || result.images.length === 0) {
-          const error = new Error(
-            "No image generated - empty or invalid response from AI service",
+            "No image URL generated - empty or invalid response from AI service",
           );
           lastError = error;
 
@@ -205,26 +191,69 @@ export async function POST(req: Request) {
         }
 
         // Success - break out of retry loop
+        console.log("✅ Image generation successful:", imageUrl);
         break;
       } catch (error) {
         lastError = error as Error;
+        const errorMessage = (error as Error).message;
+        console.warn(
+          `Generation attempt ${attempt + 1} failed:`,
+          errorMessage,
+        );
 
-        // Only retry on network errors or 5xx server errors
-        if (
-          attempt < maxRetries &&
-          (!(error as any).status || (error as any).status >= 500)
-        ) {
-          console.warn(
-            `Generation attempt ${attempt + 1} failed with error, retrying...`,
-            (error as Error).message,
-          );
-          await new Promise((resolve) =>
-            setTimeout(resolve, 1000 * (attempt + 1)),
-          );
-          continue;
+        // Enhanced error categorization for better handling
+        const isNetworkError = 
+          errorMessage.toLowerCase().includes("network") ||
+          errorMessage.toLowerCase().includes("fetch") ||
+          errorMessage.toLowerCase().includes("connection") ||
+          errorMessage.toLowerCase().includes("timeout");
+
+        const isServerError = 
+          errorMessage.includes("500") ||
+          errorMessage.includes("502") ||
+          errorMessage.includes("503") ||
+          errorMessage.includes("504") ||
+          errorMessage.toLowerCase().includes("internal server error");
+
+        const isRateLimitError = 
+          errorMessage.includes("429") ||
+          errorMessage.toLowerCase().includes("rate limit") ||
+          errorMessage.toLowerCase().includes("quota exceeded");
+
+        const isContentPolicyError = 
+          errorMessage.toLowerCase().includes("content policy") ||
+          errorMessage.toLowerCase().includes("safety") ||
+          errorMessage.toLowerCase().includes("inappropriate");
+
+        const isAuthError = 
+          errorMessage.includes("401") ||
+          errorMessage.includes("403") ||
+          errorMessage.toLowerCase().includes("unauthorized") ||
+          errorMessage.toLowerCase().includes("invalid api key");
+
+        // Only retry on certain errors
+        if (attempt < maxRetries) {
+          const isRetryable = isNetworkError || isServerError || isRateLimitError;
+          
+          if (isRetryable) {
+            const retryDelay = isRateLimitError ? 5000 : 1000 * (attempt + 1);
+            console.warn(`Retryable error detected, retrying in ${retryDelay}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+            continue;
+          }
         }
 
-        throw error;
+        // Add specific error context for non-retryable errors
+        if (isContentPolicyError) {
+          lastError = new Error("Your prompt contains content that violates our content policy. Please try a different prompt.");
+        } else if (isAuthError) {
+          lastError = new Error("Authentication failed. Please check your API configuration.");
+        } else if (errorMessage.toLowerCase().includes("insufficient credits")) {
+          lastError = new Error("Insufficient API credits. Please check your FAL AI account balance.");
+        }
+
+        // Don't retry on client errors or after max attempts
+        throw lastError;
       }
     }
 
@@ -264,6 +293,31 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Image generation failed:", error);
 
+    // Categorize error for better user experience
+    let userFriendlyMessage = "Image generation failed. Please try again.";
+    let httpStatus = 500;
+
+    if (error instanceof Error) {
+      const errorMessage = error.message.toLowerCase();
+      
+      if (errorMessage.includes("content policy") || errorMessage.includes("inappropriate")) {
+        userFriendlyMessage = "Your prompt contains content that violates our content policy. Please try a different prompt.";
+        httpStatus = 400;
+      } else if (errorMessage.includes("quota") || errorMessage.includes("limit")) {
+        userFriendlyMessage = "You have reached your generation limit for this month. Please try again next month.";
+        httpStatus = 429;
+      } else if (errorMessage.includes("unauthorized") || errorMessage.includes("api key")) {
+        userFriendlyMessage = "Service temporarily unavailable. Please try again in a few minutes.";
+        httpStatus = 503;
+      } else if (errorMessage.includes("network") || errorMessage.includes("timeout")) {
+        userFriendlyMessage = "Network error occurred. Please check your connection and try again.";
+        httpStatus = 503;
+      } else if (errorMessage.includes("insufficient credits")) {
+        userFriendlyMessage = "Service temporarily unavailable due to capacity limits. Please try again later.";
+        httpStatus = 503;
+      }
+    }
+
     // Record failed generation usage
     if (authResult.user) {
       try {
@@ -288,14 +342,11 @@ export async function POST(req: Request) {
 
     const responseData: GenerateImageResponse = {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Image generation failed. Please try again.",
+      error: userFriendlyMessage,
     };
 
     return new Response(JSON.stringify(responseData), {
-      status: 500,
+      status: httpStatus,
       headers: { "Content-Type": "application/json" },
     });
   }
