@@ -65,6 +65,22 @@
     "loading": {
       "authenticating": "Authenticating...",
       "loading": "Loading..."
+    },
+    "footer": {
+      "companyName": "OfSpace Studio",
+      "projectName": "Madar (مدار)",
+      "projectSubtitle": "Free Creative AI Playground",
+      "description": "AI-powered 3D image generation for designers",
+      "descriptionFull": "AI-powered 3D image generation for designers. Upload, choose a style, get beautiful PNGs",
+      "freeWithGoogle": "100% free with Google sign-in",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "contact": "Contact",
+      "hostedOn": "Hosted on:",
+      "copyright": "© 2024 OfSpace Studio. All rights reserved.",
+      "madeForDesigners": "Made for Arabic designers",
+      "freeImagesPerMonth": "30 Free Images/Month",
+      "googleVerified": "Google OAuth Verified"
     }
   },
   "brand": {
