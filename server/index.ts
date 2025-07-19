@@ -223,14 +223,10 @@ export function createServer() {
   app.post("/generate", async (req, res) => {
     try {
       // Check if API key is configured
-      if (
-        !process.env.FAL_AI_API_KEY ||
-        process.env.FAL_AI_API_KEY === "your_fal_ai_api_key_here"
-      ) {
-        return res.status(500).json({
+      if (!process.env.FAL_KEY) {
+        return res.status(503).json({
           success: false,
-          error:
-            "Fal AI API key is not configured. Please set FAL_AI_API_KEY environment variable.",
+          error: "Image generation service is not configured.",
         });
       }
 

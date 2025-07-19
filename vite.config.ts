@@ -22,19 +22,18 @@ export default defineConfig(({ mode }) => ({
     react(),
     {
       name: "express-dev-server",
-      configureServer: async (server) => {
-        // Load environment variables
-        const { config } = await import("dotenv");
-        config();
+      configureServer(server) {
+        // Note: Using Vercel API routes (api/ directory) instead of Express server
+        // The server/index.js integration is disabled for Vercel deployment
+        
+        // // Import and setup Express server for API routes
+        // const { createServer } = await import("./server/index.js");
+        // const app = createServer();
 
-        // Import and setup Express server for API routes
-        const { createServer } = await import("./server/index.js");
-        const app = createServer();
-
-        // Use the Express app to handle /api routes
-        server.middlewares.use("/api", (req, res, next) => {
-          app(req, res, next);
-        });
+        // // Use the Express app to handle /api routes
+        // server.middlewares.use("/api", (req, res, next) => {
+        //   app(req, res, next);
+        // });
       },
     },
   ],

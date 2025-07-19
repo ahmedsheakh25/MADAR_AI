@@ -91,8 +91,8 @@ export async function POST(req: Request) {
       .filter((part) => part.length > 0)
       .join(", ");
 
-    // Check API key configuration  
-    if (!process.env.FAL_API_KEY && !process.env.FAL_KEY) {
+    // Check API key configuration - using Vercel's automatic FAL integration
+    if (!process.env.FAL_KEY) {
       return new Response(
         JSON.stringify({
           success: false,

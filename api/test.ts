@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   try {
     // Test environment variables (without exposing them)
     const hasDatabaseUrl = !!process.env.DATABASE_URL;
-    const hasFalApiKey = !!(process.env.FAL_API_KEY || process.env.FAL_KEY);
+    const hasFalApiKey = !!process.env.FAL_KEY;
     
     const responseData = {
       success: true,
@@ -22,6 +22,7 @@ export async function GET(req: Request) {
         version: 'v4.3.19',
         provider: '@ai-sdk/fal v0.1.12',
         migration: 'AI SDK v5 Standard Patterns',
+        integration: 'Vercel FAL_KEY Automatic Integration',
       },
     };
 

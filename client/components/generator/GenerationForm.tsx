@@ -371,17 +371,37 @@ export function GenerationForm({
         transition={{ delay: 0.2 }}
         className="space-y-4"
       >
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-base text-gray-800 dark:text-gray-200 font-medium">
           {t("pages.homepage.colorSection.title")} (
           {formData.customColors.length}/3)
         </h2>
-        <ColorPicker
-          colors={formData.customColors}
-          onChange={(colors) =>
-            setFormData((prev) => ({ ...prev, customColors: colors }))
-          }
-          maxColors={3}
-        />
+        <div className="flex gap-2 flex-wrap">
+          {formData.customColors.map((color, index) => (
+            <ColorPicker
+              key={index}
+              color={color}
+              onChange={(newColor) => {
+                const newColors = [...formData.customColors];
+                newColors[index] = newColor;
+                setFormData((prev) => ({ ...prev, customColors: newColors }));
+              }}
+            >
+              <div className="w-8 h-8 rounded-full border-2 border-gray-300" style={{ backgroundColor: color }} />
+            </ColorPicker>
+          ))}
+          {formData.customColors.length < 3 && (
+            <button
+              type="button"
+              onClick={() => {
+                const newColors = [...formData.customColors, "#3B82F6"];
+                setFormData((prev) => ({ ...prev, customColors: newColors }));
+              }}
+              className="w-8 h-8 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-gray-400 hover:text-gray-600"
+            >
+              +
+            </button>
+          )}
+        </div>
       </motion.section>
 
       {/* Aspect Ratio */}
