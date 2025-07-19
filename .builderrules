@@ -1,331 +1,783 @@
+# 🧠 **Builder AI Agent Fusion Copilot – MADAR AI Model Definition**
 
-## 🧠 **Claude Sonnet 4 – MADAR AI Model Definition**
-
-**Model Role**: Fullstack Visual Copilot
-**Purpose**: Develop, extend, and support all logic and UI integration for the MADAR AI creative image generation platform.
-
----
-
-### 🚀 **🔹 PROJECT NAME:** `MADAR AI`
-
-**Meaning:** “Orbit” in Arabic – a 100% free creative tool designed for Arabic-speaking designers.
-
-**One-liner:**
-
-> MADAR lets users upload ideas, choose from stunning 3D/voxel styles, and instantly generate transparent AI art for their creative projects.
+**Agent Role**: Advanced Fullstack Visual Copilot  
+**Purpose**: Develop, extend, and maintain the MADAR AI creative image generation platform with enterprise-grade AI integrations.
 
 ---
 
-### 💡 **🔹 PROJECT PURPOSE**
+## 🚀 **🔹 PROJECT:** `MADAR AI` 
 
-Madar is an AI-powered design assistant made for Arabic-speaking creatives. It allows users to:
+**Meaning:** "Orbit" in Arabic – A 100% free creative tool for Arabic-speaking designers.
 
-* Select from creative 3D styles (e.g. Minecraft voxel, clay, low-poly, etc.)
-* Upload a photo or describe their idea
-* Automatically inject their input into pre-designed **JSON prompts**
-* Generate high-quality **transparent PNGs**
-* Save their artwork to a personal gallery
-
-The system ensures:
-
-* Free usage with a monthly quota (30 generations)
-* Clean and minimalist UI using Once UI System
-* Full RTL support for Arabic users
+**Vision:**
+> MADAR empowers users to upload ideas, select stunning 3D/voxel styles, and generate transparent AI art through enterprise-grade AI gateways.
 
 ---
 
-### 🧩 **🔹 SYSTEM COMPONENTS**
+## 💡 **🔹 PROJECT PURPOSE & EVOLUTION**
 
-| Area          | Description                                                             |
-| ------------- | ----------------------------------------------------------------------- |
-| **Frontend**  | Next.js (App Router) + Once UI System + Tailwind + Google Auth          |
-| **AI SDK**    | [Fal AI](https://fal.ai) via Vercel AI SDK for image generation         |
-| **Database**  | Neon (Postgres) for users, images, and styles                           |
-| **Auth**      | Google OAuth2 (NextAuth) to retrieve full name + email                  |
-| **Dashboard** | Admin panel for managing styles and tracking users                      |
-| **Storage**   | Currently images are generated and streamed — optional CDN coming later |
+MADAR AI is an enterprise-ready AI-powered design assistant for Arabic-speaking creatives featuring:
 
----
+### **Core Features:**
+* **Multi-Provider AI Integration** - Vercel AI Gateway + Fal AI + OpenAI fallbacks
+* **Dynamic Model Discovery** - Real-time model availability and cost optimization  
+* **Style-Based Generation** - 3D styles (Minecraft voxel, clay, low-poly) with JSON prompt injection
+* **Enterprise Analytics** - Built-in monitoring, caching, and usage tracking
+* **Transparent PNG Output** - High-quality images with transparent backgrounds
+* **Personal Gallery System** - Save and organize generated artwork
+* **RTL Arabic Support** - Full right-to-left interface design
 
-### 🖼️ **🔹 USER FLOW (ALREADY BUILT)**
-
-1. **Login Page**: Minimal two-column layout (Gmail login + app description)
-
-2. **Generator Page**:
-
-   * Upload image
-   * Select style card → auto-load prompt + colors
-   * Enter description (prompt injection)
-   * Click “Start Generating” → loading state appears
-   * Generated image displayed below
-   * “Save to My Library” → stored in Neon and shown in `/gallery`
-   * “Download” for instant use
-
-3. **Gallery Page**: Shows saved images in grid
-
-4. **Admin Pages (WIP)**: `/admin/users`, `/admin/styles`
+### **Enterprise Features:**
+* **Monthly Quotas** - 30 free generations per user per month
+* **AI Gateway Routing** - Intelligent provider selection and cost optimization
+* **Advanced Observability** - Request tracing, performance metrics, and usage analytics
+* **Multi-Model Support** - Seamless switching between AI providers
 
 ---
 
-### 🗃️ **🔹 DATABASE SCHEMA OVERVIEW (NEON)**
+## 🏗️ **🔹 CURRENT SYSTEM ARCHITECTURE**
 
-```ts
-// USERS
-id, name, email, generation_count, reset_date
+### **Frontend Stack:**
+```
+Next.js 14 (App Router) + Once UI System + Tailwind CSS + TypeScript
+├── Authentication: Google OAuth2 (NextAuth.js)
+├── UI Framework: Once UI Design System (strict adherence required)  
+├── Styling: Tailwind CSS utilities only
+├── State Management: React hooks + custom API hooks
+└── RTL Support: Full Arabic right-to-left layout support
+```
 
-// IMAGES
-id, user_id, image_url, prompt, style_name, colors[], created_at
+### **AI Integration Layer:**
+```
+Vercel AI SDK v5 (PRIMARY - NEVER use direct APIs)
+├── 🥇 Primary: Vercel AI Gateway (gpt-image-1 model)
+├── 🥈 Backup: Fal AI (fal-ai/fast-sdxl)  
+├── 🥉 Optional: OpenAI Direct (dall-e-3, dall-e-2)
+└── Dynamic Discovery: /api/models endpoint for real-time availability
+```
 
-// STYLES
-id, name, description, thumbnail_url, prompt_json
+### **Backend & Database:**
+```
+API Routes (Next.js) + Neon PostgreSQL + Drizzle ORM
+├── Database: Neon (Postgres) for users, images, styles
+├── ORM: Drizzle for type-safe database operations
+├── Authentication: NextAuth.js session management
+└── File Handling: Direct image streaming (no CDN currently)
 ```
 
 ---
 
-### 📌 **🔹 BACKEND ROUTES & LOGIC**
+## 🔗 **🔹 AI GATEWAY ARCHITECTURE (CRITICAL)**
 
-| Route           | Purpose                                                                                      |
-| --------------- | -------------------------------------------------------------------------------------------- |
-| `/api/generate` | Accepts: image + prompt + style + user info → Validates quota → Calls Fal AI → Returns image |
-| `/api/save`     | Stores generated image data into `images` table                                              |
-| `/api/user`     | Returns user info + generation stats                                                         |
-| `/api/styles`   | (Admin) CRUD operations for styles                                                           |
-| `/api/users`    | (Admin) View + reset generation quotas                                                       |
+### **🚨 MANDATORY: Always Use Vercel AI SDK v5**
+```typescript
+// ✅ CORRECT: Use Vercel AI SDK 
+import { generateImage } from 'ai';
+import { createProviderInstance } from './ai-gateway-config';
 
----
+// ❌ NEVER: Direct API calls
+// fetch('https://api.openai.com/...')  // FORBIDDEN
+```
 
-### 🧠 **🔹 MODEL BEHAVIOR EXPECTATIONS**
+### **Current Provider Configuration:**
+```typescript
+// Located in: api/ai-gateway-config.ts
+PROVIDER_CONFIGS = {
+  "vercel-gateway": {
+    id: "vercel-gateway",
+    baseURL: "https://api.vercel.com/v1/ai",
+    apiKey: process.env.VERCEL_AI_GATEWAY_KEY, // pILy0A986lbdtYyvRkdmacgN
+    models: ["gpt-image-1"]
+  },
+  "fal": {
+    apiKey: process.env.FAL_KEY,
+    models: ["fal-ai/fast-sdxl"]
+  },
+  "openai": {
+    baseURL: process.env.OPENAI_GATEWAY_URL || "https://api.openai.com/v1",
+    apiKey: process.env.OPENAI_API_KEY,
+    models: ["dall-e-3", "dall-e-2"]
+  }
+}
+```
 
-You are expected to:
-
-* 🔁 Always **use existing UI components** and file locations (no new layout systems)
-* 📌 Inject logic in these files without rewriting the UI:
-
-  * `Generator.tsx`, `Gallery.tsx`, `admin/styles.tsx`, `admin/users.tsx`
-* 🧠 Automatically build full prompts using:
-
-  * The style’s JSON
-  * User’s description
-  * Uploaded image (as base64 or URL)
-* ✅ Respect monthly quota: 30 generations/user/month
-* 🔐 Ensure image generation & save only works when user is authenticated
-* 🕌 Fully support Arabic RTL layouts (no LTR fallback)
-
----
-
-### 🛠️ **🔹 EXAMPLE TASKS YOU MIGHT HANDLE**
-
-* Enhance loading state in `Generator.tsx:1110:15` to show all possible outcomes
-* Inject logic into `onGenerate()` at `Generator.tsx:1167:15` to:
-
-  * Build final prompt
-  * Call `Fal AI`
-  * Show image in container `1225:19`
-  * Update quota
-* Save generated image using `/api/save`
-* Build admin user dashboard at `/admin/users`
-* Create dynamic form for editing JSON prompts at `/admin/styles`
+### **Model Priority Hierarchy:**
+1. **🥇 gpt-image-1** (Vercel Gateway) - Primary, enterprise features
+2. **🥈 fal-ai/fast-sdxl** (Fal AI) - Fast backup option  
+3. **🥉 dall-e-3** (OpenAI) - Premium quality fallback
+4. **dall-e-2** (OpenAI) - Cost-effective option
 
 ---
 
-### ✅ **DOs**
+## 📊 **🔹 DATABASE SCHEMA (Neon + Drizzle)**
 
-* Work strictly within the design system (Once UI)
-* Use Tailwind utility classes only
-* Respect all provided file paths
-* Keep UI minimal, RTL-friendly, and creative-focused
+```typescript
+// lib/schema.ts - Current schema
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name'),
+  email: text('email'),
+  generation_count: integer('generation_count').default(0),
+  reset_date: timestamp('reset_date')
+});
 
-### ❌ **DON’Ts**
+export const images = pgTable('images', {
+  id: serial('id').primaryKey(), 
+  user_id: integer('user_id').references(() => users.id),
+  image_url: text('image_url'),
+  prompt: text('prompt'),
+  style_name: text('style_name'),
+  model_used: text('model_used'), // NEW: Track which AI model generated
+  colors: text('colors'), // JSON array
+  created_at: timestamp('created_at').defaultNow()
+});
 
-* Do not introduce new component libraries or layout systems
-* Do not override the theme or font stack
-* Do not use MUI/Chakra/Ant/etc.
-
----
-
-### 🧷 **IMPORTANT HOOKS & STRUCTURE**
-
-* Use `useGenerateImage()` hook for frontend ↔ backend connection
-* Images should be stored in state and passed to `ImageCard` component
-* Use Supabase or Neon client for direct DB access if needed
-
----
-
-## ✅ READY TO EXECUTE
-
-Please confirm when ready to:
-
-* Begin wiring the `generate → preview → save` flow
-* Build `/admin/styles` and `/admin/users`
-* Enforce the generation quota
-
----
-
-Would you like this prompt exported as `.txt` or Markdown `.md` for use in Cursor or Claude interface?
-Here is your **comprehensive AI Model Definition** tailored for **Claude Sonnet 4** (or any Claude-compatible agent like Cursor, Builder Fusion, or Visual Copilot), based on your complete MADAR AI system vision:
+export const styles = pgTable('styles', {
+  id: serial('id').primaryKey(),
+  name: text('name'),
+  description: text('description'),
+  thumbnail_url: text('thumbnail_url'),
+  prompt_json: text('prompt_json') // Complete prompt template
+});
+```
 
 ---
 
-## 🧠 **Claude Sonnet 4 – MADAR AI Model Definition**
+## 🛣️ **🔹 API ROUTES & INTEGRATIONS**
 
-**Model Role**: Fullstack Visual Copilot
-**Purpose**: Develop, extend, and support all logic and UI integration for the MADAR AI creative image generation platform.
+### **Core Generation Flow:**
+```typescript
+// api/generate.ts - Enhanced multi-provider generation
+POST /api/generate
+├── Input: { prompt, styleId, model, colors[], aspectRatio }
+├── Process: 
+│   ├── Validate user quota (30/month)
+│   ├── Get provider via createProviderInstance(model)
+│   ├── Generate via Vercel AI SDK generateImage()
+│   ├── Track usage & analytics
+│   └── Return: { success, imageUrl, metadata }
+└── Models Supported: gpt-image-1, fal-ai/fast-sdxl, dall-e-3, dall-e-2
+```
 
----
+### **Dynamic Model Discovery:**
+```typescript
+// api/models.ts - Real-time model availability  
+GET /api/models
+├── Checks: Environment variables for each provider
+├── Validates: API key configuration
+├── Returns: Available models with metadata
+└── Format: { id, name, provider, cost, estimatedTime, isAvailable }
+```
 
-### 🚀 **🔹 PROJECT NAME:** `MADAR AI`
-
-**Meaning:** “Orbit” in Arabic – a 100% free creative tool designed for Arabic-speaking designers.
-
-**One-liner:**
-
-> MADAR lets users upload ideas, choose from stunning 3D/voxel styles, and instantly generate transparent AI art for their creative projects.
-
----
-
-### 💡 **🔹 PROJECT PURPOSE**
-
-Madar is an AI-powered design assistant made for Arabic-speaking creatives. It allows users to:
-
-* Select from creative 3D styles (e.g. Minecraft voxel, clay, low-poly, etc.)
-* Upload a photo or describe their idea
-* Automatically inject their input into pre-designed **JSON prompts**
-* Generate high-quality **transparent PNGs**
-* Save their artwork to a personal gallery
-
-The system ensures:
-
-* Free usage with a monthly quota (30 generations)
-* Clean and minimalist UI using Once UI System
-* Full RTL support for Arabic users
-
----
-
-### 🧩 **🔹 SYSTEM COMPONENTS**
-
-| Area          | Description                                                             |
-| ------------- | ----------------------------------------------------------------------- |
-| **Frontend**  | Next.js (App Router) + Once UI System + Tailwind + Google Auth          |
-| **AI SDK**    | [Fal AI](https://fal.ai) via Vercel AI SDK for image generation         |
-| **Database**  | Neon (Postgres) for users, images, and styles                           |
-| **Auth**      | Google OAuth2 (NextAuth) to retrieve full name + email                  |
-| **Dashboard** | Admin panel for managing styles and tracking users                      |
-| **Storage**   | Currently images are generated and streamed — optional CDN coming later |
+### **Enhanced API Endpoints:**
+```typescript
+// Current endpoints with AI Gateway integration
+/api/generate     // Multi-provider image generation via Vercel AI SDK
+/api/models       // Dynamic model discovery and availability
+/api/save         // Store generated images with model tracking
+/api/user         // User stats + generation quota management
+/api/styles       // (Admin) CRUD for prompt templates
+/api/users        // (Admin) User management + quota resets
+```
 
 ---
 
-### 🖼️ **🔹 USER FLOW (ALREADY BUILT)**
+## 🎯 **🔹 FRONTEND INTEGRATION POINTS**
 
-1. **Login Page**: Minimal two-column layout (Gmail login + app description)
+### **Generator Page (client/pages/Generator.tsx):**
+```typescript
+// Key integration points:
+├── Line ~1110: Enhanced loading states with model-specific messaging
+├── Line ~1167: onGenerate() function with multi-provider logic
+├── Line ~1225: Dynamic image display container
+├── Model Selection: Real-time dropdown with cost/time estimates
+└── Quota Display: Live generation count with reset date
+```
 
-2. **Generator Page**:
+### **Generation Form Component:**
+```typescript
+// client/components/generator/GenerationForm.tsx
+├── Dynamic Model Loading: Fetches /api/models on mount
+├── Model Cards: Provider badges, cost, estimated time
+├── Availability Status: Real-time checking of API keys
+├── Default Model: gpt-image-1 (Vercel Gateway)
+└── Fallback Models: Graceful degradation to available providers
+```
 
-   * Upload image
-      * Select style card → auto-load prompt + colors
-         * Enter description (prompt injection)
-            * Click “Start Generating” → loading state appears
-               * Generated image displayed below
-                  * “Save to My Library” → stored in Neon and shown in `/gallery`
-                     * “Download” for instant use
+### **Gallery Integration:**
+```typescript
+// client/pages/Gallery.tsx
+├── Model Tracking: Display which AI model generated each image
+├── Provider Analytics: Group images by provider/model
+├── Cost Tracking: Show per-image generation costs
+└── Performance Metrics: Display generation times
+```
 
-                     3. **Gallery Page**: Shows saved images in grid
+---
 
-                     4. **Admin Pages (WIP)**: `/admin/users`, `/admin/styles`
+## 🔧 **🔹 ENVIRONMENT CONFIGURATION**
 
-                     ---
+### **Required Environment Variables:**
+```bash
+# PRIMARY: Vercel AI Gateway (configured)
+VERCEL_AI_GATEWAY_KEY=pILy0A986lbdtYyvRkdmacgN
+VERCEL_AI_GATEWAY_URL=https://api.vercel.com/v1/ai
 
-                     ### 🗃️ **🔹 DATABASE SCHEMA OVERVIEW (NEON)**
+# BACKUP: Fal AI
+FAL_KEY=your_fal_ai_api_key_here
 
-                     ```ts
-                     // USERS
-                     id, name, email, generation_count, reset_date
+# OPTIONAL: Direct OpenAI  
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_GATEWAY_URL=https://api.openai.com/v1
 
-                     // IMAGES
-                     id, user_id, image_url, prompt, style_name, colors[], created_at
+# DATABASE: Neon PostgreSQL
+DATABASE_URL=your_neon_database_url
 
-                     // STYLES
-                     id, name, description, thumbnail_url, prompt_json
-                     ```
+# AUTH: Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXTAUTH_URL=http://localhost:8080
+NEXTAUTH_SECRET=your_nextauth_secret
+```
 
-                     ---
+---
 
-                     ### 📌 **🔹 BACKEND ROUTES & LOGIC**
+## 🧠 **🔹 AGENT BEHAVIOR RULES**
 
-                     | Route           | Purpose                                                                                      |
-                     | --------------- | -------------------------------------------------------------------------------------------- |
-                     | `/api/generate` | Accepts: image + prompt + style + user info → Validates quota → Calls Fal AI → Returns image |
-                     | `/api/save`     | Stores generated image data into `images` table                                              |
-                     | `/api/user`     | Returns user info + generation stats                                                         |
-                     | `/api/styles`   | (Admin) CRUD operations for styles                                                           |
-                     | `/api/users`    | (Admin) View + reset generation quotas                                                       |
+### **✅ MANDATORY DOs:**
 
-                     ---
+1. **AI Integration Rules:**
+   - ✅ **ALWAYS use Vercel AI SDK v5** - Never direct API calls
+   - ✅ **Route through ai-gateway-config.ts** for all AI operations
+   - ✅ **Support multi-provider fallbacks** automatically
+   - ✅ **Track model usage** in database for analytics
 
-                     ### 🧠 **🔹 MODEL BEHAVIOR EXPECTATIONS**
+2. **UI/UX Standards:**
+   - ✅ **Once UI System only** - No external component libraries
+   - ✅ **Tailwind CSS utilities only** - No custom CSS
+   - ✅ **RTL Arabic support** - All text and layouts
+   - ✅ **Minimal, clean design** - Follow existing patterns
 
-                     You are expected to:
+3. **Code Structure:**
+   - ✅ **Work within existing files** - Don't create new layout systems
+   - ✅ **Use TypeScript strictly** - Full type safety
+   - ✅ **Follow Drizzle ORM patterns** - For database operations
+   - ✅ **Implement proper error handling** - With user-friendly messages
 
-                     * 🔁 Always **use existing UI components** and file locations (no new layout systems)
-                     * 📌 Inject logic in these files without rewriting the UI:
+### **❌ CRITICAL DON'Ts:**
 
-                       * `Generator.tsx`, `Gallery.tsx`, `admin/styles.tsx`, `admin/users.tsx`
-                       * 🧠 Automatically build full prompts using:
+1. **Forbidden Practices:**
+   - ❌ **NO direct API calls** - Must use Vercel AI SDK
+   - ❌ **NO external UI libraries** - MUI/Chakra/Ant Design forbidden
+   - ❌ **NO custom CSS files** - Tailwind utilities only
+   - ❌ **NO layout system changes** - Respect Once UI structure
 
-                         * The style’s JSON
-                           * User’s description
-                             * Uploaded image (as base64 or URL)
-                             * ✅ Respect monthly quota: 30 generations/user/month
-                             * 🔐 Ensure image generation & save only works when user is authenticated
-                             * 🕌 Fully support Arabic RTL layouts (no LTR fallback)
+2. **AI Integration Restrictions:**
+   - ❌ **NO bypassing ai-gateway-config.ts** - All providers must go through it
+   - ❌ **NO hardcoded API endpoints** - Use environment variables
+   - ❌ **NO ignoring quota limits** - Enforce 30 generations/month
+   - ❌ **NO direct database queries** - Use Drizzle ORM
 
-                             ---
+---
 
-                             ### 🛠️ **🔹 EXAMPLE TASKS YOU MIGHT HANDLE**
+## 🎯 **🔹 COMMON DEVELOPMENT TASKS**
 
-                             * Enhance loading state in `Generator.tsx:1110:15` to show all possible outcomes
-                             * Inject logic into `onGenerate()` at `Generator.tsx:1167:15` to:
+### **AI Generation Enhancement:**
+```typescript
+// Enhance generation flow in Generator.tsx
+1. Integrate model selection with real-time availability
+2. Add loading states specific to each AI provider  
+3. Implement cost tracking and quota warnings
+4. Add generation time estimates and progress indicators
+5. Handle provider failures with automatic fallbacks
+```
 
-                               * Build final prompt
-                                 * Call `Fal AI`
-                                   * Show image in container `1225:19`
-                                     * Update quota
-                                     * Save generated image using `/api/save`
-                                     * Build admin user dashboard at `/admin/users`
-                                     * Create dynamic form for editing JSON prompts at `/admin/styles`
+### **Admin Dashboard Development:**
+```typescript
+// Build admin interfaces for:
+├── /admin/users - User management + quota controls
+├── /admin/styles - JSON prompt template editor
+├── /admin/analytics - AI usage metrics and costs
+└── /admin/models - Provider configuration and status
+```
 
-                                     ---
+### **Database Operations:**
+```typescript
+// All database work through Drizzle ORM:
+├── User quota management and reset cycles
+├── Image metadata with model tracking
+├── Style template CRUD operations
+└── Analytics data aggregation
+```
 
-                                     ### ✅ **DOs**
+---
 
-                                     * Work strictly within the design system (Once UI)
-                                     * Use Tailwind utility classes only
-                                     * Respect all provided file paths
-                                     * Keep UI minimal, RTL-friendly, and creative-focused
+## 📊 **🔹 PERFORMANCE & MONITORING**
 
-                                     ### ❌ **DON’Ts**
+### **AI Gateway Analytics:**
+```typescript
+// Built-in observability features:
+├── Request tracing with Vercel trace IDs
+├── Generation time monitoring
+├── Cost tracking per model/provider
+├── Success/failure rate analytics
+├── Quota usage patterns
+└── Provider performance comparison
+```
 
-                                     * Do not introduce new component libraries or layout systems
-                                     * Do not override the theme or font stack
-                                     * Do not use MUI/Chakra/Ant/etc.
+### **Frontend Performance:**
+```typescript
+// Optimization requirements:
+├── Lazy loading for large image galleries
+├── Real-time model availability checking
+├── Efficient state management for generation flows
+├── Error boundary implementation
+└── Loading state optimization
+```
 
-                                     ---
+---
 
-                                     ### 🧷 **IMPORTANT HOOKS & STRUCTURE**
+## 🚀 **🔹 DEPLOYMENT & SCALING**
 
-                                     * Use `useGenerateImage()` hook for frontend ↔ backend connection
-                                     * Images should be stored in state and passed to `ImageCard` component
-                                     * Use Supabase or Neon client for direct DB access if needed
+### **Production Ready Features:**
+- ✅ **Enterprise AI Gateway** - Vercel infrastructure
+- ✅ **Multi-provider redundancy** - Automatic failover
+- ✅ **Usage analytics** - Comprehensive monitoring
+- ✅ **Cost optimization** - Intelligent model routing
+- ✅ **Global performance** - Edge network optimization
 
-                                     ---
+### **Scaling Considerations:**
+- 📊 **Monitor quota usage** patterns for optimization
+- 🔄 **Implement caching strategies** for repeated prompts
+- 📈 **Track model performance** for intelligent routing
+- 💰 **Optimize costs** through usage analytics
 
-                                     ## ✅ READY TO EXECUTE
+---
 
-                                     Please confirm when ready to:
+## 🎉 **🔹 READY FOR EXECUTION**
 
-                                     * Begin wiring the `generate → preview → save` flow
-                                     * Build `/admin/styles` and `/admin/users`
-                                     * Enforce the generation quota
+### **Current Development Server:**
+**URL:** http://localhost:8080  
+**Status:** Running with Vercel AI Gateway integration
 
-                                     ---
+### **Immediate Tasks Ready:**
+1. ✅ **AI Generation Flow** - Fully integrated with multi-provider support
+2. ✅ **Model Selection UI** - Dynamic discovery with real-time data
+3. 🚧 **Admin Dashboards** - User and style management (in progress)
+4. 🚧 **Analytics Dashboard** - Usage and cost tracking (ready for implementation)
 
-                                     
+### **Next Development Priorities:**
+1. **Complete admin interfaces** for users and styles management
+2. **Implement advanced analytics** for AI usage optimization  
+3. **Add generation history** with detailed model tracking
+4. **Enhance quota management** with usage predictions
+
+---
+
+## 📞 **🔹 SUPPORT & DOCUMENTATION**
+
+### **Technical Documentation:**
+- **`VERCEL_AI_GATEWAY_SETUP.md`** - Complete integration guide
+- **`OPENAI_SETUP.md`** - Multi-provider configuration
+- **`AI_GATEWAY_IMPLEMENTATION.md`** - Architecture overview
+
+### **Development Guidelines:**
+- **Always prioritize Vercel AI SDK** over direct API integrations
+- **Maintain strict UI consistency** with Once UI System
+- **Implement comprehensive error handling** for all AI operations
+- **Track all interactions** for analytics and optimization
+
+---
+
+**🎯 Your MADAR AI platform is now enterprise-ready with advanced AI gateway integration, multi-provider support, and comprehensive monitoring capabilities!**# 🧠 **Builder AI Agent Fusion Copilot – MADAR AI Model Definition**
+
+**Agent Role**: Advanced Fullstack Visual Copilot  
+**Purpose**: Develop, extend, and maintain the MADAR AI creative image generation platform with enterprise-grade AI integrations.
+
+---
+
+## 🚀 **🔹 PROJECT:** `MADAR AI` 
+
+**Meaning:** "Orbit" in Arabic – A 100% free creative tool for Arabic-speaking designers.
+
+**Vision:**
+> MADAR empowers users to upload ideas, select stunning 3D/voxel styles, and generate transparent AI art through enterprise-grade AI gateways.
+
+---
+
+## 💡 **🔹 PROJECT PURPOSE & EVOLUTION**
+
+MADAR AI is an enterprise-ready AI-powered design assistant for Arabic-speaking creatives featuring:
+
+### **Core Features:**
+* **Multi-Provider AI Integration** - Vercel AI Gateway + Fal AI + OpenAI fallbacks
+* **Dynamic Model Discovery** - Real-time model availability and cost optimization  
+* **Style-Based Generation** - 3D styles (Minecraft voxel, clay, low-poly) with JSON prompt injection
+* **Enterprise Analytics** - Built-in monitoring, caching, and usage tracking
+* **Transparent PNG Output** - High-quality images with transparent backgrounds
+* **Personal Gallery System** - Save and organize generated artwork
+* **RTL Arabic Support** - Full right-to-left interface design
+
+### **Enterprise Features:**
+* **Monthly Quotas** - 30 free generations per user per month
+* **AI Gateway Routing** - Intelligent provider selection and cost optimization
+* **Advanced Observability** - Request tracing, performance metrics, and usage analytics
+* **Multi-Model Support** - Seamless switching between AI providers
+
+---
+
+## 🏗️ **🔹 CURRENT SYSTEM ARCHITECTURE**
+
+### **Frontend Stack:**
+```
+Next.js 14 (App Router) + Once UI System + Tailwind CSS + TypeScript
+├── Authentication: Google OAuth2 (NextAuth.js)
+├── UI Framework: Once UI Design System (strict adherence required)  
+├── Styling: Tailwind CSS utilities only
+├── State Management: React hooks + custom API hooks
+└── RTL Support: Full Arabic right-to-left layout support
+```
+
+### **AI Integration Layer:**
+```
+Vercel AI SDK v5 (PRIMARY - NEVER use direct APIs)
+├── 🥇 Primary: Vercel AI Gateway (gpt-image-1 model)
+├── 🥈 Backup: Fal AI (fal-ai/fast-sdxl)  
+├── 🥉 Optional: OpenAI Direct (dall-e-3, dall-e-2)
+└── Dynamic Discovery: /api/models endpoint for real-time availability
+```
+
+### **Backend & Database:**
+```
+API Routes (Next.js) + Neon PostgreSQL + Drizzle ORM
+├── Database: Neon (Postgres) for users, images, styles
+├── ORM: Drizzle for type-safe database operations
+├── Authentication: NextAuth.js session management
+└── File Handling: Direct image streaming (no CDN currently)
+```
+
+---
+
+## 🔗 **🔹 AI GATEWAY ARCHITECTURE (CRITICAL)**
+
+### **🚨 MANDATORY: Always Use Vercel AI SDK v5**
+```typescript
+// ✅ CORRECT: Use Vercel AI SDK 
+import { generateImage } from 'ai';
+import { createProviderInstance } from './ai-gateway-config';
+
+// ❌ NEVER: Direct API calls
+// fetch('https://api.openai.com/...')  // FORBIDDEN
+```
+
+### **Current Provider Configuration:**
+```typescript
+// Located in: api/ai-gateway-config.ts
+PROVIDER_CONFIGS = {
+  "vercel-gateway": {
+      id: "vercel-gateway",
+          baseURL: "https://api.vercel.com/v1/ai",
+              apiKey: process.env.VERCEL_AI_GATEWAY_KEY, // pILy0A986lbdtYyvRkdmacgN
+                  models: ["gpt-image-1"]
+                    },
+                      "fal": {
+                          apiKey: process.env.FAL_KEY,
+                              models: ["fal-ai/fast-sdxl"]
+                                },
+                                  "openai": {
+                                      baseURL: process.env.OPENAI_GATEWAY_URL || "https://api.openai.com/v1",
+                                          apiKey: process.env.OPENAI_API_KEY,
+                                              models: ["dall-e-3", "dall-e-2"]
+                                                }
+                                                }
+                                                ```
+
+                                                ### **Model Priority Hierarchy:**
+                                                1. **🥇 gpt-image-1** (Vercel Gateway) - Primary, enterprise features
+                                                2. **🥈 fal-ai/fast-sdxl** (Fal AI) - Fast backup option  
+                                                3. **🥉 dall-e-3** (OpenAI) - Premium quality fallback
+                                                4. **dall-e-2** (OpenAI) - Cost-effective option
+
+                                                ---
+
+                                                ## 📊 **🔹 DATABASE SCHEMA (Neon + Drizzle)**
+
+                                                ```typescript
+                                                // lib/schema.ts - Current schema
+                                                export const users = pgTable('users', {
+                                                  id: serial('id').primaryKey(),
+                                                    name: text('name'),
+                                                      email: text('email'),
+                                                        generation_count: integer('generation_count').default(0),
+                                                          reset_date: timestamp('reset_date')
+                                                          });
+
+                                                          export const images = pgTable('images', {
+                                                            id: serial('id').primaryKey(), 
+                                                              user_id: integer('user_id').references(() => users.id),
+                                                                image_url: text('image_url'),
+                                                                  prompt: text('prompt'),
+                                                                    style_name: text('style_name'),
+                                                                      model_used: text('model_used'), // NEW: Track which AI model generated
+                                                                        colors: text('colors'), // JSON array
+                                                                          created_at: timestamp('created_at').defaultNow()
+                                                                          });
+
+                                                                          export const styles = pgTable('styles', {
+                                                                            id: serial('id').primaryKey(),
+                                                                              name: text('name'),
+                                                                                description: text('description'),
+                                                                                  thumbnail_url: text('thumbnail_url'),
+                                                                                    prompt_json: text('prompt_json') // Complete prompt template
+                                                                                    });
+                                                                                    ```
+
+                                                                                    ---
+
+                                                                                    ## 🛣️ **🔹 API ROUTES & INTEGRATIONS**
+
+                                                                                    ### **Core Generation Flow:**
+                                                                                    ```typescript
+                                                                                    // api/generate.ts - Enhanced multi-provider generation
+                                                                                    POST /api/generate
+                                                                                    ├── Input: { prompt, styleId, model, colors[], aspectRatio }
+                                                                                    ├── Process: 
+                                                                                    │   ├── Validate user quota (30/month)
+                                                                                    │   ├── Get provider via createProviderInstance(model)
+                                                                                    │   ├── Generate via Vercel AI SDK generateImage()
+                                                                                    │   ├── Track usage & analytics
+                                                                                    │   └── Return: { success, imageUrl, metadata }
+                                                                                    └── Models Supported: gpt-image-1, fal-ai/fast-sdxl, dall-e-3, dall-e-2
+                                                                                    ```
+
+                                                                                    ### **Dynamic Model Discovery:**
+                                                                                    ```typescript
+                                                                                    // api/models.ts - Real-time model availability  
+                                                                                    GET /api/models
+                                                                                    ├── Checks: Environment variables for each provider
+                                                                                    ├── Validates: API key configuration
+                                                                                    ├── Returns: Available models with metadata
+                                                                                    └── Format: { id, name, provider, cost, estimatedTime, isAvailable }
+                                                                                    ```
+
+                                                                                    ### **Enhanced API Endpoints:**
+                                                                                    ```typescript
+                                                                                    // Current endpoints with AI Gateway integration
+                                                                                    /api/generate     // Multi-provider image generation via Vercel AI SDK
+                                                                                    /api/models       // Dynamic model discovery and availability
+                                                                                    /api/save         // Store generated images with model tracking
+                                                                                    /api/user         // User stats + generation quota management
+                                                                                    /api/styles       // (Admin) CRUD for prompt templates
+                                                                                    /api/users        // (Admin) User management + quota resets
+                                                                                    ```
+
+                                                                                    ---
+
+                                                                                    ## 🎯 **🔹 FRONTEND INTEGRATION POINTS**
+
+                                                                                    ### **Generator Page (client/pages/Generator.tsx):**
+                                                                                    ```typescript
+                                                                                    // Key integration points:
+                                                                                    ├── Line ~1110: Enhanced loading states with model-specific messaging
+                                                                                    ├── Line ~1167: onGenerate() function with multi-provider logic
+                                                                                    ├── Line ~1225: Dynamic image display container
+                                                                                    ├── Model Selection: Real-time dropdown with cost/time estimates
+                                                                                    └── Quota Display: Live generation count with reset date
+                                                                                    ```
+
+                                                                                    ### **Generation Form Component:**
+                                                                                    ```typescript
+                                                                                    // client/components/generator/GenerationForm.tsx
+                                                                                    ├── Dynamic Model Loading: Fetches /api/models on mount
+                                                                                    ├── Model Cards: Provider badges, cost, estimated time
+                                                                                    ├── Availability Status: Real-time checking of API keys
+                                                                                    ├── Default Model: gpt-image-1 (Vercel Gateway)
+                                                                                    └── Fallback Models: Graceful degradation to available providers
+                                                                                    ```
+
+                                                                                    ### **Gallery Integration:**
+                                                                                    ```typescript
+                                                                                    // client/pages/Gallery.tsx
+                                                                                    ├── Model Tracking: Display which AI model generated each image
+                                                                                    ├── Provider Analytics: Group images by provider/model
+                                                                                    ├── Cost Tracking: Show per-image generation costs
+                                                                                    └── Performance Metrics: Display generation times
+                                                                                    ```
+
+                                                                                    ---
+
+                                                                                    ## 🔧 **🔹 ENVIRONMENT CONFIGURATION**
+
+                                                                                    ### **Required Environment Variables:**
+                                                                                    ```bash
+                                                                                    # PRIMARY: Vercel AI Gateway (configured)
+                                                                                    VERCEL_AI_GATEWAY_KEY=pILy0A986lbdtYyvRkdmacgN
+                                                                                    VERCEL_AI_GATEWAY_URL=https://api.vercel.com/v1/ai
+
+                                                                                    # BACKUP: Fal AI
+                                                                                    FAL_KEY=your_fal_ai_api_key_here
+
+                                                                                    # OPTIONAL: Direct OpenAI  
+                                                                                    OPENAI_API_KEY=your_openai_api_key_here
+                                                                                    OPENAI_GATEWAY_URL=https://api.openai.com/v1
+
+                                                                                    # DATABASE: Neon PostgreSQL
+                                                                                    DATABASE_URL=your_neon_database_url
+
+                                                                                    # AUTH: Google OAuth
+                                                                                    GOOGLE_CLIENT_ID=your_google_client_id
+                                                                                    GOOGLE_CLIENT_SECRET=your_google_client_secret
+                                                                                    NEXTAUTH_URL=http://localhost:8080
+                                                                                    NEXTAUTH_SECRET=your_nextauth_secret
+                                                                                    ```
+
+                                                                                    ---
+
+                                                                                    ## 🧠 **🔹 AGENT BEHAVIOR RULES**
+
+                                                                                    ### **✅ MANDATORY DOs:**
+
+                                                                                    1. **AI Integration Rules:**
+                                                                                       - ✅ **ALWAYS use Vercel AI SDK v5** - Never direct API calls
+                                                                                          - ✅ **Route through ai-gateway-config.ts** for all AI operations
+                                                                                             - ✅ **Support multi-provider fallbacks** automatically
+                                                                                                - ✅ **Track model usage** in database for analytics
+
+                                                                                                2. **UI/UX Standards:**
+                                                                                                   - ✅ **Once UI System only** - No external component libraries
+                                                                                                      - ✅ **Tailwind CSS utilities only** - No custom CSS
+                                                                                                         - ✅ **RTL Arabic support** - All text and layouts
+                                                                                                            - ✅ **Minimal, clean design** - Follow existing patterns
+
+                                                                                                            3. **Code Structure:**
+                                                                                                               - ✅ **Work within existing files** - Don't create new layout systems
+                                                                                                                  - ✅ **Use TypeScript strictly** - Full type safety
+                                                                                                                     - ✅ **Follow Drizzle ORM patterns** - For database operations
+                                                                                                                        - ✅ **Implement proper error handling** - With user-friendly messages
+
+                                                                                                                        ### **❌ CRITICAL DON'Ts:**
+
+                                                                                                                        1. **Forbidden Practices:**
+                                                                                                                           - ❌ **NO direct API calls** - Must use Vercel AI SDK
+                                                                                                                              - ❌ **NO external UI libraries** - MUI/Chakra/Ant Design forbidden
+                                                                                                                                 - ❌ **NO custom CSS files** - Tailwind utilities only
+                                                                                                                                    - ❌ **NO layout system changes** - Respect Once UI structure
+
+                                                                                                                                    2. **AI Integration Restrictions:**
+                                                                                                                                       - ❌ **NO bypassing ai-gateway-config.ts** - All providers must go through it
+                                                                                                                                          - ❌ **NO hardcoded API endpoints** - Use environment variables
+                                                                                                                                             - ❌ **NO ignoring quota limits** - Enforce 30 generations/month
+                                                                                                                                                - ❌ **NO direct database queries** - Use Drizzle ORM
+
+                                                                                                                                                ---
+
+                                                                                                                                                ## 🎯 **🔹 COMMON DEVELOPMENT TASKS**
+
+                                                                                                                                                ### **AI Generation Enhancement:**
+                                                                                                                                                ```typescript
+                                                                                                                                                // Enhance generation flow in Generator.tsx
+                                                                                                                                                1. Integrate model selection with real-time availability
+                                                                                                                                                2. Add loading states specific to each AI provider  
+                                                                                                                                                3. Implement cost tracking and quota warnings
+                                                                                                                                                4. Add generation time estimates and progress indicators
+                                                                                                                                                5. Handle provider failures with automatic fallbacks
+                                                                                                                                                ```
+
+                                                                                                                                                ### **Admin Dashboard Development:**
+                                                                                                                                                ```typescript
+                                                                                                                                                // Build admin interfaces for:
+                                                                                                                                                ├── /admin/users - User management + quota controls
+                                                                                                                                                ├── /admin/styles - JSON prompt template editor
+                                                                                                                                                ├── /admin/analytics - AI usage metrics and costs
+                                                                                                                                                └── /admin/models - Provider configuration and status
+                                                                                                                                                ```
+
+                                                                                                                                                ### **Database Operations:**
+                                                                                                                                                ```typescript
+                                                                                                                                                // All database work through Drizzle ORM:
+                                                                                                                                                ├── User quota management and reset cycles
+                                                                                                                                                ├── Image metadata with model tracking
+                                                                                                                                                ├── Style template CRUD operations
+                                                                                                                                                └── Analytics data aggregation
+                                                                                                                                                ```
+
+                                                                                                                                                ---
+
+                                                                                                                                                ## 📊 **🔹 PERFORMANCE & MONITORING**
+
+                                                                                                                                                ### **AI Gateway Analytics:**
+                                                                                                                                                ```typescript
+                                                                                                                                                // Built-in observability features:
+                                                                                                                                                ├── Request tracing with Vercel trace IDs
+                                                                                                                                                ├── Generation time monitoring
+                                                                                                                                                ├── Cost tracking per model/provider
+                                                                                                                                                ├── Success/failure rate analytics
+                                                                                                                                                ├── Quota usage patterns
+                                                                                                                                                └── Provider performance comparison
+                                                                                                                                                ```
+
+                                                                                                                                                ### **Frontend Performance:**
+                                                                                                                                                ```typescript
+                                                                                                                                                // Optimization requirements:
+                                                                                                                                                ├── Lazy loading for large image galleries
+                                                                                                                                                ├── Real-time model availability checking
+                                                                                                                                                ├── Efficient state management for generation flows
+                                                                                                                                                ├── Error boundary implementation
+                                                                                                                                                └── Loading state optimization
+                                                                                                                                                ```
+
+                                                                                                                                                ---
+
+                                                                                                                                                ## 🚀 **🔹 DEPLOYMENT & SCALING**
+
+                                                                                                                                                ### **Production Ready Features:**
+                                                                                                                                                - ✅ **Enterprise AI Gateway** - Vercel infrastructure
+                                                                                                                                                - ✅ **Multi-provider redundancy** - Automatic failover
+                                                                                                                                                - ✅ **Usage analytics** - Comprehensive monitoring
+                                                                                                                                                - ✅ **Cost optimization** - Intelligent model routing
+                                                                                                                                                - ✅ **Global performance** - Edge network optimization
+
+                                                                                                                                                ### **Scaling Considerations:**
+                                                                                                                                                - 📊 **Monitor quota usage** patterns for optimization
+                                                                                                                                                - 🔄 **Implement caching strategies** for repeated prompts
+                                                                                                                                                - 📈 **Track model performance** for intelligent routing
+                                                                                                                                                - 💰 **Optimize costs** through usage analytics
+
+                                                                                                                                                ---
+
+                                                                                                                                                ## 🎉 **🔹 READY FOR EXECUTION**
+
+                                                                                                                                                ### **Current Development Server:**
+                                                                                                                                                **URL:** http://localhost:8080  
+                                                                                                                                                **Status:** Running with Vercel AI Gateway integration
+
+                                                                                                                                                ### **Immediate Tasks Ready:**
+                                                                                                                                                1. ✅ **AI Generation Flow** - Fully integrated with multi-provider support
+                                                                                                                                                2. ✅ **Model Selection UI** - Dynamic discovery with real-time data
+                                                                                                                                                3. 🚧 **Admin Dashboards** - User and style management (in progress)
+                                                                                                                                                4. 🚧 **Analytics Dashboard** - Usage and cost tracking (ready for implementation)
+
+                                                                                                                                                ### **Next Development Priorities:**
+                                                                                                                                                1. **Complete admin interfaces** for users and styles management
+                                                                                                                                                2. **Implement advanced analytics** for AI usage optimization  
+                                                                                                                                                3. **Add generation history** with detailed model tracking
+                                                                                                                                                4. **Enhance quota management** with usage predictions
+
+                                                                                                                                                ---
+
+                                                                                                                                                ## 📞 **🔹 SUPPORT & DOCUMENTATION**
+
+                                                                                                                                                ### **Technical Documentation:**
+                                                                                                                                                - **`VERCEL_AI_GATEWAY_SETUP.md`** - Complete integration guide
+                                                                                                                                                - **`OPENAI_SETUP.md`** - Multi-provider configuration
+                                                                                                                                                - **`AI_GATEWAY_IMPLEMENTATION.md`** - Architecture overview
+
+                                                                                                                                                ### **Development Guidelines:**
+                                                                                                                                                - **Always prioritize Vercel AI SDK** over direct API integrations
+                                                                                                                                                - **Maintain strict UI consistency** with Once UI System
+                                                                                                                                                - **Implement comprehensive error handling** for all AI operations
+                                                                                                                                                - **Track all interactions** for analytics and optimization
+
+                                                                                                                                                ---
+
+                                                                                                                                                **🎯 Your MADAR AI platform is now enterprise-ready with advanced AI gateway integration, multi-provider support, and comprehensive monitoring capabilities!**
