@@ -48,10 +48,10 @@ export default function StyleCarousel({
   );
 
   return (
-    <div className={cn("mx-auto max-w-2xl", className)}>
+    <div className={cn("mx-auto w-full relative z-50", className)}>
       <Carousel
         setApi={setApi}
-        className="w-full"
+        className="w-full relative z-50"
         opts={{
           loop: true,
           align: "center",
@@ -61,20 +61,23 @@ export default function StyleCarousel({
         onMouseEnter={plugin.current.stop}
         onMouseLeave={plugin.current.reset}
       >
-        <CarouselContent className="py-8 px-4">
+        <CarouselContent className="py-4 sm:py-6 md:py-8 px-2 sm:px-4">
           {images.map((image, index) => (
             <CarouselItem
               key={index}
-              className={cn("basis-[60%] md:basis-[45%] lg:basis-[40%]")}
+              className={cn(
+                "basis-[70%] sm:basis-[60%] md:basis-[50%] lg:basis-[40%] xl:basis-[35%] pl-2 sm:pl-4",
+              )}
             >
               <Card
                 className={cn(
-                  "transition-all duration-700 ease-out border bg-card hover:shadow-2xl",
+                  "transition-all duration-700 ease-out border bg-card hover:shadow-2xl relative",
                   "rounded-xl overflow-hidden group cursor-pointer",
                   {
-                    "scale-110 z-10 shadow-2xl border-primary/60 ring-2 ring-primary/20":
+                    "scale-105 sm:scale-110 z-20 shadow-2xl border-primary/60 ring-2 ring-primary/20":
                       index === current,
-                    "scale-95 opacity-75 border-border/50": index !== current,
+                    "scale-90 sm:scale-95 opacity-75 border-border/50 z-10":
+                      index !== current,
                   },
                 )}
               >
@@ -96,12 +99,12 @@ export default function StyleCarousel({
               </Card>
 
               {/* Style name indicator */}
-              <div className="mt-4 text-center">
+              <div className="mt-3 sm:mt-4 text-center">
                 <p
                   className={cn(
-                    "text-sm font-medium transition-all duration-500 font-arabic",
+                    "text-xs sm:text-sm font-medium transition-all duration-500 font-arabic",
                     index === current
-                      ? "text-primary font-semibold text-base"
+                      ? "text-primary font-semibold text-sm sm:text-base"
                       : "text-muted-foreground",
                   )}
                 >
@@ -112,37 +115,41 @@ export default function StyleCarousel({
           ))}
         </CarouselContent>
 
-        {/* Custom styled navigation buttons with RTL support */}
+        {/* Custom styled navigation buttons with RTL support and improved responsive design */}
         <CarouselPrevious
           className={cn(
-            "h-12 w-12 border-2 border-border/50 bg-background/90 backdrop-blur-sm",
+            "h-10 w-10 sm:h-12 sm:w-12 border-2 border-border/50 bg-background/90 backdrop-blur-sm z-30",
             "hover:bg-accent hover:border-primary/50 transition-all duration-300",
             "shadow-lg hover:shadow-xl",
-            // RTL positioning adjustments
-            "start-2 end-auto [dir=rtl]:start-auto [dir=rtl]:end-2",
+            // RTL positioning adjustments with responsive spacing
+            "start-1 sm:start-2 end-auto [dir=rtl]:start-auto [dir=rtl]:end-1 [dir=rtl]:sm:end-2",
+            // Hide on very small screens to prevent overlap
+            "hidden xs:flex",
           )}
         />
         <CarouselNext
           className={cn(
-            "h-12 w-12 border-2 border-border/50 bg-background/90 backdrop-blur-sm",
+            "h-10 w-10 sm:h-12 sm:w-12 border-2 border-border/50 bg-background/90 backdrop-blur-sm z-30",
             "hover:bg-accent hover:border-primary/50 transition-all duration-300",
             "shadow-lg hover:shadow-xl",
-            // RTL positioning adjustments
-            "end-2 start-auto [dir=rtl]:end-auto [dir=rtl]:start-2",
+            // RTL positioning adjustments with responsive spacing
+            "end-1 sm:end-2 start-auto [dir=rtl]:end-auto [dir=rtl]:start-1 [dir=rtl]:sm:start-2",
+            // Hide on very small screens to prevent overlap
+            "hidden xs:flex",
           )}
         />
       </Carousel>
 
-      {/* Custom dots indicator with better spacing */}
-      <div className="flex justify-center gap-3 mt-8">
+      {/* Custom dots indicator with better responsive spacing */}
+      <div className="flex justify-center gap-2 sm:gap-3 mt-6 sm:mt-8 relative z-30">
         {images.map((_, index) => (
           <button
             key={index}
             className={cn(
-              "h-2 rounded-full transition-all duration-300 hover:scale-110",
+              "h-1.5 sm:h-2 rounded-full transition-all duration-300 hover:scale-110",
               index === current
-                ? "bg-primary w-8 shadow-lg"
-                : "bg-muted-foreground/30 hover:bg-muted-foreground/50 w-2",
+                ? "bg-primary w-6 sm:w-8 shadow-lg"
+                : "bg-muted-foreground/30 hover:bg-muted-foreground/50 w-1.5 sm:w-2",
             )}
             onClick={() => api?.scrollTo(index)}
             aria-label={`Go to slide ${index + 1}`}
